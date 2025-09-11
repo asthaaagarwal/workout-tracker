@@ -181,11 +181,19 @@ function initApp() {
 // Set up all event listeners
 function setupEventListeners() {
     // Navigation
-    document.getElementById('calendarBtn').addEventListener('click', openCalendar);
     document.getElementById('cancelWorkoutBtn').addEventListener('click', goBackHome);
-    document.getElementById('closeCalendarBtn').addEventListener('click', showHomeScreen);
     document.getElementById('startWorkoutBtn').addEventListener('click', startWorkout);
     document.getElementById('completeWorkoutBtn').addEventListener('click', completeWorkout);
+    
+    // Bottom App Bar
+    document.getElementById('homeAppBarBtn').addEventListener('click', () => {
+        showHomeScreen();
+        updateAppBarState('home');
+    });
+    document.getElementById('calendarAppBarBtn').addEventListener('click', () => {
+        openCalendar();
+        updateAppBarState('calendar');
+    });
     
     // Calendar navigation
     document.getElementById('prevMonthBtn').addEventListener('click', () => navigateMonth(-1));
@@ -206,6 +214,12 @@ function updateDisplay() {
     updateAppName();
     renderWorkoutCards();
     updateStats();
+}
+
+// Update app bar active state
+function updateAppBarState(activeTab) {
+    document.getElementById('homeAppBarBtn').classList.toggle('active', activeTab === 'home');
+    document.getElementById('calendarAppBarBtn').classList.toggle('active', activeTab === 'calendar');
 }
 
 // ==== SIMPLIFIED CORE FUNCTIONS ====
@@ -270,6 +284,19 @@ function renderWorkoutCards() {
             timerHtml = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
         }
         
+        // Determine description text based on workout state
+        let descriptionText = workout.description;
+        if (workoutState === 'completed') {
+            // Find the completion time from history
+            const completedWorkout = workoutData.history
+                .filter(h => h.type === type)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            
+            if (completedWorkout) {
+                descriptionText = formatWorkoutDateTime(completedWorkout.date);
+            }
+        }
+        
         workoutCard.innerHTML = `
             <div class="workout-card-header">
                 <h3 class="workout-title">${workout.title}</h3>
@@ -277,7 +304,7 @@ function renderWorkoutCards() {
                     ${status}
                 </span>
             </div>
-            <p class="workout-description">${workout.description}</p>
+            <p class="workout-description">${descriptionText}</p>
             ${timerHtml}
         `;
         
@@ -315,7 +342,7 @@ function openWorkout(type) {
             // Add default sets
             for (let i = 0; i < exercise.sets; i++) {
                 exerciseData[exercise.name].sets.push({
-                    weight: workoutData.lastWeights[`${type}-${exercise.name}`] || '',
+                    weight: '',
                     reps: workoutData.lastReps[`${type}-${exercise.name}`] || 12
                 });
             }
@@ -517,6 +544,7 @@ function openCalendar() {
     
     currentCalendarDate = new Date();
     updateCalendarDisplay();
+    updateAppBarState('calendar');
 }
 
 // Update app name randomly
@@ -604,7 +632,7 @@ function startWorkoutTimer() {
     }
     // Only start timer if not already running
     if (!timerInterval) {
-        timerInterval = setInterval(updateTimer, 1000);
+        timerInterval = setInterval(updateTimer, 100);
     }
 }
 
@@ -614,8 +642,14 @@ function updateTimer() {
     
     const timerElement = document.getElementById('workoutTimer');
     if (timerElement) {
-        const timeStr = getFormattedElapsedTime(workoutStartTime);
-        timerElement.textContent = timeStr;
+        // Only show running timer if current workout is the ongoing one
+        const ongoingWorkoutType = getOngoingWorkoutType();
+        if (currentWorkout === ongoingWorkoutType) {
+            const timeStr = getFormattedElapsedTime(workoutStartTime);
+            timerElement.textContent = timeStr;
+        } else {
+            timerElement.textContent = '00:00.0';
+        }
     }
     
     // Also update home screen workout card timers
@@ -641,13 +675,38 @@ function updateHomeScreenTimers() {
 
 // Get formatted elapsed time for any start time
 function getFormattedElapsedTime(startTime) {
-    if (!startTime) return '00:00';
+    if (!startTime) return '00:00.0';
     
     const elapsed = new Date() - new Date(startTime);
     const minutes = Math.floor(elapsed / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
+    const milliseconds = Math.floor((elapsed % 1000) / 100);
     
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds}`;
+}
+
+// Format workout completion date/time
+function formatWorkoutDateTime(date) {
+    const completionDate = new Date(date);
+    
+    // Round to nearest 15-minute mark
+    const roundedDate = new Date(completionDate);
+    const minutes = roundedDate.getMinutes();
+    const roundedMinutes = Math.round(minutes / 15) * 15;
+    roundedDate.setMinutes(roundedMinutes, 0, 0);
+    
+    const timeStr = roundedDate.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    const dayStr = completionDate.toLocaleDateString('en-GB', { 
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short'
+    }).replace(',', '');
+    
+    return `${timeStr}, ${dayStr}`;
 }
 
 // Update exercise list in workout screen
@@ -666,17 +725,23 @@ function updateExerciseList() {
         return aCompleted - bCompleted;
     });
     
-    // Add warmup card
+    // Add warmup exercises
     if (warmupExercises.length > 0) {
-        const warmupCard = document.createElement('div');
-        warmupCard.className = 'exercise-section-card';
-        warmupCard.innerHTML = `
-            <h3 class="section-title">🔥 Warm Up</h3>
-            <div class="section-exercises">
-                ${warmupExercises.map(ex => `<span class="exercise-chip">${exerciseInfo[ex.name].emoji} ${ex.name}</span>`).join('')}
+        const warmupContainer = document.createElement('div');
+        warmupContainer.className = 'section-container';
+        
+        warmupContainer.innerHTML = `
+            <h3 class="section-container-title">🔥 Warm Up</h3>
+            <div class="section-container-exercises">
+                ${warmupExercises.map(exercise => `
+                    <div class="exercise-item-simple warmup">
+                        <div class="exercise-name">${exercise.name}</div>
+                    </div>
+                `).join('')}
             </div>
         `;
-        exerciseList.appendChild(warmupCard);
+        
+        exerciseList.appendChild(warmupContainer);
     }
     
     // Add main exercises
@@ -695,9 +760,6 @@ function updateExerciseList() {
         const info = exerciseInfo[exercise.name];
         
         exerciseItem.innerHTML = `
-            <div class="exercise-icon-container">
-                <div class="exercise-icon">${info.emoji}</div>
-            </div>
             <div class="exercise-name">${exercise.name}</div>
             ${isInProgress ? '<div class="exercise-status-dot"></div>' : ''}
             <div class="exercise-arrow">›</div>
@@ -709,17 +771,23 @@ function updateExerciseList() {
         exerciseList.appendChild(exerciseItem);
     });
     
-    // Add cooldown card
+    // Add cooldown exercises
     if (cooldownExercises.length > 0) {
-        const cooldownCard = document.createElement('div');
-        cooldownCard.className = 'exercise-section-card';
-        cooldownCard.innerHTML = `
-            <h3 class="section-title">❄️ Cool Down</h3>
-            <div class="section-exercises">
-                ${cooldownExercises.map(ex => `<span class="exercise-chip">${exerciseInfo[ex.name].emoji} ${ex.name}</span>`).join('')}
+        const cooldownContainer = document.createElement('div');
+        cooldownContainer.className = 'section-container';
+        
+        cooldownContainer.innerHTML = `
+            <h3 class="section-container-title">❄️ Cool Down</h3>
+            <div class="section-container-exercises">
+                ${cooldownExercises.map(exercise => `
+                    <div class="exercise-item-simple cooldown">
+                        <div class="exercise-name">${exercise.name}</div>
+                    </div>
+                `).join('')}
             </div>
         `;
-        exerciseList.appendChild(cooldownCard);
+        
+        exerciseList.appendChild(cooldownContainer);
     }
     
     checkWorkoutCompletion();
@@ -728,17 +796,18 @@ function updateExerciseList() {
 // Render sets for an exercise
 function renderSets(exerciseName) {
     const sets = exerciseData[exerciseName].sets;
+    const lastWeight = workoutData.lastWeights[`${currentWorkout}-${exerciseName}`];
+    
     return sets.map((set, index) => `
         <div class="set-item">
             <button class="btn-remove-set" onclick="removeSet('${exerciseName}', ${index})">×</button>
             <input type="number" 
                    class="weight-input" 
-                   placeholder="Weight" 
-                   value="${set.weight}" 
+                   placeholder="${lastWeight ? lastWeight + 'kg' : 'Weight (kg)'}" 
+                   value="${set.weight && set.weight !== '' ? set.weight : ''}" 
                    onchange="updateWeight('${exerciseName}', ${index}, this.value)"
                    min="0"
-                   inputmode="decimal"
-                   pattern="[0-9]*">
+                   inputmode="decimal">
             <div class="reps-container">
                 <button class="btn-reps" onclick="updateReps('${exerciseName}', ${index}, -1)">-</button>
                 <div class="reps-display">${set.reps}</div>
@@ -751,7 +820,7 @@ function renderSets(exerciseName) {
 // Add a set to an exercise
 function addSet(exerciseName) {
     exerciseData[exerciseName].sets.push({
-        weight: workoutData.lastWeights[`${currentWorkout}-${exerciseName}`] || '',
+        weight: '',
         reps: workoutData.lastReps[`${currentWorkout}-${exerciseName}`] || 12
     });
     updatePendingWorkout();
@@ -826,6 +895,7 @@ function showHomeScreen() {
     document.getElementById('workoutScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.add('hidden');
     updateDisplay();
+    updateAppBarState('home');
 }
 
 let currentSheetExercise = null;
@@ -962,7 +1032,17 @@ function renderCalendar() {
             showWorkoutDetails(dayDate);
         }
         
-        dayElement.addEventListener('click', () => showWorkoutDetails(dayDate));
+        dayElement.addEventListener('click', () => {
+            // Remove previous selection
+            const previousSelected = calendar.querySelector('.calendar-day.selected');
+            if (previousSelected) {
+                previousSelected.classList.remove('selected');
+            }
+            
+            // Add selection to clicked day
+            dayElement.classList.add('selected');
+            showWorkoutDetails(dayDate);
+        });
         calendar.appendChild(dayElement);
     }
 }
@@ -980,22 +1060,47 @@ function showWorkoutDetails(date) {
         return;
     }
     
+    // Filter exercises that have weights
+    const exercisesWithWeights = Object.entries(workout.exercises).filter(([exerciseName, sets]) => 
+        sets.length > 0 && sets.some(set => set.weight && parseFloat(set.weight) > 0)
+    );
+    
+    if (exercisesWithWeights.length === 0) {
+        // If no exercises with weights, still show the workout but with a message
+        workoutDetailsDiv.innerHTML = `
+            <div class="workout-details-header">
+                <h3>${workoutExercises[workout.type].title}</h3>
+                <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+            </div>
+            <p class="no-weights-message">No weight data recorded for this workout.</p>
+        `;
+        workoutDetailsDiv.classList.remove('hidden');
+        return;
+    }
+    
     let detailsHtml = `
-        <h3>${workoutExercises[workout.type].title} - ${date.toLocaleDateString()}</h3>
+        <div class="workout-details-header">
+            <h3>${workoutExercises[workout.type].title}</h3>
+            <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+        </div>
+        <div class="workout-details-exercises">
     `;
     
-    Object.entries(workout.exercises).forEach(([exerciseName, sets]) => {
-        if (sets.length > 0) {
+    exercisesWithWeights.forEach(([exerciseName, sets]) => {
+        const setsWithWeights = sets.filter(set => set.weight && set.weight > 0);
+        if (setsWithWeights.length > 0) {
             detailsHtml += `
                 <div class="exercise-detail">
-                    <div class="exercise-detail-name">${exerciseInfo[exerciseName].emoji} ${exerciseName}</div>
+                    <div class="exercise-detail-name">${exerciseName}</div>
                     <div class="exercise-detail-sets">
-                        ${sets.map(set => `${set.weight}lbs × ${set.reps}`).join(', ')}
+                        ${setsWithWeights.map(set => `${set.weight}kg × ${set.reps}`).join(', ')}
                     </div>
                 </div>
             `;
         }
     });
+    
+    detailsHtml += '</div>';
     
     workoutDetailsDiv.innerHTML = detailsHtml;
     workoutDetailsDiv.classList.remove('hidden');

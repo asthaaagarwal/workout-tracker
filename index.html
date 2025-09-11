@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Squat Squad</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="icons/favicon.png">
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1c1c1e">
@@ -20,6 +23,9 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
@@ -65,14 +71,6 @@
                 </div>
             </div>
 
-            <!-- Calendar Card -->
-            <div class="calendar-card" id="calendarBtn">
-                <div class="calendar-card-header">
-                    <span class="calendar-icon">📅</span>
-                    <h3>Workout Calendar</h3>
-                </div>
-                <p class="calendar-card-description">View your workout history and progress</p>
-            </div>
         </div>
 
         <!-- Workout Screen -->
@@ -98,9 +96,7 @@
         <!-- Calendar Screen -->
         <div id="calendarScreen" class="screen hidden">
             <header class="calendar-header">
-                <button id="closeCalendarBtn" class="btn-cancel">Back</button>
                 <h2>Workout Calendar</h2>
-                <div class="header-spacer"></div>
             </header>
 
             <div class="calendar-navigation">
@@ -143,8 +139,22 @@
                 <p>Great job finishing your workout!</p>
             </div>
         </div>
+
+        <!-- Bottom App Bar -->
+        <div class="bottom-app-bar">
+            <button class="app-bar-item active" id="homeAppBarBtn">
+                <i data-lucide="home"></i>
+            </button>
+            <button class="app-bar-item" id="calendarAppBarBtn">
+                <i data-lucide="calendar"></i>
+            </button>
+        </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

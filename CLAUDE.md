@@ -68,14 +68,17 @@ The app uses a state-based system to track workout progress:
 ### Key JavaScript Functions
 
 - `updateDisplay()`: Main rendering function that updates all UI components
-- `selectWorkout(type)`: Initiates a workout session for given type
+- `openWorkout(type)`: Initiates a workout session for given type
 - `startWorkout()`: Begins workout timer and transitions to ongoing state
 - `completeWorkout()`: Saves workout data and transitions to completed state
-- `showCalendarView()`: Displays historical workout calendar
+- `openCalendar()`: Displays historical workout calendar
 - `saveWorkoutData()`: Persists data to localStorage
 - `updatePendingWorkout()`: Real-time updates of pending workout progress
 - `getWorkoutState(type)`: Returns current state for workout type
 - `setWorkoutState(type, state)`: Updates workout state and saves data
+- `formatWorkoutDateTime(date)`: Formats completion dates to "11:30, Thu, 20 Sep" format
+- `openExerciseSheet(name)`: Opens bottom sheet for exercise set management
+- `updateAppBarState(tab)`: Updates bottom app bar active state
 
 ## Development Commands
 
@@ -90,12 +93,13 @@ Will be manually tested by the user.
 ### File Structure
 ```
 .
-├── index.html    # Main application file 
-├── style.css   # all css styling for the app
-├── script.js   # all js
+├── index.html              # Main application file with Lucide icons CDN
+├── style.css              # All CSS styling including bottom app bar and responsive design
+├── script.js              # All JavaScript logic with bottom sheet and timer functionality
 ├── manifest.json          # PWA manifest configuration
 ├── sw.js                  # Service worker for offline caching
-└── CLAUDE.md             # This file
+├── icons/favicon.png      # App favicon
+└── CLAUDE.md             # This file (project documentation)
 ```
 
 ## Key Implementation Details
@@ -103,9 +107,14 @@ Will be manually tested by the user.
 - **Exercise Data**: Hardcoded in `workoutExercises` object with exercise names, sets, and types
 - **Exercise Metadata**: Images and descriptions stored in `exerciseInfo` object
 - **State Management**: Uses global variables (`currentWorkout`, `exerciseData`) for session state
-- **Mobile Design**: Make a mobile-only design with a max-width of 400px
+- **Mobile Design**: Mobile-only design with a max-width of 390px and bottom padding for app bar
 - **Offline Support**: Service worker caches app for offline use
-- **Calendar Integration**: Custom calendar view showing workout history with color coding.
+- **Calendar Integration**: Custom calendar view showing workout history with color coding
+- **Bottom App Bar**: Fixed navigation using Lucide icons with z-index 1000
+- **Exercise Bottom Sheet**: Modal overlay with z-index 1100, responsive to keyboard
+- **Weight Units**: All weights displayed in kilograms (kg) throughout the app
+- **Timer Display**: High-precision timer showing tenths of seconds (MM:SS.T format)
+- **Date Formatting**: Consistent "11:30, Thu, 20 Sep" format with 15-minute rounding
 
 
 ## Data Persistence
@@ -141,25 +150,39 @@ pendingWorkouts: {
 ## Functionality
 
 ### Home screen layout
-[Calendar button] ["Weekly workouts"]
-[List of all workouts (with a start button for pending workouts) sorted to show pending once first - completed workouts have a different state and are shown last]
-[Stats can that shows - Days since last workout and total count of workouts completed]
+[Bottom app bar with Home and Calendar icons]
+[List of all workouts (with a start button for pending workouts) sorted to show pending/ongoing first - completed workouts show completion time and are shown last]
+[Stats card that shows - Days since last workout, total count of workouts completed, and total cycles completed]
+
+### Navigation
+- **Bottom App Bar**: Fixed navigation with Home and Calendar icons (no text labels)
+- **No Back Buttons**: Navigation handled entirely through bottom app bar
+- **Zoom Prevention**: Viewport configured to prevent zooming and double-tap zoom
 
 ### Workout view
-When the user clicks "Start workout" on the home screen the workout screen is openned.
+When the user clicks "Start workout" on the home screen the workout screen is opened.
 [Workout name] [Cancel button]
-[Timer that starts when the workout is started]
+[Timer that starts when the workout is started and shows MM:SS.T format with tenths of seconds]
 [Complete workout button]
-[List of all exercises, sorted to show the incomplete ones on top]
-[For each exercise, show the name, a view button to open an image of the exercise, show 3 sets, add a button to add a new set]
-[For each set show a button to remove the set, a weight input box (numbers only - as a placeholder show the last value used for this exercise), and the number of reps input box with a "+" and "-" button next to it to control the input. Default value is set to 12.]
+[Warm-up section: Dark container with individual exercise cards]
+[List of main exercises, sorted to show the incomplete ones on top with progress indicators]
+[Cool-down section: Dark container with individual exercise cards]
+[For each main exercise, clicking opens a bottom sheet with sets, weights, and reps]
+
+### Exercise Bottom Sheet
+- **Weight Input**: Number input with decimal keypad, shows previous weights as placeholders (e.g., "45kg")
+- **Reps Control**: Plus/minus buttons with display, default value 12, range 1-∞
+- **Set Management**: Add/remove sets dynamically
+- **Keyboard Handling**: Bottom sheet stays at bottom when mobile keyboard appears
+- **Units**: All weights displayed in kilograms (kg)
 
 ### Calendar view
-When the user clicks the calendar button the home screen, the calendar view is opened.
-[Calendar view] [Cancel button]
+Accessed via bottom app bar calendar icon.
+[Calendar view with month navigation]
 A calendar with month navigator on top
-For each date on the calendar mark it green if a workout was done on that day and mark it gray if no workout was done.
-On clicking the date, below the calendar show the workout that was done along with exercises (weight, reps and sets). Show only the exercises that have at least one weight added).
+For each date on the calendar mark it with workout-specific colors if a workout was done that day.
+On clicking any date, below the calendar show the workout details with completion time in "11:30, Thu, 20 Sep" format.
+Show only exercises that have recorded weights with format "45kg × 12, 50kg × 10".
 
 ### Celebration screen
 This will appear for 5 seconds when the user marks a workout as completed, then automatically returns to the home screen.
@@ -211,12 +234,12 @@ The app follows iOS design principles with a clean, minimalist aesthetic and smo
 ### Button Styling
 
 **Primary Button (.btn-success):**
-- Background: `#1c1c1e`
+- Background: `#FFA570` (Orange)
 - Color: `white`
 - Padding: `16px 32px`
 - Font: `17px, font-weight: 600`
 - Border-radius: `12px`
-- Hover: `#2c2c2e`
+- Hover: `#FF9F63`
 
 **Control Buttons:**
 - Background: `#1c1c1e`
