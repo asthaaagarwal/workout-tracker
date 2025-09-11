@@ -32,11 +32,16 @@ body {
     display: none;
 }
 
+/* General Hidden Class */
+.hidden {
+    display: none !important;
+}
+
 /* Header Styles */
 .header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 24px;
 }
 
@@ -121,7 +126,7 @@ body {
     color: white;
 }
 
-.status-pending {
+.status-ongoing {
     background: #ff9500;
     color: white;
 }
@@ -130,6 +135,17 @@ body {
     font-size: 14px;
     color: #6c6c70;
     margin-bottom: 16px;
+}
+
+.workout-timer {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff9500;
+    background: rgba(255, 149, 0, 0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 8px;
 }
 
 .btn-start-workout {
@@ -182,6 +198,46 @@ body {
     opacity: 0.7;
 }
 
+/* Calendar Card */
+.calendar-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.calendar-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.calendar-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.calendar-icon {
+    font-size: 24px;
+}
+
+.calendar-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin: 0;
+}
+
+.calendar-card-description {
+    font-size: 14px;
+    color: #6c6c70;
+    margin: 0;
+}
+
 /* Workout Screen */
 .workout-header {
     display: flex;
@@ -193,6 +249,12 @@ body {
 .workout-header h2 {
     font-size: 24px;
     font-weight: 700;
+    flex: 1;
+    text-align: center;
+}
+
+.header-spacer {
+    width: 40px;
 }
 
 .btn-cancel {
@@ -520,11 +582,19 @@ body {
     font-weight: 600;
     cursor: pointer;
     width: 100%;
+    margin-bottom: 24px;
     transition: all 0.3s ease;
 }
 
 .btn-success:hover {
     background: #2c2c2e;
+}
+
+.btn-success:disabled {
+    background: #6c6c70;
+    color: #c7c7cc;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Calendar Screen */
@@ -538,6 +608,8 @@ body {
 .calendar-header h2 {
     font-size: 24px;
     font-weight: 700;
+    flex: 1;
+    text-align: center;
 }
 
 .calendar-navigation {
@@ -707,10 +779,14 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.9);
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
+}
+
+.celebration-overlay.hidden {
+    display: none;
 }
 
 .celebration-content {

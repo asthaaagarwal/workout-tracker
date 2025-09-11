@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Tracker</title>
+    <title>Gains of Thrones</title>
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1c1c1e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Workout Tracker">
+    <meta name="apple-mobile-web-app-title" content="Gains of Thrones">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -37,8 +37,7 @@
         <!-- Home Screen -->
         <div id="homeScreen" class="screen">
             <header class="header">
-                <button id="calendarBtn" class="btn-calendar">📅</button>
-                <h1>Weekly Workouts</h1>
+                <h1>Gains of Thrones</h1>
             </header>
 
             <!-- Workout Cards -->
@@ -56,20 +55,35 @@
                     <span class="stat-value" id="totalWorkouts">0</span>
                     <span class="stat-label">Total workouts completed</span>
                 </div>
+                <div class="stat">
+                    <span class="stat-value" id="totalCycles">0</span>
+                    <span class="stat-label">Cycles completed</span>
+                </div>
+            </div>
+
+            <!-- Calendar Card -->
+            <div class="calendar-card" id="calendarBtn">
+                <div class="calendar-card-header">
+                    <span class="calendar-icon">📅</span>
+                    <h3>Workout Calendar</h3>
+                </div>
+                <p class="calendar-card-description">View your workout history and progress</p>
             </div>
         </div>
 
         <!-- Workout Screen -->
         <div id="workoutScreen" class="screen hidden">
             <header class="workout-header">
+                <button id="cancelWorkoutBtn" class="btn-cancel">Back</button>
                 <h2 id="workoutTitle">Workout</h2>
-                <button id="cancelWorkoutBtn" class="btn-cancel">Cancel</button>
+                <div class="header-spacer"></div>
             </header>
             
             <div class="timer">
                 <span id="workoutTimer">00:00</span>
             </div>
 
+            <button id="startWorkoutBtn" class="btn-success hidden">Start Workout</button>
             <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
 
             <div id="exerciseList" class="exercise-list">
@@ -80,8 +94,9 @@
         <!-- Calendar Screen -->
         <div id="calendarScreen" class="screen hidden">
             <header class="calendar-header">
+                <button id="closeCalendarBtn" class="btn-cancel">Back</button>
                 <h2>Workout Calendar</h2>
-                <button id="closeCalendarBtn" class="btn-cancel">Close</button>
+                <div class="header-spacer"></div>
             </header>
 
             <div class="calendar-navigation">

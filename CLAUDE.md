@@ -24,11 +24,14 @@ The app uses a centralized `workoutData` object stored in localStorage:
 workoutData = {
     currentCycle: [],        // Completed workouts in current week cycle
     totalWorkouts: 0,        // Total workouts completed across all time
+    totalCycles: 0,          // Total completed cycles across all time
     lastWeights: {},         // Weight data by workout type and exercise
     lastReps: {},           // Rep data by workout type and exercise  
     lastSets: {},           // Set counts by workout type and exercise
     weekStartDate: null,     // Start date of current workout cycle
-    history: []             // Historical workout records with dates
+    history: [],            // Historical workout records with dates
+    pendingWorkouts: {},    // In-progress workouts saved when cancelled
+    workoutStates: {}       // Current state of each workout: 'pending', 'ongoing', 'completed'
 }
 ```
 
@@ -37,14 +40,42 @@ workoutData = {
 - **Workout**: A workout is a collection of exercises to be performed. Each workout has a warm up, exercises to be performed, and a cooldown. A single exercise may appear in multiple workouts.
 - **Progressive Tracking**: Tracks weights, reps, and sets for each exercise across sessions.
 - **Weekly Cycles**: Tracks completion of all three workouts per week cycle.
+- **Workout States**: Each workout has three possible states that control UI behavior and user flow.
+
+### Workout State Management
+
+The app uses a state-based system to track workout progress:
+
+**Three States:**
+- **Pending** (`'pending'`): Initial state, workout not yet started
+- **Ongoing** (`'ongoing'`): Workout in progress, timer running  
+- **Completed** (`'completed'`): Workout finished and recorded
+
+**State Transitions:**
+- **Pending → Ongoing**: User clicks "Start Workout" button
+- **Ongoing → Completed**: User clicks "Complete Workout" button
+- **All → Pending**: New cycle begins (automatic reset)
+
+**UI Behavior by State:**
+- **Pending**: Shows "Available" status, "Start Workout" button visible
+- **Ongoing**: Shows "Ongoing" status (orange), "Complete Workout" button visible
+- **Completed**: Shows "Completed" status, workout card disabled
+
+**State Functions:**
+- `getWorkoutState(type)`: Returns current state for workout type
+- `setWorkoutState(type, state)`: Updates state and saves to localStorage
 
 ### Key JavaScript Functions
 
 - `updateDisplay()`: Main rendering function that updates all UI components
 - `selectWorkout(type)`: Initiates a workout session for given type
-- `completeWorkout()`: Saves workout data and updates progress
+- `startWorkout()`: Begins workout timer and transitions to ongoing state
+- `completeWorkout()`: Saves workout data and transitions to completed state
 - `showCalendarView()`: Displays historical workout calendar
 - `saveWorkoutData()`: Persists data to localStorage
+- `updatePendingWorkout()`: Real-time updates of pending workout progress
+- `getWorkoutState(type)`: Returns current state for workout type
+- `setWorkoutState(type, state)`: Updates workout state and saves data
 
 ## Development Commands
 
@@ -79,7 +110,33 @@ Will be manually tested by the user.
 
 ## Data Persistence
 
-All data is stored in browser localStorage under the key `workoutTrackerData`. The app automatically saves after each workout completion and loads data on page initialization.
+All data is stored in browser localStorage under the key `workoutTrackerData`. The app uses multiple persistence strategies:
+
+### Real-time Persistence
+- **Pending Workouts**: Progress is saved immediately when any exercise data changes (weights, reps, sets, completion status)
+- **Auto-save Triggers**: Called from `removeSet()`, `addSet()`, `updateWeight()`, `updateReps()`, and `markExerciseComplete()`
+- **Smart Cleanup**: Pending workouts are automatically removed if no progress exists (no completed exercises and no sets with weight)
+
+### Workout Completion
+- Final workout data is saved when `completeWorkout()` is called
+- Historical records are stored with timestamps and exercise details
+- Pending workout data is cleared upon successful completion
+
+### Data Recovery
+- Cancelled workouts with progress are saved as pending and can be resumed
+- Exercise data includes current session state (`exerciseData`) and workout start time
+- Resume functionality restores exact state including timer and all set data
+
+### Storage Structure
+```javascript
+// Pending workout example
+pendingWorkouts: {
+    'upper-body': {
+        exerciseData: { /* current session data */ },
+        startTime: '2024-01-15T10:30:00.000Z'
+    }
+}
+```
 
 ## Functionality
 
@@ -105,7 +162,7 @@ For each date on the calendar mark it green if a workout was done on that day an
 On clicking the date, below the calendar show the workout that was done along with exercises (weight, reps and sets). Show only the exercises that have at least one weight added).
 
 ### Celebration screen
-This will appear when the user marks a workout as completed.
+This will appear for 5 seconds when the user marks a workout as completed, then automatically returns to the home screen.
 
 ## Styling
 The app follows iOS design principles with a clean, minimalist aesthetic and smooth animations.

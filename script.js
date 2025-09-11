@@ -7,6 +7,22 @@ let timerInterval = null;
 let exerciseData = {};
 let currentCalendarDate = new Date();
 
+// App names to cycle through
+const appNames = [
+    "Exercise? I thought you said Extra Fries",
+    "Gains of Thrones",
+    "Squat Squad",
+    "No Whey Out",
+    "Gym and Tonic"
+];
+
+// Workout colors
+const workoutColors = {
+    'upper-body': '#007aff',    // iOS blue
+    'lower-body': '#ff9500',    // iOS orange
+    'full-body': '#34c759'      // iOS green
+};
+
 // Workout exercises data
 const workoutExercises = {
     'upper-body': {
@@ -96,12 +112,14 @@ const exerciseInfo = {
 let workoutData = {
     currentCycle: [],
     totalWorkouts: 0,
+    totalCycles: 0,
     lastWeights: {},
     lastReps: {},
     lastSets: {},
     weekStartDate: null,
     history: [],
-    pendingWorkouts: {}
+    pendingWorkouts: {},
+    workoutStates: {} // Track workout states: 'pending', 'ongoing', 'completed'
 };
 
 // Load data from localStorage on page load
@@ -110,18 +128,53 @@ function loadWorkoutData() {
     if (saved) {
         workoutData = { ...workoutData, ...JSON.parse(saved) };
     }
-    console.log('Loaded workout data:', workoutData);
 }
 
 // Save data to localStorage
 function saveWorkoutData() {
     localStorage.setItem('workoutTrackerData', JSON.stringify(workoutData));
-    console.log('Saved workout data:', workoutData);
+}
+
+// Update pending workout data if current workout is in progress
+function updatePendingWorkout() {
+    if (!currentWorkout || !exerciseData) return;
+    
+    // Check if any exercises are completed or have weight entered
+    const hasProgress = Object.values(exerciseData).some(exercise => 
+        exercise.completed || exercise.sets.some(set => set.weight && set.weight > 0)
+    );
+    
+    // Check if workout is ongoing (started)
+    const isOngoing = getWorkoutState(currentWorkout) === 'ongoing';
+    
+    
+    if (hasProgress || isOngoing) {
+        // Save current progress as pending workout (for progress OR ongoing workouts)
+        workoutData.pendingWorkouts[currentWorkout] = {
+            exerciseData: JSON.parse(JSON.stringify(exerciseData)),
+            startTime: workoutStartTime?.toISOString() || new Date().toISOString()
+        };
+        saveWorkoutData();
+    } else {
+        // Remove pending workout only if no progress AND not ongoing
+        if (workoutData.pendingWorkouts[currentWorkout]) {
+            delete workoutData.pendingWorkouts[currentWorkout];
+            saveWorkoutData();
+        }
+    }
 }
 
 // Initialize the app
 function initApp() {
     loadWorkoutData();
+    
+    // Check if any workout is ongoing and restart timer
+    const ongoingWorkoutType = getOngoingWorkoutType();
+    if (ongoingWorkoutType && workoutData.pendingWorkouts[ongoingWorkoutType]) {
+        workoutStartTime = new Date(workoutData.pendingWorkouts[ongoingWorkoutType].startTime);
+        startWorkoutTimer();
+    }
+    
     updateDisplay();
     setupEventListeners();
 }
@@ -129,9 +182,10 @@ function initApp() {
 // Set up all event listeners
 function setupEventListeners() {
     // Navigation
-    document.getElementById('calendarBtn').addEventListener('click', showCalendarView);
-    document.getElementById('cancelWorkoutBtn').addEventListener('click', cancelWorkout);
+    document.getElementById('calendarBtn').addEventListener('click', openCalendar);
+    document.getElementById('cancelWorkoutBtn').addEventListener('click', goBackHome);
     document.getElementById('closeCalendarBtn').addEventListener('click', showHomeScreen);
+    document.getElementById('startWorkoutBtn').addEventListener('click', startWorkout);
     document.getElementById('completeWorkoutBtn').addEventListener('click', completeWorkout);
     
     // Calendar navigation
@@ -150,54 +204,73 @@ function setupEventListeners() {
 
 // Update the main display
 function updateDisplay() {
-    updateWorkoutList();
+    updateAppName();
+    renderWorkoutCards();
     updateStats();
 }
 
-// Update workout list on home screen
-function updateWorkoutList() {
+// ==== SIMPLIFIED CORE FUNCTIONS ====
+
+// 1. Render workout cards on home screen
+function renderWorkoutCards() {
     const workoutList = document.getElementById('workoutList');
     workoutList.innerHTML = '';
     
     // Check if we need to start a new cycle
     checkNewWeekCycle();
     
+    // Check if current cycle is complete and reset if needed
+    const allWorkoutTypes = Object.keys(workoutExercises);
+    const cycleComplete = allWorkoutTypes.every(type => workoutData.currentCycle.includes(type));
+    
+    if (cycleComplete) {
+        workoutData.totalCycles++;
+        workoutData.currentCycle = [];
+        workoutData.workoutStates = {}; // Reset all workout states to pending
+        workoutData.weekStartDate = new Date().toISOString();
+        saveWorkoutData();
+    }
+    
     const workoutTypes = Object.keys(workoutExercises);
     
-    // Sort workouts: pending first, then available, then completed
+    // Sort workouts: ongoing first, then available, then completed
     workoutTypes.sort((a, b) => {
-        const aCompleted = workoutData.currentCycle.includes(a);
-        const bCompleted = workoutData.currentCycle.includes(b);
-        const aPending = workoutData.pendingWorkouts[a];
-        const bPending = workoutData.pendingWorkouts[b];
-        
-        if (aPending && !bPending) return -1;
-        if (!aPending && bPending) return 1;
-        return aCompleted - bCompleted;
+        const aState = getWorkoutState(a);
+        const bState = getWorkoutState(b);
+        const stateOrder = { 'ongoing': 0, 'pending': 1, 'completed': 2 };
+        return stateOrder[aState] - stateOrder[bState];
     });
     
     workoutTypes.forEach(type => {
         const workout = workoutExercises[type];
-        const isCompleted = workoutData.currentCycle.includes(type);
-        const isPending = workoutData.pendingWorkouts[type];
+        const workoutState = getWorkoutState(type);
         
-        let status, statusClass, buttonText;
-        if (isPending) {
-            status = 'Pending';
-            statusClass = 'status-pending';
-            buttonText = 'Resume Workout';
-        } else if (isCompleted) {
-            status = 'Completed';
-            statusClass = 'status-completed';
-            buttonText = 'Completed';
-        } else {
-            status = 'Available';
-            statusClass = 'status-available';
-            buttonText = 'Start Workout';
+        let status, statusClass;
+        switch (workoutState) {
+            case 'ongoing':
+                status = 'Ongoing';
+                statusClass = 'status-ongoing';
+                break;
+            case 'completed':
+                status = 'Completed';
+                statusClass = 'status-completed';
+                break;
+            default: // 'pending'
+                status = 'Available';
+                statusClass = 'status-available';
         }
         
         const workoutCard = document.createElement('div');
         workoutCard.className = 'workout-card';
+        workoutCard.style.borderLeft = `4px solid ${workoutColors[type]}`;
+        
+        // Add timer display for ongoing workouts
+        let timerHtml = '';
+        if (workoutState === 'ongoing' && workoutData.pendingWorkouts[type] && workoutData.pendingWorkouts[type].startTime) {
+            const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
+            timerHtml = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
+        }
+        
         workoutCard.innerHTML = `
             <div class="workout-card-header">
                 <h3 class="workout-title">${workout.title}</h3>
@@ -206,20 +279,259 @@ function updateWorkoutList() {
                 </span>
             </div>
             <p class="workout-description">${workout.description}</p>
-            <button class="btn-start-workout" ${isCompleted ? 'disabled' : ''} 
-                    onclick="selectWorkout('${type}')">
-                ${buttonText}
-            </button>
+            ${timerHtml}
         `;
+        
+        // Add click event to card (only if not completed)
+        if (workoutState !== 'completed') {
+            workoutCard.addEventListener('click', () => openWorkout(type));
+        } else {
+            workoutCard.style.opacity = '0.6';
+            workoutCard.style.cursor = 'not-allowed';
+        }
         
         workoutList.appendChild(workoutCard);
     });
 }
 
+// 2. Open workout screen
+function openWorkout(type) {
+    if (workoutData.currentCycle.includes(type)) return;
+    
+    currentWorkout = type;
+    
+    // Load or initialize exercise data
+    if (workoutData.pendingWorkouts[type]) {
+        // Resume from saved progress
+        exerciseData = JSON.parse(JSON.stringify(workoutData.pendingWorkouts[type].exerciseData));
+        workoutStartTime = workoutData.pendingWorkouts[type].startTime ? new Date(workoutData.pendingWorkouts[type].startTime) : null;
+    } else {
+        // Initialize fresh exercise data
+        exerciseData = {};
+        workoutExercises[type].exercises.forEach(exercise => {
+            exerciseData[exercise.name] = {
+                sets: [],
+                completed: false
+            };
+            // Add default sets
+            for (let i = 0; i < exercise.sets; i++) {
+                exerciseData[exercise.name].sets.push({
+                    weight: workoutData.lastWeights[`${type}-${exercise.name}`] || '',
+                    reps: workoutData.lastReps[`${type}-${exercise.name}`] || 12
+                });
+            }
+        });
+        workoutStartTime = null;
+    }
+    
+    // Show workout screen
+    document.getElementById('homeScreen').classList.add('hidden');
+    document.getElementById('workoutScreen').classList.remove('hidden');
+    document.getElementById('calendarScreen').classList.add('hidden');
+    
+    document.getElementById('workoutTitle').textContent = workoutExercises[currentWorkout].title;
+    
+    // Show appropriate button based on workout state
+    const workoutState = getWorkoutState(currentWorkout);
+    const startBtn = document.getElementById('startWorkoutBtn');
+    const completeBtn = document.getElementById('completeWorkoutBtn');
+    const isOtherWorkoutOngoing = hasOngoingWorkout() && getOngoingWorkoutType() !== currentWorkout;
+    
+    // Hide both buttons first
+    startBtn.classList.add('hidden');
+    completeBtn.classList.add('hidden');
+    
+    switch (workoutState) {
+        case 'pending':
+            if (isOtherWorkoutOngoing) {
+                startBtn.classList.remove('hidden');
+                startBtn.disabled = true;
+                startBtn.textContent = `Complete ${workoutExercises[getOngoingWorkoutType()].title} First`;
+            } else {
+                startBtn.classList.remove('hidden');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Workout';
+            }
+            break;
+        case 'ongoing':
+            completeBtn.classList.remove('hidden');
+            if (workoutStartTime) {
+                startWorkoutTimer();
+            }
+            break;
+        case 'completed':
+            // Both buttons remain hidden
+            break;
+    }
+    
+    updateExerciseList();
+}
+
+// 3. Start workout (change state to ongoing and start timer)
+function startWorkout() {
+    if (!currentWorkout) return;
+    
+    // Create start time and start timer
+    workoutStartTime = new Date();
+    startWorkoutTimer();
+    
+    // Set workout state to ongoing
+    setWorkoutState(currentWorkout, 'ongoing');
+    
+    // Save to pending workouts immediately
+    workoutData.pendingWorkouts[currentWorkout] = {
+        exerciseData: JSON.parse(JSON.stringify(exerciseData)),
+        startTime: workoutStartTime.toISOString()
+    };
+    saveWorkoutData();
+    
+    // Update UI
+    document.getElementById('startWorkoutBtn').classList.add('hidden');
+    document.getElementById('completeWorkoutBtn').classList.remove('hidden');
+    
+}
+
+// 4. Save exercise data (when weights are entered)
+function saveExerciseData(exerciseName, setIndex, field, value) {
+    if (!exerciseData[exerciseName]) return;
+    
+    exerciseData[exerciseName].sets[setIndex][field] = value;
+    
+    // Save to pending workouts
+    if (currentWorkout && workoutData.workoutStates[currentWorkout] === 'ongoing') {
+        workoutData.pendingWorkouts[currentWorkout] = {
+            exerciseData: JSON.parse(JSON.stringify(exerciseData)),
+            startTime: workoutStartTime?.toISOString()
+        };
+        saveWorkoutData();
+    }
+    
+}
+
+// 5. Delete exercise data (when sets with weights are removed)
+function deleteExerciseData(exerciseName, setIndex) {
+    if (!exerciseData[exerciseName]) return;
+    
+    exerciseData[exerciseName].sets.splice(setIndex, 1);
+    
+    // Update UI
+    if (currentSheetExercise === exerciseName) {
+        updateSheetSets();
+    } else {
+        updateExerciseList();
+    }
+    
+    // Save to pending workouts
+    if (currentWorkout && workoutData.workoutStates[currentWorkout] === 'ongoing') {
+        workoutData.pendingWorkouts[currentWorkout] = {
+            exerciseData: JSON.parse(JSON.stringify(exerciseData)),
+            startTime: workoutStartTime?.toISOString()
+        };
+        saveWorkoutData();
+    }
+    
+}
+
+// 6. Complete exercise (mark exercise as done)
+function completeExercise(exerciseName) {
+    if (!exerciseData[exerciseName]) return;
+    
+    exerciseData[exerciseName].completed = true;
+    
+    // Update UI
+    updateExerciseList();
+    
+    // Save to pending workouts
+    if (currentWorkout && workoutData.workoutStates[currentWorkout] === 'ongoing') {
+        workoutData.pendingWorkouts[currentWorkout] = {
+            exerciseData: JSON.parse(JSON.stringify(exerciseData)),
+            startTime: workoutStartTime?.toISOString()
+        };
+        saveWorkoutData();
+    }
+    
+}
+
+// 7. Complete workout (change to completed state and show celebration)
+function completeWorkout() {
+    if (!currentWorkout) return;
+    
+    // Stop timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
+    const workoutDuration = workoutStartTime ? new Date() - workoutStartTime : 0;
+    
+    // Save workout data and set state to completed
+    workoutData.currentCycle.push(currentWorkout);
+    workoutData.totalWorkouts++;
+    setWorkoutState(currentWorkout, 'completed');
+    
+    // Update last weights, reps, and sets for completed exercises
+    Object.entries(exerciseData).forEach(([exerciseName, data]) => {
+        if (data.completed && data.sets.some(set => set.weight && set.weight > 0)) {
+            const key = `${currentWorkout}-${exerciseName}`;
+            const lastSetWithWeight = data.sets.filter(set => set.weight && set.weight > 0).pop();
+            if (lastSetWithWeight) {
+                workoutData.lastWeights[key] = lastSetWithWeight.weight;
+                workoutData.lastReps[key] = lastSetWithWeight.reps;
+            }
+            workoutData.lastSets[key] = data.sets.length;
+        }
+    });
+    
+    // Add to history
+    workoutData.history.push({
+        date: new Date().toISOString(),
+        type: currentWorkout,
+        duration: workoutDuration,
+        exercises: Object.fromEntries(
+            Object.entries(exerciseData)
+                .filter(([_, data]) => data.completed && data.sets.some(set => set.weight && set.weight > 0))
+                .map(([name, data]) => [name, data.sets.filter(set => set.weight && set.weight > 0)])
+        )
+    });
+    
+    saveWorkoutData();
+    
+    // Remove from pending workouts
+    if (workoutData.pendingWorkouts[currentWorkout]) {
+        delete workoutData.pendingWorkouts[currentWorkout];
+        saveWorkoutData();
+    }
+    
+    // Show celebration for 5 seconds, then return to home screen
+    showCelebration();
+    setTimeout(() => {
+        closeCelebration();
+    }, 5000);
+    
+}
+
+// 8. Open calendar screen
+function openCalendar() {
+    document.getElementById('homeScreen').classList.add('hidden');
+    document.getElementById('workoutScreen').classList.add('hidden');
+    document.getElementById('calendarScreen').classList.remove('hidden');
+    
+    currentCalendarDate = new Date();
+    updateCalendarDisplay();
+}
+
+// Update app name randomly
+function updateAppName() {
+    const randomIndex = Math.floor(Math.random() * appNames.length);
+    document.querySelector('.header h1').textContent = appNames[randomIndex];
+}
+
+
 // Update stats display
 function updateStats() {
     const daysSinceElement = document.getElementById('daysSinceLastWorkout');
     const totalWorkoutsElement = document.getElementById('totalWorkouts');
+    const totalCyclesElement = document.getElementById('totalCycles');
     
     // Calculate days since last workout
     let daysSince = 0;
@@ -231,6 +543,7 @@ function updateStats() {
     
     daysSinceElement.textContent = daysSince;
     totalWorkoutsElement.textContent = workoutData.totalWorkouts;
+    totalCyclesElement.textContent = workoutData.totalCycles || 0;
 }
 
 // Check if we need to start a new week cycle
@@ -243,6 +556,7 @@ function checkNewWeekCycle() {
         if (workoutData.currentCycle.length > 0) {
             workoutData.currentCycle = [];
             workoutData.weekStartDate = today.toISOString();
+            workoutData.workoutStates = {}; // Reset workout states for new cycle
             saveWorkoutData();
         } else if (!workoutData.weekStartDate) {
             workoutData.weekStartDate = today.toISOString();
@@ -251,71 +565,90 @@ function checkNewWeekCycle() {
     }
 }
 
-// Select and start a workout
-function selectWorkout(type) {
-    if (workoutData.currentCycle.includes(type)) return;
-    
-    currentWorkout = type;
-    
-    // Check if there's pending workout data to resume
-    if (workoutData.pendingWorkouts[type]) {
-        // Resume from saved progress
-        exerciseData = JSON.parse(JSON.stringify(workoutData.pendingWorkouts[type].exerciseData));
-        workoutStartTime = new Date(workoutData.pendingWorkouts[type].startTime);
-    } else {
-        // Initialize fresh exercise data
-        exerciseData = {};
-        
-        workoutExercises[type].exercises.forEach(exercise => {
-            exerciseData[exercise.name] = {
-                sets: [],
-                completed: false
-            };
-            
-            // Add default sets
-            for (let i = 0; i < exercise.sets; i++) {
-                exerciseData[exercise.name].sets.push({
-                    weight: workoutData.lastWeights[`${type}-${exercise.name}`] || '',
-                    reps: workoutData.lastReps[`${type}-${exercise.name}`] || 12
-                });
-            }
-        });
-        
-        workoutStartTime = null;
+// Get workout state
+function getWorkoutState(type) {
+    // If workout is in current cycle (completed), return 'completed'
+    if (workoutData.currentCycle.includes(type)) {
+        return 'completed';
     }
-    
-    showWorkoutScreen();
-    startWorkoutTimer();
+    // Otherwise check stored state, default to 'pending'
+    return workoutData.workoutStates[type] || 'pending';
 }
 
-// Show workout screen
-function showWorkoutScreen() {
-    document.getElementById('homeScreen').classList.add('hidden');
-    document.getElementById('workoutScreen').classList.remove('hidden');
-    document.getElementById('calendarScreen').classList.add('hidden');
-    
-    document.getElementById('workoutTitle').textContent = workoutExercises[currentWorkout].title;
-    updateExerciseList();
+// Set workout state
+function setWorkoutState(type, state) {
+    workoutData.workoutStates[type] = state;
+    saveWorkoutData();
 }
+
+
+
+// Check if any workout is currently ongoing
+function hasOngoingWorkout() {
+    return Object.keys(workoutData.workoutStates).some(type => 
+        workoutData.workoutStates[type] === 'ongoing'
+    );
+}
+
+// Get the ongoing workout type (if any)
+function getOngoingWorkoutType() {
+    return Object.keys(workoutData.workoutStates).find(type => 
+        workoutData.workoutStates[type] === 'ongoing'
+    );
+}
+
 
 // Start workout timer
 function startWorkoutTimer() {
     if (!workoutStartTime) {
         workoutStartTime = new Date();
     }
-    timerInterval = setInterval(updateTimer, 1000);
+    // Only start timer if not already running
+    if (!timerInterval) {
+        timerInterval = setInterval(updateTimer, 1000);
+    }
 }
 
 // Update timer display
 function updateTimer() {
     if (!workoutStartTime) return;
     
-    const elapsed = new Date() - workoutStartTime;
+    const timerElement = document.getElementById('workoutTimer');
+    if (timerElement) {
+        const timeStr = getFormattedElapsedTime(workoutStartTime);
+        timerElement.textContent = timeStr;
+    }
+    
+    // Also update home screen workout card timers
+    updateHomeScreenTimers();
+}
+
+// Update timers on home screen workout cards
+function updateHomeScreenTimers() {
+    const homeScreen = document.getElementById('homeScreen');
+    if (homeScreen && !homeScreen.classList.contains('hidden')) {
+        // Update specific timer elements by workout type
+        Object.keys(workoutData.pendingWorkouts).forEach(type => {
+            if (workoutData.pendingWorkouts[type].startTime) {
+                const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
+                const timerElement = document.querySelector(`.workout-timer[data-workout-type="${type}"]`);
+                if (timerElement) {
+                    timerElement.innerHTML = `⏱️ ${elapsedTime}`;
+                }
+            }
+        });
+    }
+}
+
+// Get formatted elapsed time for any start time
+function getFormattedElapsedTime(startTime) {
+    if (!startTime) return '00:00';
+    
+    const elapsed = new Date() - new Date(startTime);
     const minutes = Math.floor(elapsed / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
     
-    document.getElementById('workoutTimer').textContent = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 // Update exercise list in workout screen
@@ -420,6 +753,7 @@ function addSet(exerciseName) {
         weight: workoutData.lastWeights[`${currentWorkout}-${exerciseName}`] || '',
         reps: workoutData.lastReps[`${currentWorkout}-${exerciseName}`] || 12
     });
+    updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
         updateSheetSets();
     } else {
@@ -430,6 +764,7 @@ function addSet(exerciseName) {
 // Remove a set from an exercise
 function removeSet(exerciseName, setIndex) {
     exerciseData[exerciseName].sets.splice(setIndex, 1);
+    updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
         updateSheetSets();
     } else {
@@ -440,6 +775,7 @@ function removeSet(exerciseName, setIndex) {
 // Update weight for a set
 function updateWeight(exerciseName, setIndex, weight) {
     exerciseData[exerciseName].sets[setIndex].weight = weight;
+    updatePendingWorkout();
 }
 
 // Update reps for a set
@@ -447,6 +783,7 @@ function updateReps(exerciseName, setIndex, change) {
     const currentReps = exerciseData[exerciseName].sets[setIndex].reps;
     const newReps = Math.max(1, currentReps + change);
     exerciseData[exerciseName].sets[setIndex].reps = newReps;
+    updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
         updateSheetSets();
     } else {
@@ -457,98 +794,28 @@ function updateReps(exerciseName, setIndex, change) {
 // Mark exercise as complete
 function markExerciseComplete(exerciseName) {
     exerciseData[exerciseName].completed = true;
+    updatePendingWorkout();
     updateExerciseList();
 }
 
-// Check if workout can be completed
+// Check if workout can be completed (not needed anymore with state system)
 function checkWorkoutCompletion() {
-    const hasCompletedExercises = Object.values(exerciseData).some(exercise => 
-        exercise.completed
-    );
-    
-    const completeBtn = document.getElementById('completeWorkoutBtn');
-    if (hasCompletedExercises) {
-        completeBtn.classList.remove('hidden');
-    } else {
-        completeBtn.classList.add('hidden');
-    }
+    // Complete button visibility is now handled by workout state
+    // This function can be removed or kept for backwards compatibility
 }
 
-// Complete workout
-function completeWorkout() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-    
-    const workoutDuration = workoutStartTime ? new Date() - workoutStartTime : 0;
-    
-    // Save workout data
-    workoutData.currentCycle.push(currentWorkout);
-    workoutData.totalWorkouts++;
-    
-    // Update last weights, reps, and sets
-    Object.entries(exerciseData).forEach(([exerciseName, data]) => {
-        if (data.completed && data.sets.some(set => set.weight && set.weight > 0)) {
-            const key = `${currentWorkout}-${exerciseName}`;
-            
-            // Get the last set with weight
-            const lastSetWithWeight = data.sets.filter(set => set.weight && set.weight > 0).pop();
-            if (lastSetWithWeight) {
-                workoutData.lastWeights[key] = lastSetWithWeight.weight;
-                workoutData.lastReps[key] = lastSetWithWeight.reps;
-            }
-            workoutData.lastSets[key] = data.sets.length;
-        }
-    });
-    
-    // Add to history
-    workoutData.history.push({
-        date: new Date().toISOString(),
-        type: currentWorkout,
-        duration: workoutDuration,
-        exercises: Object.fromEntries(
-            Object.entries(exerciseData)
-                .filter(([_, data]) => data.completed && data.sets.some(set => set.weight && set.weight > 0))
-                .map(([name, data]) => [name, data.sets.filter(set => set.weight && set.weight > 0)])
-        )
-    });
-    
-    saveWorkoutData();
-    
-    // Remove from pending workouts since it's now completed
-    if (workoutData.pendingWorkouts[currentWorkout]) {
-        delete workoutData.pendingWorkouts[currentWorkout];
-        saveWorkoutData();
-    }
-    
-    // Return to home screen
-    showHomeScreen();
-}
 
-// Cancel workout
-function cancelWorkout() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
+// Go back to home screen (replaces cancelWorkout)
+function goBackHome() {
+    // Update pending workout data BEFORE clearing references
+    if (currentWorkout) {
+        updatePendingWorkout();
     }
     
-    // Check if any exercises are completed or have weight entered
-    const hasProgress = Object.values(exerciseData).some(exercise => 
-        exercise.completed || exercise.sets.some(set => set.weight && set.weight > 0)
-    );
-    
-    if (hasProgress) {
-        // Save progress as pending workout
-        workoutData.pendingWorkouts[currentWorkout] = {
-            exerciseData: JSON.parse(JSON.stringify(exerciseData)),
-            startTime: workoutStartTime
-        };
-        saveWorkoutData();
-    }
-    
+    // Clear current references but don't stop timer
     currentWorkout = null;
     exerciseData = {};
+    
     showHomeScreen();
 }
 
@@ -604,6 +871,7 @@ function showCelebration() {
 // Close celebration
 function closeCelebration() {
     document.getElementById('celebrationOverlay').classList.add('hidden');
+    showHomeScreen();
 }
 
 // Show calendar view
@@ -672,15 +940,25 @@ function renderCalendar() {
         dayElement.className = 'calendar-day';
         dayElement.textContent = day;
         
-        // Check if workout was done on this day
+        // Check if workout was done on this day and get workout type
         const dayDate = new Date(year, month, day);
-        const hasWorkout = workoutData.history.some(workout => {
+        const dayWorkout = workoutData.history.find(workout => {
             const workoutDate = new Date(workout.date);
             return workoutDate.toDateString() === dayDate.toDateString();
         });
         
-        if (hasWorkout) {
+        // Check if this is today's date
+        const today = new Date();
+        const isToday = dayDate.toDateString() === today.toDateString();
+        
+        if (dayWorkout) {
             dayElement.classList.add('workout-day');
+            dayElement.style.backgroundColor = workoutColors[dayWorkout.type];
+        }
+        
+        if (isToday) {
+            dayElement.classList.add('selected');
+            showWorkoutDetails(dayDate);
         }
         
         dayElement.addEventListener('click', () => showWorkoutDetails(dayDate));
