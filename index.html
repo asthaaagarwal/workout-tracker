@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1c1c1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Workout Tracker">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen">
+            <header class="header">
+                <button id="calendarBtn" class="btn-calendar">📅</button>
+                <h1>Weekly Workouts</h1>
+            </header>
+
+            <!-- Workout Cards -->
+            <div id="workoutList" class="workout-list">
+                <!-- Workout cards will be dynamically generated -->
+            </div>
+
+            <!-- Stats Card -->
+            <div class="stats-card">
+                <div class="stat">
+                    <span class="stat-value" id="daysSinceLastWorkout">0</span>
+                    <span class="stat-label">Days since last workout</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="totalWorkouts">0</span>
+                    <span class="stat-label">Total workouts completed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Screen -->
+        <div id="workoutScreen" class="screen hidden">
+            <header class="workout-header">
+                <h2 id="workoutTitle">Workout</h2>
+                <button id="cancelWorkoutBtn" class="btn-cancel">Cancel</button>
+            </header>
+            
+            <div class="timer">
+                <span id="workoutTimer">00:00</span>
+            </div>
+
+            <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
+
+            <div id="exerciseList" class="exercise-list">
+                <!-- Exercise items will be dynamically generated -->
+            </div>
+        </div>
+
+        <!-- Calendar Screen -->
+        <div id="calendarScreen" class="screen hidden">
+            <header class="calendar-header">
+                <h2>Workout Calendar</h2>
+                <button id="closeCalendarBtn" class="btn-cancel">Close</button>
+            </header>
+
+            <div class="calendar-navigation">
+                <button id="prevMonthBtn" class="btn-nav">‹</button>
+                <span id="currentMonth">January 2024</span>
+                <button id="nextMonthBtn" class="btn-nav">›</button>
+            </div>
+
+            <div id="calendar" class="calendar-grid">
+                <!-- Calendar will be dynamically generated -->
+            </div>
+
+            <div id="workoutDetails" class="workout-details hidden">
+                <!-- Selected date workout details -->
+            </div>
+        </div>
+
+        <!-- Exercise Bottom Sheet -->
+        <div id="exerciseBottomSheet" class="bottom-sheet hidden">
+            <div class="bottom-sheet-content">
+                <div class="bottom-sheet-header">
+                    <h3 id="sheetExerciseTitle">Exercise</h3>
+                    <button class="sheet-close" id="closeSheetBtn">×</button>
+                </div>
+                <div id="sheetSetsContainer" class="sheet-sets-container">
+                    <!-- Sets will be dynamically generated -->
+                </div>
+                <div class="sheet-actions">
+                    <button id="sheetAddSetBtn" class="btn-add-set">Add Set</button>
+                    <button id="sheetDoneBtn" class="btn-done-exercise">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Celebration Overlay -->
+        <div id="celebrationOverlay" class="celebration-overlay hidden">
+            <div class="celebration-content">
+                <div class="celebration-text">🎉</div>
+                <h2>Workout Complete!</h2>
+                <p>Great job finishing your workout!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
