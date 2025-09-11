@@ -288,13 +288,13 @@ function renderWorkoutCards() {
         // Determine description text based on workout state
         let descriptionText = workout.description;
         if (workoutState === 'completed') {
-            // Find the completion time from history
+            // Find the most recent workout from history
             const completedWorkout = workoutData.history
                 .filter(h => h.type === type)
                 .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
             
-            if (completedWorkout) {
-                descriptionText = formatWorkoutDateTime(completedWorkout.date);
+            if (completedWorkout && completedWorkout.duration) {
+                descriptionText = formatWorkoutDuration(completedWorkout.duration);
             }
         }
         
@@ -708,6 +708,21 @@ function formatWorkoutDateTime(date) {
     }).replace(',', '');
     
     return `${timeStr}, ${dayStr}`;
+}
+
+// Format workout duration in milliseconds to readable format
+function formatWorkoutDuration(durationMs) {
+    if (!durationMs || durationMs <= 0) return '0 min';
+    
+    const totalMinutes = Math.floor(durationMs / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    
+    if (hours > 0) {
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    } else {
+        return `${minutes}m`;
+    }
 }
 
 // Update exercise list in workout screen
