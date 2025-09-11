@@ -10,7 +10,6 @@ let currentCalendarDate = new Date();
 // App names to cycle through
 const appNames = [
     "Exercise? I thought you said Extra Fries",
-    "Gains of Thrones",
     "Squat Squad",
     "No Whey Out",
     "Gym and Tonic"
@@ -316,7 +315,7 @@ function openWorkout(type) {
             // Add default sets
             for (let i = 0; i < exercise.sets; i++) {
                 exerciseData[exercise.name].sets.push({
-                    weight: workoutData.lastWeights[`${type}-${exercise.name}`] || '',
+                    weight: workoutData.lastWeights[`${type}-${exercise.name}`] || 0.5,
                     reps: workoutData.lastReps[`${type}-${exercise.name}`] || 12
                 });
             }
@@ -732,17 +731,22 @@ function renderSets(exerciseName) {
     return sets.map((set, index) => `
         <div class="set-item">
             <button class="btn-remove-set" onclick="removeSet('${exerciseName}', ${index})">×</button>
-            <input type="number" 
+            <input type="range" 
                    class="weight-input" 
-                   placeholder="Weight" 
-                   value="${set.weight}" 
-                   onchange="updateWeight('${exerciseName}', ${index}, this.value)"
-                   min="0">
-            <div class="reps-container">
-                <button class="btn-reps" onclick="updateReps('${exerciseName}', ${index}, -1)">-</button>
-                <div class="reps-display">${set.reps}</div>
-                <button class="btn-reps" onclick="updateReps('${exerciseName}', ${index}, 1)">+</button>
-            </div>
+                   min="0.5" 
+                   max="100" 
+                   step="0.25" 
+                   value="${set.weight || 0.5}" 
+                   onchange="updateWeight('${exerciseName}', ${index}, this.value)">
+            <div class="weight-display">${set.weight || 0.5} lbs</div>
+            <input type="range" 
+                   class="reps-input" 
+                   min="5" 
+                   max="15" 
+                   step="1" 
+                   value="${set.reps}" 
+                   onchange="updateReps('${exerciseName}', ${index}, this.value)">
+            <div class="reps-display">${set.reps} reps</div>
         </div>
     `).join('');
 }
@@ -750,7 +754,7 @@ function renderSets(exerciseName) {
 // Add a set to an exercise
 function addSet(exerciseName) {
     exerciseData[exerciseName].sets.push({
-        weight: workoutData.lastWeights[`${currentWorkout}-${exerciseName}`] || '',
+        weight: workoutData.lastWeights[`${currentWorkout}-${exerciseName}`] || 0.5,
         reps: workoutData.lastReps[`${currentWorkout}-${exerciseName}`] || 12
     });
     updatePendingWorkout();
@@ -779,10 +783,8 @@ function updateWeight(exerciseName, setIndex, weight) {
 }
 
 // Update reps for a set
-function updateReps(exerciseName, setIndex, change) {
-    const currentReps = exerciseData[exerciseName].sets[setIndex].reps;
-    const newReps = Math.max(1, currentReps + change);
-    exerciseData[exerciseName].sets[setIndex].reps = newReps;
+function updateReps(exerciseName, setIndex, reps) {
+    exerciseData[exerciseName].sets[setIndex].reps = parseInt(reps);
     updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
         updateSheetSets();
