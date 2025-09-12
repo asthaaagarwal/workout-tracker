@@ -639,12 +639,32 @@ function completeWorkout() {
 
 // Show confirmation dialog
 function showConfirmationDialog() {
-    document.getElementById('confirmationDialog').classList.remove('hidden');
+    const dialog = document.getElementById('confirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+    
+    dialog.classList.remove('hidden');
+    
+    // Force reflow to ensure the dialog is visible before animation
+    dialog.offsetHeight;
+    
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+        dialogContent.classList.add('show');
+    });
 }
 
 // Close confirmation dialog
 function closeConfirmationDialog() {
-    document.getElementById('confirmationDialog').classList.add('hidden');
+    const dialog = document.getElementById('confirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+    
+    // Start slide down animation
+    dialogContent.classList.remove('show');
+    
+    // Hide the dialog after animation completes
+    setTimeout(() => {
+        dialog.classList.add('hidden');
+    }, 300); // Match the CSS transition duration
 }
 
 // Confirm and actually complete the workout
@@ -1026,35 +1046,17 @@ function renderSets(exerciseName) {
                        value="${set.weight && set.weight !== '' ? set.weight : ''}" 
                        ${weightChange}
                        min="0"
+                       step="0.25"
                        inputmode="decimal"
                        ${disabled}>
                 <div class="reps-container">
-                    <select class="reps-select" 
+                    <button class="btn-reps" 
                             ${disabled} 
-                            ${repsChange}>
-                        ${(() => {
-                            const options = [];
-                            const currentReps = set.reps;
-                            
-                            // If current reps is outside 5-25 range, include it
-                            if (currentReps < 5) {
-                                options.push(`<option value="${currentReps}" selected>${currentReps}</option>`);
-                            }
-                            
-                            // Generate options 5-25
-                            for (let i = 5; i <= 25; i++) {
-                                const selected = currentReps === i ? 'selected' : '';
-                                options.push(`<option value="${i}" ${selected}>${i}</option>`);
-                            }
-                            
-                            // If current reps is above 25, include it
-                            if (currentReps > 25) {
-                                options.push(`<option value="${currentReps}" selected>${currentReps}</option>`);
-                            }
-                            
-                            return options.join('');
-                        })()}
-                    </select>
+                            onclick="adjustReps('${exerciseName}', ${index}, -1)">-</button>
+                    <div class="reps-display">${set.reps}</div>
+                    <button class="btn-reps" 
+                            ${disabled} 
+                            onclick="adjustReps('${exerciseName}', ${index}, 1)">+</button>
                 </div>
                 <button class="delete-btn" ${removeButtonClick} ${removeButtonStyle}>
                     <i data-lucide="trash-2"></i>
@@ -1098,6 +1100,19 @@ function updateWeight(exerciseName, setIndex, weight) {
 // Update reps for a set
 function updateReps(exerciseName, setIndex, repsValue) {
     const newReps = parseInt(repsValue) || 12;
+    exerciseData[exerciseName].sets[setIndex].reps = newReps;
+    updatePendingWorkout();
+    if (currentSheetExercise === exerciseName) {
+        updateSheetSets();
+    } else {
+        updateExerciseList();
+    }
+}
+
+// Adjust reps with +/- buttons
+function adjustReps(exerciseName, setIndex, change) {
+    const currentReps = exerciseData[exerciseName].sets[setIndex].reps;
+    const newReps = Math.max(1, currentReps + change); // Minimum of 1 rep
     exerciseData[exerciseName].sets[setIndex].reps = newReps;
     updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
@@ -1189,14 +1204,35 @@ function openExerciseSheet(exerciseName) {
     addSetBtn.classList.remove('hidden');
     doneBtn.classList.remove('hidden');
     
-    document.getElementById('exerciseBottomSheet').classList.remove('hidden');
+    // Show bottom sheet with animation
+    const bottomSheet = document.getElementById('exerciseBottomSheet');
+    const bottomSheetContent = bottomSheet.querySelector('.bottom-sheet-content');
+    
+    bottomSheet.classList.remove('hidden');
+    
+    // Force reflow to ensure the sheet is visible before animation
+    bottomSheet.offsetHeight;
+    
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+        bottomSheetContent.classList.add('show');
+    });
 }
 
 // Close exercise bottom sheet
 function closeExerciseSheet() {
-    document.getElementById('exerciseBottomSheet').classList.add('hidden');
-    currentSheetExercise = null;
-    updateExerciseList();
+    const bottomSheet = document.getElementById('exerciseBottomSheet');
+    const bottomSheetContent = bottomSheet.querySelector('.bottom-sheet-content');
+    
+    // Start slide down animation
+    bottomSheetContent.classList.remove('show');
+    
+    // Hide the sheet after animation completes
+    setTimeout(() => {
+        bottomSheet.classList.add('hidden');
+        currentSheetExercise = null;
+        updateExerciseList();
+    }, 300); // Match the CSS transition duration
 }
 
 // Update sets in bottom sheet
@@ -1422,12 +1458,32 @@ function openWorkoutFromCalendar(workoutType) {
 
 // Show delete confirmation dialog
 function showDeleteConfirmationDialog() {
-    document.getElementById('deleteConfirmationDialog').classList.remove('hidden');
+    const dialog = document.getElementById('deleteConfirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+    
+    dialog.classList.remove('hidden');
+    
+    // Force reflow to ensure the dialog is visible before animation
+    dialog.offsetHeight;
+    
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+        dialogContent.classList.add('show');
+    });
 }
 
 // Close delete confirmation dialog
 function closeDeleteConfirmationDialog() {
-    document.getElementById('deleteConfirmationDialog').classList.add('hidden');
+    const dialog = document.getElementById('deleteConfirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+    
+    // Start slide down animation
+    dialogContent.classList.remove('show');
+    
+    // Hide the dialog after animation completes
+    setTimeout(() => {
+        dialog.classList.add('hidden');
+    }, 300); // Match the CSS transition duration
 }
 
 // Confirm and actually delete the workout
@@ -1485,6 +1541,26 @@ function confirmDeleteWorkout() {
     } else {
         showHomeScreen();
     }
+}
+
+// Service Worker Update Detection
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('SW registered:', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New content available, prompt user to refresh
+                    if (confirm('New version available! Refresh to update?')) {
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+    });
 }
 
 // Initialize app when DOM is loaded

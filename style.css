@@ -19,7 +19,7 @@ body {
     max-width: 390px;
     width: 100vw;
     margin: 0 auto;
-    padding: 20px 20px 80px 20px;
+    padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px;
     min-height: 100vh;
 }
 
@@ -349,6 +349,7 @@ body {
     cursor: pointer;
     transition: background-color 0.2s ease;
     flex-shrink: 0;
+    margin-left: auto;
 }
 
 .delete-btn:hover {
@@ -392,18 +393,25 @@ body {
 .reps-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
+    background: rgb(255, 165, 112);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .btn-reps {
-    background: #1c1c1e;
+    background: rgb(255, 165, 112);
     color: white;
     border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-reps:disabled {
@@ -415,58 +423,31 @@ body {
 
 .reps-display {
     background: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    min-width: 80px;
+    padding: 0 16px;
+    min-width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     font-weight: 600;
-    border: 1px solid #dee2e6;
+    font-size: 16px;
+    border: none;
 }
 
-.reps-select {
-    background: white;
-    padding: 8px 12px;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    min-width: 80px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 16px;
-    padding-right: 32px;
-}
-
-.reps-select:focus {
-    outline: none;
-    border-color: #007aff;
-}
-
-.reps-select:disabled {
-    background: #f2f2f7;
-    color: #6c6c70;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
 
 .btn-add-set {
     background: #34c759;
     color: white;
     border: none;
-    width: 40px;
+    width: 100%;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    margin: 0 auto 8px auto;
+    margin-bottom: 8px;
     transition: background-color 0.2s ease;
 }
 
@@ -625,18 +606,18 @@ body {
     height: 100vh;
     height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
-    display: none;
+    display: flex;
     align-items: flex-end;
     justify-content: center;
     z-index: 1100;
-}
-
-.bottom-sheet.hidden {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .bottom-sheet:not(.hidden) {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
 }
 
 .bottom-sheet-content {
@@ -649,6 +630,12 @@ body {
     overflow-y: auto;
     position: fixed;
     bottom: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bottom-sheet-content.show {
+    transform: translateY(0);
 }
 
 .bottom-sheet-header {
