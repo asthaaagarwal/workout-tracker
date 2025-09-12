@@ -324,6 +324,7 @@ body {
     flex-direction: column;
     gap: 12px;
     margin-bottom: 16px;
+    padding-bottom: 0px;
 }
 
 .set-item {
@@ -335,16 +336,35 @@ body {
     border-radius: 12px;
 }
 
-.btn-remove-set {
+.delete-btn {
     background: #ff3b30;
-    color: white;
     border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
 }
+
+.delete-btn:hover {
+    background: #ff2d20;
+}
+
+.delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.delete-btn i {
+    width: 18px;
+    height: 18px;
+}
+
 
 .weight-input {
     width: 120px;
@@ -360,6 +380,13 @@ body {
 .weight-input:focus {
     outline: none;
     border-color: #007aff;
+}
+
+.weight-input:disabled {
+    background: #f2f2f7;
+    color: #6c6c70;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .reps-container {
@@ -379,6 +406,13 @@ body {
     cursor: pointer;
 }
 
+.btn-reps:disabled {
+    background: #6c6c70;
+    color: #c7c7cc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .reps-display {
     background: white;
     padding: 8px 16px;
@@ -389,29 +423,76 @@ body {
     border: 1px solid #dee2e6;
 }
 
+.reps-select {
+    background: white;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    min-width: 80px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+.reps-select:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.reps-select:disabled {
+    background: #f2f2f7;
+    color: #6c6c70;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .btn-add-set {
     background: #34c759;
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    width: 100%;
-    margin-bottom: 8px;
+    margin: 0 auto 8px auto;
+    transition: background-color 0.2s ease;
+}
+
+.btn-add-set:hover {
+    background: #30a355;
+}
+
+.btn-add-set i {
+    width: 20px;
+    height: 20px;
 }
 
 .btn-done-exercise {
-    background: #007aff;
+    background: rgb(255, 165, 112);
     color: white;
     border: none;
-    padding: 8px 16px;
+    height: 40px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
+}
+
+.btn-done-exercise:hover {
+    background: rgb(245, 155, 102);
 }
 
 /* Exercise Section Cards */
@@ -594,6 +675,9 @@ body {
 
 .sheet-sets-container {
     padding: 20px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sheet-actions {
@@ -627,6 +711,25 @@ body {
     color: #c7c7cc;
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+/* Destructive Button */
+.btn-destructive {
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+
+.btn-destructive:hover {
+    background: #d70015;
 }
 
 /* Calendar Screen */
@@ -729,13 +832,46 @@ body {
 }
 
 .workout-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 16px;
+}
+
+.workout-details-info {
+    flex: 1;
 }
 
 .workout-details-header h3 {
     font-size: 20px;
     font-weight: 600;
     margin: 0 0 4px 0;
+}
+
+.workout-details-open-btn {
+    background: #007aff;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+}
+
+.workout-details-open-btn:hover {
+    background: #0056cc;
+    transform: scale(1.05);
+}
+
+.workout-details-open-btn i {
+    width: 16px;
+    height: 16px;
 }
 
 .workout-details-date {
@@ -930,6 +1066,82 @@ body {
     transition: width 0.3s ease;
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+}
+
+/* Confirmation Dialog */
+.confirmation-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.confirmation-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1c1c1e;
+}
+
+.confirmation-content p {
+    font-size: 16px;
+    color: #6c6c70;
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-confirm-yes {
+    flex: 1;
+    background: #34c759;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-yes:hover {
+    background: #28a745;
+}
+
+.btn-confirm-no {
+    flex: 1;
+    background: #f2f2f7;
+    color: #1c1c1e;
+    border: 1px solid #c7c7cc;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-no:hover {
+    background: #e5e5ea;
+}
+
+.btn-confirm-delete {
+    flex: 1;
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-delete:hover {
+    background: #d70015;
 }
 
 /* Bottom App Bar */

@@ -86,11 +86,14 @@
             </div>
 
             <button id="startWorkoutBtn" class="btn-success hidden">Start Workout</button>
-            <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
 
             <div id="exerciseList" class="exercise-list">
                 <!-- Exercise items will be dynamically generated -->
             </div>
+
+            <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
+            
+            <button id="deleteWorkoutBtn" class="btn-destructive hidden">Delete Workout</button>
         </div>
 
         <!-- Calendar Screen -->
@@ -125,8 +128,38 @@
                     <!-- Sets will be dynamically generated -->
                 </div>
                 <div class="sheet-actions">
-                    <button id="sheetAddSetBtn" class="btn-add-set">Add Set</button>
+                    <button id="sheetAddSetBtn" class="btn-add-set">
+                        <i data-lucide="plus"></i>
+                    </button>
                     <button id="sheetDoneBtn" class="btn-done-exercise">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Dialog -->
+        <div id="confirmationDialog" class="bottom-sheet hidden">
+            <div class="bottom-sheet-content">
+                <div class="confirmation-content">
+                    <h3>Complete Workout</h3>
+                    <p>Are you sure you are done with the workout?</p>
+                    <div class="confirmation-buttons">
+                        <button id="confirmYesBtn" class="btn-confirm-yes">Yes</button>
+                        <button id="confirmNoBtn" class="btn-confirm-no">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Dialog -->
+        <div id="deleteConfirmationDialog" class="bottom-sheet hidden">
+            <div class="bottom-sheet-content">
+                <div class="confirmation-content">
+                    <h3>Delete Workout</h3>
+                    <p>Are you sure you want to delete this workout? All your hardwork will vanish in an instance.</p>
+                    <div class="confirmation-buttons">
+                        <button id="confirmDeleteBtn" class="btn-confirm-delete">Delete</button>
+                        <button id="cancelDeleteBtn" class="btn-confirm-no">Go back</button>
+                    </div>
                 </div>
             </div>
         </div>
