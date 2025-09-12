@@ -27,20 +27,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
-    </script>
+    <!-- Service Worker Registration handled in script.js -->
 </head>
 <body>
     <div class="container">
@@ -74,15 +61,15 @@
         </div>
 
         <!-- Workout Screen -->
-        <div id="workoutScreen" class="screen hidden">
+        <div id="workoutScreen" class="workout-screen screen hidden">
             <header class="workout-header">
-                <button id="cancelWorkoutBtn" class="btn-cancel">Back</button>
+                <button id="cancelWorkoutBtn" class="btn-cancel"><i data-lucide="chevron-left"></i>Back</button>
                 <h2 id="workoutTitle">Workout</h2>
                 <div class="header-spacer"></div>
             </header>
             
             <div class="timer">
-                <span id="workoutTimer">00:00</span>
+                <span id="workoutTimer">00:00:00</span>
             </div>
 
             <button id="startWorkoutBtn" class="btn-success hidden">Start Workout</button>
@@ -98,9 +85,6 @@
 
         <!-- Calendar Screen -->
         <div id="calendarScreen" class="screen hidden">
-            <header class="calendar-header">
-                <h2>Workout Calendar</h2>
-            </header>
 
             <div class="calendar-navigation">
                 <button id="prevMonthBtn" class="btn-nav">‹</button>
@@ -166,10 +150,30 @@
 
         <!-- Celebration Overlay -->
         <div id="celebrationOverlay" class="celebration-overlay hidden">
+            <div class="confetti-container">
+                <div class="confetti confetti-1"></div>
+                <div class="confetti confetti-2"></div>
+                <div class="confetti confetti-3"></div>
+                <div class="confetti confetti-4"></div>
+                <div class="confetti confetti-5"></div>
+                <div class="confetti confetti-6"></div>
+                <div class="confetti confetti-7"></div>
+                <div class="confetti confetti-8"></div>
+                <div class="confetti confetti-9"></div>
+                <div class="confetti confetti-10"></div>
+                <div class="confetti confetti-11"></div>
+                <div class="confetti confetti-12"></div>
+                <div class="confetti confetti-13"></div>
+                <div class="confetti confetti-14"></div>
+                <div class="confetti confetti-15"></div>
+                <div class="confetti confetti-16"></div>
+                <div class="confetti confetti-17"></div>
+                <div class="confetti confetti-18"></div>
+                <div class="confetti confetti-19"></div>
+                <div class="confetti confetti-20"></div>
+            </div>
             <div class="celebration-content">
-                <div class="celebration-text">🎉</div>
-                <h2>Workout Complete!</h2>
-                <p>Great job finishing your workout!</p>
+                <div class="celebration-text">Crushed it</div>
             </div>
         </div>
 

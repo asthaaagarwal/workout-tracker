@@ -1,5 +1,6 @@
 // Service Worker for Workout Tracker PWA
-const CACHE_NAME = 'workout-tracker-v2';
+const CACHE_NAME = 'workout-tracker-v' + Date.now();
+const STATIC_CACHE = 'workout-tracker-static';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -52,7 +53,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - Network First with Cache Fallback for iOS PWA updates
 self.addEventListener('fetch', event => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
@@ -64,47 +65,49 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version if available
-        if (response) {
-          console.log('Service Worker: Serving from cache', event.request.url);
-          return response;
-        }
-
-        // Otherwise fetch from network
-        console.log('Service Worker: Fetching from network', event.request.url);
-        return fetch(event.request)
-          .then(response => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response since it can only be consumed once
+  // Network First strategy for app resources to ensure updates
+  if (urlsToCache.some(url => event.request.url.endsWith(url) || event.request.url.includes(url))) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone and cache successful responses
+          if (response && response.status === 200) {
             const responseToCache = response.clone();
-
-            // Add to cache for future use
             caches.open(CACHE_NAME)
               .then(cache => {
                 cache.put(event.request, responseToCache);
               });
-
+          }
+          return response;
+        })
+        .catch(error => {
+          console.log('Service Worker: Network failed, serving from cache', event.request.url);
+          // Fallback to cache when network fails
+          return caches.match(event.request)
+            .then(cachedResponse => {
+              if (cachedResponse) {
+                return cachedResponse;
+              }
+              // Ultimate fallback for navigation
+              if (event.request.destination === 'document') {
+                return caches.match('/index.html');
+              }
+              throw error;
+            });
+        })
+    );
+  } else {
+    // Cache First for other resources
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          if (response) {
             return response;
-          })
-          .catch(error => {
-            console.error('Service Worker: Fetch failed', error);
-            
-            // Return a fallback for navigation requests when offline
-            if (event.request.destination === 'document') {
-              return caches.match('/index.html');
-            }
-            
-            throw error;
-          });
-      })
-  );
+          }
+          return fetch(event.request);
+        })
+    );
+  }
 });
 
 // Background sync for workout data (if supported)

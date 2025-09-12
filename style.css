@@ -8,8 +8,8 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #f2f2f7;
-    color: #1c1c1e;
+    background: #f3eee8;
+    color: #18222b;
     min-height: 100vh;
     width: 100vw;
     overflow-x: hidden;
@@ -41,14 +41,14 @@ body {
 .header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     margin-bottom: 24px;
 }
 
 .header h1 {
     font-size: 28px;
     font-weight: 700;
-    color: #1c1c1e;
+    color: #18222b;
 }
 
 .btn-calendar {
@@ -58,37 +58,29 @@ body {
     height: 40px;
     border-radius: 12px;
     font-size: 18px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.btn-calendar:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
 
 /* Workout List */
 .workout-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .workout-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    background: #fcd5c1;
+    border-radius: 24px;
+    padding: 24px;
+    border: none;
     transition: all 0.3s ease;
     cursor: pointer;
+    color: #18222b;
 }
 
-.workout-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
 
 .workout-card.selected {
     border: 2px solid #007aff;
@@ -105,7 +97,7 @@ body {
 .workout-title {
     font-size: 20px;
     font-weight: 600;
-    color: #1c1c1e;
+    color: #18222b;
 }
 
 .workout-status {
@@ -117,35 +109,41 @@ body {
 }
 
 .status-completed {
-    background: #34c759;
-    color: white;
+    background: #fff;
+    color: #46725e
 }
 
 .status-available {
-    background: #007aff;
-    color: white;
+    background: #fff;
+    color: #fa7427;
 }
 
 .status-ongoing {
-    background: #ff9500;
-    color: white;
+    background: #fff;
+    color: #fa7427;
 }
 
 .workout-description {
     font-size: 14px;
-    color: #6c6c70;
+    color: #18222b;
     margin-bottom: 16px;
+    opacity: 0.7;
 }
 
 .workout-timer {
     font-size: 14px;
     font-weight: 600;
-    color: #ff9500;
-    background: rgba(255, 149, 0, 0.1);
-    padding: 8px 12px;
-    border-radius: 8px;
-    display: inline-block;
-    margin-top: 8px;
+    color: #fa7427;
+    background: #fff;
+    padding: 5px 12px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.workout-timer.completed-timer {
+    color: #46725e;
 }
 
 .btn-start-workout {
@@ -173,12 +171,13 @@ body {
 
 /* Stats Card */
 .stats-card {
-    background: #1c1c1e;
-    border-radius: 16px;
-    padding: 20px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
     display: flex;
     justify-content: space-around;
-    color: white;
+    color: #18222b;
+    border: none;
 }
 
 .stat {
@@ -203,16 +202,11 @@ body {
     background: white;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     cursor: pointer;
     margin-top: 16px;
 }
 
-.calendar-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
 
 .calendar-card-header {
     display: flex;
@@ -261,9 +255,17 @@ body {
     background: none;
     border: none;
     font-size: 16px;
-    color: #007aff;
+    color: #fa7427;
     cursor: pointer;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-cancel i {
+    width: 16px;
+    height: 16px;
 }
 
 .timer {
@@ -281,20 +283,36 @@ body {
 .exercise-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.exercise-list .exercise-item:not(.completed) {
+    order: 2;
+}
+
+.workout-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .exercise-item {
-    background: white;
-    border-radius: 16px;
+    background: #fff;
+    border-radius: 24px;
     padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
 }
 
 .exercise-item.completed {
-    opacity: 0.6;
-    order: 2;
+    background: rgb(225, 240, 184);
+    order: 1;
+}
+
+.exercise-item.completed .exercise-check-icon {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
 }
 
 .exercise-header {
@@ -307,6 +325,7 @@ body {
 .exercise-name {
     font-size: 18px;
     font-weight: 600;
+    color: #18222b;
 }
 
 .btn-view-exercise {
@@ -340,8 +359,8 @@ body {
     background: #ff3b30;
     border: none;
     border-radius: 8px;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     color: white;
     display: flex;
     align-items: center;
@@ -394,13 +413,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0;
-    background: rgb(255, 165, 112);
+    background: #fa7427;
     border-radius: 8px;
     overflow: hidden;
 }
 
 .btn-reps {
-    background: rgb(255, 165, 112);
+    background: #fa7427;
     color: white;
     border: none;
     width: 40px;
@@ -461,7 +480,7 @@ body {
 }
 
 .btn-done-exercise {
-    background: rgb(255, 165, 112);
+    background: #fa7427;
     color: white;
     border: none;
     height: 40px;
@@ -473,7 +492,7 @@ body {
 }
 
 .btn-done-exercise:hover {
-    background: rgb(245, 155, 102);
+    background: #e6681f;
 }
 
 /* Exercise Section Cards */
@@ -500,21 +519,27 @@ body {
 
 /* Section Container */
 .section-container {
-    background: #dbdbdf;
-    border-radius: 16px;
-    padding: 16px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px;
+}
+
+/* Ensure cooldown appears after completed exercises */
+.section-container:has(.cooldown) {
+    order: 3;
 }
 
 .section-container-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #18222b;
 }
 
 .section-container-exercises {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
 }
 
 .section-container .exercise-item-simple {
@@ -539,22 +564,28 @@ body {
 
 /* Exercise Items Simple */
 .exercise-item-simple {
-    background: white;
-    border-radius: 16px;
-    margin-bottom: 4px;
+    background: transparent;
+    border-radius: 0;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
-    padding: 12px;
-    cursor: pointer;
+    padding: 4px 0;
+    cursor: default;
 }
 
 .exercise-item-simple.completed {
-    opacity: 0.6;
-    order: 2;
+    background: rgb(225, 240, 184);
+    order: 1;
+}
+
+.exercise-item-simple.completed .exercise-check-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
 }
 
 .exercise-item-simple.in-progress {
-    border-left: 4px solid #ff9500;
+    border-left: 4px solid #fa7427;
 }
 
 .exercise-icon-container {
@@ -574,9 +605,9 @@ body {
 }
 
 .exercise-name {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1c1c1e;
+    font-size: 14px;
+    font-weight: 500;
+    color: #18222b;
     flex-grow: 1;
 }
 
@@ -590,7 +621,7 @@ body {
 .exercise-status-dot {
     width: 8px;
     height: 8px;
-    background: #ff9500;
+    background: #fa7427;
     border-radius: 50%;
     flex-shrink: 0;
     margin-left: auto;
@@ -676,8 +707,8 @@ body {
 
 /* Success Button */
 .btn-success {
-    background: #FFA570;
-    color: white;
+    background: #fa7427;
+    color: #fff;
     border: none;
     padding: 16px 32px;
     border-radius: 12px;
@@ -685,12 +716,11 @@ body {
     font-weight: 600;
     cursor: pointer;
     width: 100%;
-    margin-bottom: 24px;
     transition: all 0.3s ease;
 }
 
 .btn-success:hover {
-    background: #FF9F63;
+    background: #e6681f;
 }
 
 .btn-success:disabled {
@@ -749,7 +779,6 @@ body {
     border-radius: 12px;
     font-size: 18px;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -770,7 +799,6 @@ body {
     background: white;
     border-radius: 16px;
     padding: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     margin-bottom: 24px;
 }
 
@@ -800,6 +828,11 @@ body {
     color: white;
 }
 
+.calendar-day.workout-day.selected {
+    background: #007aff;
+    color: white;
+}
+
 .calendar-day.other-month {
     color: #c7c7cc;
 }
@@ -809,7 +842,6 @@ body {
     background: white;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .workout-details h3 {
@@ -963,11 +995,19 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: linear-gradient(135deg, 
+        #ffe8a3 0%, 
+        #ffb3d4 25%, 
+        #c8a2ff 50%, 
+        #a2d2ff 75%, 
+        #ffe8a3 100%);
+    background-size: 400% 400%;
+    animation: morphGradient 8s ease-in-out infinite;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
+    overflow: hidden;
 }
 
 .celebration-overlay.hidden {
@@ -976,27 +1016,105 @@ body {
 
 .celebration-content {
     text-align: center;
-    color: white;
+    color: #18222b;
     animation: celebrationFadeIn 0.5s ease-out;
+    position: relative;
+    width: 100%;
+}
+
+.celebration-cloud {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    z-index: 1;
+    animation: slideUpCloud 1.2s ease-out;
 }
 
 .celebration-text {
+    position: relative;
+    z-index: 10;
     font-size: 64px;
     font-weight: 800;
-    margin-bottom: 20px;
-    animation: bounceIn 1s ease-out;
+    color: white;
+    text-align: center;
 }
 
-.celebration-content h2 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #c6f847;
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
 }
 
-.celebration-content p {
+.confetti {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 2px;
+    opacity: 0.9;
+}
+
+.character-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    animation: slideInFromLeft 0.8s ease-out;
+}
+
+.celebration-character {
+    animation: bounce 1s ease-in-out infinite alternate;
+}
+
+.speech-bubble {
+    position: relative;
+    background: white;
+    border: 2px solid #18222b;
+    border-radius: 20px;
+    padding: 16px 24px;
+    animation: fadeInDelay 0.6s ease-out;
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+
+.speech-text {
     font-size: 18px;
-    opacity: 0.8;
+    font-weight: 600;
+    color: #18222b;
+    white-space: nowrap;
+}
+
+.speech-tail {
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 12px solid white;
+}
+
+.speech-tail::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: -12px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-right: 14px solid #18222b;
 }
 
 /* Animations */
@@ -1011,18 +1129,32 @@ body {
     }
 }
 
-@keyframes bounceIn {
-    0% {
-        transform: scale(0);
-        rotation: 0deg;
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100vw);
     }
-    50% {
-        transform: scale(1.2);
-        rotation: 180deg;
+    to {
+        transform: translateX(0);
     }
-    100% {
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0px);
+    }
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeInDelay {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
         transform: scale(1);
-        rotation: 360deg;
     }
 }
 
@@ -1037,6 +1169,85 @@ body {
     }
 }
 
+@keyframes slideUpCloud {
+    from {
+        transform: translateY(100vh);
+        opacity: 0.8;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceText {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(50px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) translateY(-10px);
+    }
+    70% {
+        transform: scale(0.95) translateY(5px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes morphGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 100% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    75% {
+        background-position: 0% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(calc(100vh + 50px)) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+/* Individual confetti pieces with different positions and delays */
+.confetti-1 { left: 5%; animation: confettiFall 1.5s linear infinite; animation-delay: 0s; }
+.confetti-2 { left: 10%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.1s; }
+.confetti-3 { left: 15%; animation: confettiFall 1.6s linear infinite; animation-delay: 0.2s; }
+.confetti-4 { left: 20%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.05s; }
+.confetti-5 { left: 25%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.3s; }
+.confetti-6 { left: 30%; animation: confettiFall 1.35s linear infinite; animation-delay: 0.15s; }
+.confetti-7 { left: 35%; animation: confettiFall 1.65s linear infinite; animation-delay: 0.4s; }
+.confetti-8 { left: 40%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.25s; }
+.confetti-9 { left: 45%; animation: confettiFall 1.5s linear infinite; animation-delay: 0.45s; }
+.confetti-10 { left: 50%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.35s; }
+.confetti-11 { left: 55%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.55s; }
+.confetti-12 { left: 60%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.2s; }
+.confetti-13 { left: 65%; animation: confettiFall 1.6s linear infinite; animation-delay: 0.65s; }
+.confetti-14 { left: 70%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.3s; }
+.confetti-15 { left: 75%; animation: confettiFall 1.5s linear infinite; animation-delay: 0.75s; }
+.confetti-16 { left: 80%; animation: confettiFall 1.35s linear infinite; animation-delay: 0.4s; }
+.confetti-17 { left: 85%; animation: confettiFall 1.65s linear infinite; animation-delay: 0.85s; }
+.confetti-18 { left: 90%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.5s; }
+.confetti-19 { left: 95%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.95s; }
+.confetti-20 { left: 12%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.6s; }
+
 /* Progress Bar */
 .progress-bar {
     width: 100%;
@@ -1049,10 +1260,9 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #007aff 0%, #34c759 100%);
+    background: #fa7427;
     transition: width 0.3s ease;
     border-radius: 4px;
-    box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
 }
 
 /* Confirmation Dialog */
@@ -1082,7 +1292,7 @@ body {
 
 .btn-confirm-yes {
     flex: 1;
-    background: #34c759;
+    background: #fa7427;
     color: white;
     border: none;
     padding: 16px 24px;
@@ -1094,7 +1304,7 @@ body {
 }
 
 .btn-confirm-yes:hover {
-    background: #28a745;
+    background: #e6681f;
 }
 
 .btn-confirm-no {
@@ -1139,10 +1349,10 @@ body {
     transform: translateX(-50%);
     max-width: 390px;
     width: 100vw;
-    background: white;
+    background: #fff;
     border-top: 1px solid #e5e5ea;
     display: flex;
-    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom)) 16px;
     z-index: 1000;
 }
 
@@ -1155,7 +1365,7 @@ body {
     padding: 8px 16px;
     border: none;
     background: none;
-    color: #8e8e93;
+    color: #c9b7b6;
     font-size: 10px;
     font-weight: 500;
     cursor: pointer;
@@ -1167,7 +1377,9 @@ body {
 }
 
 .app-bar-item.active {
-    color: #007aff;
+    color: #18222b;
+    background: #fcd5c1;
+    border-radius: 16px;
 }
 
 .app-bar-item i {

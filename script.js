@@ -11,16 +11,17 @@ let previousScreen = 'home'; // Track which screen opened the workout
 // App names to cycle through
 const appNames = [
     "Exercise? I thought you said Extra Fries",
-    "Squat Squad",
-    "No Whey Out",
-    "Gym and Tonic"
+    "Abs are great, but have you tried donuts?",
+    "I have a love–hate relationship with burpees. Mostly hate.",
+    "Burpees? No thanks, I’ll do burfis.",
+    "HIIT = High Intensity Imbiss Training.",
 ];
 
 // Workout colors
 const workoutColors = {
-    'upper-body': '#007aff',    // iOS blue
-    'lower-body': '#ff9500',    // iOS orange
-    'full-body': '#34c759'      // iOS green
+    'upper-body': '#fcd5c1',    // Default workout card color
+    'lower-body': '#fcd5c1',    // Default workout card color  
+    'full-body': '#fcd5c1'      // Default workout card color
 };
 
 // Workout exercises data
@@ -187,10 +188,20 @@ function updateCompletedWorkoutInHistory() {
     }
     
     // Update the exercises data with current exercise data
+    // For completed workouts being edited, save all exercises with valid weight data
+    const workoutState = getWorkoutState(currentWorkout);
     const updatedExercises = Object.fromEntries(
         Object.entries(exerciseData)
-            .filter(([_, data]) => data.completed && data.sets.some(set => set.weight && set.weight > 0))
-            .map(([name, data]) => [name, data.sets.filter(set => set.weight && set.weight > 0)])
+            .filter(([_, data]) => {
+                // If workout is already completed (editing from calendar), save all exercises with weights
+                // Otherwise, only save completed exercises with weights
+                if (workoutState === 'completed') {
+                    return data.sets.some(set => set.weight && parseFloat(set.weight) > 0);
+                } else {
+                    return data.completed && data.sets.some(set => set.weight && parseFloat(set.weight) > 0);
+                }
+            })
+            .map(([name, data]) => [name, data.sets.filter(set => set.weight && parseFloat(set.weight) > 0)])
     );
     
     workoutData.history[mostRecentIndex].exercises = updatedExercises;
@@ -318,13 +329,13 @@ function renderWorkoutCards() {
                 statusClass = 'status-completed';
                 break;
             default: // 'pending'
-                status = 'Available';
+                status = 'Ready to start';
                 statusClass = 'status-available';
         }
         
         const workoutCard = document.createElement('div');
         workoutCard.className = 'workout-card';
-        workoutCard.style.borderLeft = `4px solid ${workoutColors[type]}`;
+        workoutCard.style.background = workoutColors[type];
         
         // Add timer display for ongoing workouts
         let timerHtml = '';
@@ -335,26 +346,35 @@ function renderWorkoutCards() {
         
         // Determine description text based on workout state
         let descriptionText = workout.description;
-        if (workoutState === 'completed') {
-            // Find the most recent workout from history
+        
+        // For ongoing workouts, replace status badge with timer
+        // For completed workouts, replace status badge with duration
+        let statusElement;
+        if (workoutState === 'ongoing' && workoutData.pendingWorkouts[type] && workoutData.pendingWorkouts[type].startTime) {
+            const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
+            statusElement = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
+        } else if (workoutState === 'completed') {
+            // Find the most recent completed workout to get duration
             const completedWorkout = workoutData.history
                 .filter(h => h.type === type)
                 .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
             
             if (completedWorkout && completedWorkout.duration) {
-                descriptionText = formatWorkoutDuration(completedWorkout.duration);
+                const duration = formatWorkoutDuration(completedWorkout.duration);
+                statusElement = `<div class="workout-timer completed-timer"><i data-lucide="check" style="color: #46725e; width: 16px; height: 16px;"></i> ${duration}</div>`;
+            } else {
+                statusElement = `<span class="workout-status ${statusClass}">${status}</span>`;
             }
+        } else {
+            statusElement = `<span class="workout-status ${statusClass}">${status}</span>`;
         }
         
         workoutCard.innerHTML = `
             <div class="workout-card-header">
                 <h3 class="workout-title">${workout.title}</h3>
-                <span class="workout-status ${statusClass}">
-                    ${status}
-                </span>
+                ${statusElement}
             </div>
             <p class="workout-description">${descriptionText}</p>
-            ${timerHtml}
         `;
         
         // Add click event to card for all workout states
@@ -362,11 +382,16 @@ function renderWorkoutCards() {
         
         // Style completed workouts differently but keep them clickable
         if (workoutState === 'completed') {
-            workoutCard.style.opacity = '0.8';
+            workoutCard.style.background = '#e1f0b8';
         }
         
         workoutList.appendChild(workoutCard);
     });
+    
+    // Reinitialize Lucide icons for the newly added content
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // 2. Open workout screen
@@ -455,7 +480,7 @@ function openWorkout(type, fromScreen = 'home') {
             // Reset timer display for pending workouts
             const timerElement = document.getElementById('workoutTimer');
             if (timerElement) {
-                timerElement.textContent = '00:00.0';
+                timerElement.textContent = '00:00:00';
             }
             break;
         case 'ongoing':
@@ -889,14 +914,15 @@ function updateHomeScreenTimers() {
 
 // Get formatted elapsed time for any start time
 function getFormattedElapsedTime(startTime) {
-    if (!startTime) return '00:00.0';
+    if (!startTime) return '00:00:00';
     
     const elapsed = new Date() - new Date(startTime);
-    const minutes = Math.floor(elapsed / 60000);
-    const seconds = Math.floor((elapsed % 60000) / 1000);
-    const milliseconds = Math.floor((elapsed % 1000) / 100);
+    const totalSeconds = Math.floor(elapsed / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
     
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 // Format workout completion date/time
@@ -925,12 +951,13 @@ function formatWorkoutDateTime(date) {
 
 // Format workout duration in milliseconds to readable format
 function formatWorkoutDuration(durationMs) {
-    if (!durationMs || durationMs <= 0) return '0:00';
+    if (!durationMs || durationMs <= 0) return '00:00';
     
     const totalMinutes = Math.floor(durationMs / (1000 * 60));
-    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     
-    return `${totalMinutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 // Update exercise list in workout screen
@@ -975,7 +1002,7 @@ function updateExerciseList() {
         const hasWeight = exerciseData[exercise.name].sets.some(set => set.weight && set.weight > 0);
         const isInProgress = !isCompleted && hasWeight;
         
-        let className = 'exercise-item-simple';
+        let className = 'exercise-item';
         if (isCompleted) className += ' completed';
         else if (isInProgress) className += ' in-progress';
         
@@ -984,6 +1011,7 @@ function updateExerciseList() {
         const info = exerciseInfo[exercise.name];
         
         exerciseItem.innerHTML = `
+            ${isCompleted ? '<i class="exercise-check-icon" data-lucide="check" style="color: #46725e; width: 16px; height: 16px;"></i>' : ''}
             <div class="exercise-name">${exercise.name}</div>
             ${isInProgress ? '<div class="exercise-status-dot"></div>' : ''}
             <div class="exercise-arrow">›</div>
@@ -993,6 +1021,11 @@ function updateExerciseList() {
         exerciseItem.addEventListener('click', () => openExerciseSheet(exercise.name));
         
         exerciseList.appendChild(exerciseItem);
+        
+        // Reinitialize Lucide icons for the newly added exercise item
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
     
     // Add cooldown exercises
@@ -1029,7 +1062,7 @@ function renderSets(exerciseName) {
     return sets.map((set, index) => {
         // Use individual set's last weight if available, otherwise use fallback
         const placeholderWeight = set.lastWeight || fallbackWeight;
-        const placeholder = placeholderWeight ? placeholderWeight + 'kg' : 'Weight (kg)';
+        const placeholder = placeholderWeight ? placeholderWeight + 'kg' : 'KG';
         
         // Determine if controls should be disabled
         const disabled = isWorkoutStarted ? '' : 'disabled';
@@ -1150,6 +1183,13 @@ function goBackHome() {
     // Navigate back to the screen that opened the workout
     if (previousScreen === 'calendar') {
         openCalendar();
+        // Refresh the workout details for the current date if available
+        const selectedDay = document.querySelector('.calendar-day.selected');
+        if (selectedDay) {
+            const dayNumber = parseInt(selectedDay.textContent);
+            const selectedDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), dayNumber);
+            showWorkoutDetails(selectedDate);
+        }
     } else {
         showHomeScreen();
     }
@@ -1345,7 +1385,6 @@ function renderCalendar() {
         
         if (dayWorkout) {
             dayElement.classList.add('workout-day');
-            dayElement.style.backgroundColor = workoutColors[dayWorkout.type];
         }
         
         if (isToday) {
@@ -1382,8 +1421,8 @@ function showWorkoutDetails(date) {
     }
     
     // Filter exercises that have weights
-    const exercisesWithWeights = Object.entries(workout.exercises).filter(([exerciseName, sets]) => 
-        sets.length > 0 && sets.some(set => set.weight && parseFloat(set.weight) > 0)
+    const exercisesWithWeights = Object.entries(workout.exercises || {}).filter(([exerciseName, sets]) => 
+        sets && sets.length > 0 && sets.some(set => set.weight && parseFloat(set.weight) > 0)
     );
     
     if (exercisesWithWeights.length === 0) {
@@ -1543,23 +1582,60 @@ function confirmDeleteWorkout() {
     }
 }
 
-// Service Worker Update Detection
+// Service Worker Update Detection for iOS PWA
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(registration => {
+    let refreshing = false;
+    
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(registration => {
         console.log('SW registered:', registration);
         
-        // Check for updates
+        // Check for updates every time the app is opened
+        registration.update();
+        
+        // Listen for updates
         registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
+            console.log('New SW found, installing...');
+            
             newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content available, prompt user to refresh
-                    if (confirm('New version available! Refresh to update?')) {
-                        window.location.reload();
+                if (newWorker.state === 'installed') {
+                    if (navigator.serviceWorker.controller) {
+                        console.log('New SW installed, activating...');
+                        // Force the new service worker to take control
+                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                    } else {
+                        console.log('SW installed for the first time');
                     }
                 }
             });
         });
+        
+        // Listen for controlling service worker changes
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            console.log('SW controller changed, reloading...');
+            window.location.reload();
+        });
+        
+        // Check for updates on visibility change (iOS PWA switching)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && registration) {
+                console.log('App became visible, checking for updates...');
+                registration.update();
+            }
+        });
+        
+        // Check for updates on focus (when returning to the app)
+        window.addEventListener('focus', () => {
+            if (registration) {
+                console.log('App focused, checking for updates...');
+                registration.update();
+            }
+        });
+        
+    }).catch(error => {
+        console.error('SW registration failed:', error);
     });
 }
 

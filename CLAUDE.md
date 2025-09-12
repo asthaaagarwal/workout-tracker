@@ -342,8 +342,9 @@ The app follows iOS design principles with a clean, minimalist aesthetic and smo
 - **Stretch** 🤸: Perform gentle stretches to relax muscles and improve flexibility.
 
 ### Data Modification Notes
-
-- All exercise data is stored in JavaScript objects within the HTML file (workout-tracker.html:1278-1348)
 - To add new exercises: Update both `workoutExercises` and `exerciseInfo` objects
 - Exercise types: `'warmup'`, `'cooldown'`, or no type (main exercises)
 - Set counts are configurable per exercise and can be dynamically adjusted during workouts
+
+
+
