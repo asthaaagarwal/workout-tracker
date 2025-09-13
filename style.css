@@ -1,5 +1,9 @@
 /* iOS-style Workout Tracker Styles */
 
+:root {
+    --orange: #fa7427;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -13,6 +17,7 @@ body {
     min-height: 100vh;
     width: 100vw;
     overflow-x: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .container {
@@ -72,10 +77,10 @@ body {
 .btn-calendar {
     background: white;
     border: none;
-    width: 40px;
-    height: 40px;
+    padding: 16px 32px;
     border-radius: 12px;
-    font-size: 18px;
+    font-size: 17px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -98,6 +103,11 @@ body {
     color: #18222b;
 }
 
+.workout-card.ongoing {
+    background: #F75500;
+    color: white;
+}
+
 
 .workout-card.selected {
     border: 2px solid #007aff;
@@ -114,6 +124,10 @@ body {
     font-size: 20px;
     font-weight: 600;
     color: #18222b;
+}
+
+.workout-card.ongoing .workout-title {
+    color: white;
 }
 
 .workout-status {
@@ -144,6 +158,10 @@ body {
     color: #18222b;
 }
 
+.workout-card.ongoing .workout-description {
+    color: white;
+}
+
 .workout-timer {
     font-size: 14px;
     font-weight: 600;
@@ -154,6 +172,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    margin-bottom: 4px;
 }
 
 .workout-timer.completed-timer {
@@ -161,12 +180,12 @@ body {
 }
 
 .btn-start-workout {
-    background: #1c1c1e;
+    background: #282826;
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 16px 32px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -174,7 +193,7 @@ body {
 }
 
 .btn-start-workout:hover {
-    background: #2c2c2e;
+    background: #3c3c3a;
 }
 
 .btn-start-workout:disabled {
@@ -187,7 +206,6 @@ body {
 .daily-checkin-simple {
     background: white;
     border-radius: 16px;
-    padding: 20px;
     display: flex;
     justify-content: center;
     gap: 16px;
@@ -196,7 +214,7 @@ body {
 .mood-emoji {
     font-size: 32px;
     padding: 8px;
-    border-radius: 50%;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     background: transparent;
@@ -209,7 +227,7 @@ body {
 }
 
 .mood-emoji.selected {
-    background: #007aff;
+    background: #cdcbff;
     transform: scale(1.2);
 }
 
@@ -217,18 +235,19 @@ body {
 .checkin-popover {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    max-width: 400px;
     width: 100%;
     height: 100vh;
     background: #f3eee8;
     z-index: 2000;
     padding: 20px;
-    transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .checkin-popover:not(.hidden) {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 .checkin-header {
@@ -326,7 +345,7 @@ body {
     right: 20px;
     max-width: 350px;
     margin: 0 auto;
-    background: #007aff;
+    background: #153EFC;
     color: white;
     border: none;
     padding: 16px 32px;
@@ -338,8 +357,28 @@ body {
     z-index: 3000;
 }
 
+/* Mobile keyboard support */
+@supports (height: 100dvh) {
+    .btn-save-checkin {
+        bottom: calc(20px + env(keyboard-inset-height, env(safe-area-inset-bottom)));
+    }
+}
+
+/* Alternative approach for better mobile keyboard handling */
+@media screen and (max-height: 500px) {
+    .btn-save-checkin {
+        position: sticky;
+        bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .checkin-popover {
+        padding-bottom: 80px;
+    }
+}
+
 .btn-save-checkin:hover {
-    background: #0056cc;
+    background: #0f2ee0;
 }
 
 .daily-checkin-card.hidden {
@@ -453,19 +492,19 @@ body {
 }
 
 .checkin-save-btn {
-    background: #007aff;
+    background: #153EFC;
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .checkin-save-btn:hover {
-    background: #0056cc;
+    background: #0f2ee0;
 }
 
 .checkin-complete {
@@ -637,13 +676,15 @@ body {
 }
 
 .btn-view-exercise {
-    background: #007aff;
+    background: #153EFC;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .sets-container {
@@ -663,12 +704,12 @@ body {
 }
 
 .delete-btn {
-    background: #ff3b30;
+    background: #ffeaea;
     border: none;
     border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    color: white;
+    width: 40px;
+    height: 40px;
+    color: #ff3b30;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -679,7 +720,7 @@ body {
 }
 
 .delete-btn:hover {
-    background: #ff2d20;
+    background: #ffdddd;
 }
 
 .delete-btn:disabled {
@@ -695,7 +736,7 @@ body {
 
 .weight-input {
     width: 120px;
-    height: 32px;
+    height: 40px;
     border: 1px solid #dee2e6;
     border-radius: 6px;
     text-align: center;
@@ -720,13 +761,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0;
-    background: #fa7427;
+    background: #153EFC;
     border-radius: 8px;
     overflow: hidden;
 }
 
 .btn-reps {
-    background: #fa7427;
+    background: #153EFC;
     color: white;
     border: none;
     width: 40px;
@@ -763,21 +804,23 @@ body {
 
 
 .btn-add-set {
-    background: #34c759;
+    background: #153EFC;
     color: white;
     border: none;
     width: 100%;
-    height: 40px;
-    border-radius: 8px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-        transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-add-set:hover {
-    background: #30a355;
+    background: #0f2ee0;
 }
 
 .btn-add-set i {
@@ -786,19 +829,20 @@ body {
 }
 
 .btn-done-exercise {
-    background: #fa7427;
+    background: #282826;
     color: white;
     border: none;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 .btn-done-exercise:hover {
-    background: #e6681f;
+    background: #3c3c3a;
 }
 
 /* Exercise Section Cards */
@@ -1005,6 +1049,7 @@ body {
 
 .sheet-actions {
     padding: 20px;
+    padding-top: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1012,7 +1057,7 @@ body {
 
 /* Success Button */
 .btn-success {
-    background: #fa7427;
+    background: #282826;
     color: #fff;
     border: none;
     padding: 16px 32px;
@@ -1025,7 +1070,7 @@ body {
 }
 
 .btn-success:hover {
-    background: #e6681f;
+    background: #3c3c3a;
 }
 
 .btn-success:disabled {
@@ -1076,13 +1121,20 @@ body {
 .btn-nav {
     background: white;
     border: none;
-    width: 40px;
-    height: 40px;
+    padding: 16px 24px;
     border-radius: 12px;
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-nav i {
+    width: 24px;
+    height: 24px;
 }
 
 .btn-nav:hover {
@@ -1159,6 +1211,9 @@ body {
     background: white;
     border-radius: 16px;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .workout-details h3 {
@@ -1168,12 +1223,37 @@ body {
 
 .workout-details-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
     }
 
 .workout-details-info {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.workout-emoji {
+    font-size: 24px;
+}
+
+.workout-duration-badge {
+    background: #e8f5e8;
+    padding: 6px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #34c759;
+    font-weight: 600;
+}
+
+.workout-duration-badge i {
+    width: 16px;
+    height: 16px;
 }
 
 .workout-details-header h3 {
@@ -1183,11 +1263,12 @@ body {
 }
 
 .workout-details-open-btn {
-    background: #007aff;
+    background: #153EFC;
     border: none;
-    border-radius: 8px;
-    width: 32px;
-    height: 32px;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 17px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1195,11 +1276,11 @@ body {
     cursor: pointer;
     flex-shrink: 0;
     margin-left: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .workout-details-open-btn:hover {
-    background: #0056cc;
+    background: #0f2ee0;
     transform: scale(1.05);
 }
 
@@ -1263,35 +1344,37 @@ body {
 }
 
 .btn-save-note, .btn-edit-note, .btn-delete-note {
-    padding: 10px 20px;
+    padding: 16px 32px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     margin-right: 8px;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-save-note {
-    background: #007aff;
+    background: #153EFC;
     color: white;
 }
 
 .btn-save-note:hover {
-    background: #0056cc;
+    background: #0f2ee0;
 }
 
 .btn-edit-note {
-    background: #007aff;
+    background: #153EFC;
     color: white;
     border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 16px 32px;
+    font-size: 17px;
+    font-weight: 600;
     margin-top: 12px;
 }
 
 .btn-edit-note:hover {
-    background: #0056cc;
+    background: #0f2ee0;
 }
 
 .btn-delete-note {
@@ -1836,14 +1919,19 @@ body {
 .confirmation-buttons {
     display: flex;
     gap: 16px;
+    flex-direction: row-reverse;
+}
+
+.confirmation-content .confirmation-buttons {
+    margin-top: 16px;
 }
 
 .btn-confirm-yes {
     flex: 1;
-    background: #fa7427;
+    background: #282826;
     color: white;
     border: none;
-    padding: 16px 24px;
+    padding: 16px 32px;
     border-radius: 12px;
     font-size: 17px;
     font-weight: 600;
@@ -1852,7 +1940,7 @@ body {
 }
 
 .btn-confirm-yes:hover {
-    background: #e6681f;
+    background: #3c3c3a;
 }
 
 .btn-confirm-no {
@@ -1897,46 +1985,46 @@ body {
     transform: translateX(-50%);
     max-width: 390px;
     width: 100vw;
-    background: #fff;
-    border-top: 1px solid #e5e5ea;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
-    padding: 8px 16px calc(8px + env(safe-area-inset-bottom)) 16px;
+    padding: 12px 32px calc(12px + env(safe-area-inset-bottom)) 32px;
     z-index: 1000;
+    justify-content: space-around;
 }
 
 .app-bar-item {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 8px 16px;
+    justify-content: center;
+    padding: 12px 24px;
     border: none;
     background: none;
-    color: #c9b7b6;
-    font-size: 10px;
-    font-weight: 500;
+    color: #8e8e93;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    min-width: 60px;
 }
 
 .app-bar-item:hover {
-    color: #007aff;
+    color: var(--orange);
 }
 
 .app-bar-item.active {
-    color: #18222b;
-    background: #fcd5c1;
-    border-radius: 16px;
+    color: var(--orange);
+}
+
+.app-bar-item.active i {
+    color: var(--orange);
 }
 
 .app-bar-item i {
-    width: 24px;
-    height: 24px;
-}
-
-.app-bar-item span {
-    margin-top: 2px;
+    width: 28px;
+    height: 28px;
+    color: inherit;
 }
 
 /* Daily Check-in Collapsible */
@@ -1967,25 +2055,61 @@ body {
 
 /* Daily Completion Message */
 .daily-completion-message {
-    background: white;
+    background: #007aff;
     border-radius: 24px;
-    padding: 40px 24px;
+    padding: 32px 24px;
     text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.completion-icon {
-    font-size: 48px;
-    }
+.completion-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+}
+
+.completion-character {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.completion-emoji {
+    background: white;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
 .daily-completion-message h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #18222b;
-    }
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+}
 
 .daily-completion-message p {
     font-size: 16px;
-    color: #6c6c70;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.4;
+    margin: 0;
 }
 
+.completion-icon {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+}

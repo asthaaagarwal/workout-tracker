@@ -6,6 +6,7 @@ let workoutStartTime = null;
 let timerInterval = null;
 let exerciseData = {};
 let currentCalendarDate = new Date();
+let selectedCalendarDate = new Date(); // Track selected date for calendar check-ins
 let previousScreen = 'home'; // Track which screen opened the workout
 
 // App names to cycle through
@@ -84,30 +85,30 @@ const workoutExercises = {
 
 // Exercise information with descriptions and emojis
 const exerciseInfo = {
-    'Dead bug': { icon: '🐛', description: 'Lie on your back, arms up, knees bent at 90°. Lower opposite arm and leg slowly, return to start.' },
-    'Shoulder tap': { icon: '👋', description: 'Start in plank position. Tap opposite shoulder with hand while maintaining stable core.' },
-    'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.' },
-    'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.' },
-    'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.' },
-    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.' },
-    'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.' },
-    'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.' },
-    'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.' },
-    'Bicep curls': { icon: '💪', description: 'Curl weights from extended arms to shoulders, control the descent.' },
-    'Tricep curls': { icon: '💪', description: 'Extend arms overhead, lower weight behind head, press back to start.' },
-    'Back squats': { icon: '🏋️', description: 'Bar on upper back, squat down keeping chest up, drive through heels to stand.' },
-    'Deadlift': { icon: '🏋️', description: 'Lift bar from ground by extending hips and knees, keep bar close to body.' },
-    'Step ups': { icon: '🚆', description: 'Step onto platform with full foot, drive through heel, step down with control.' },
-    'Hip thrust': { icon: '🏋️', description: 'Shoulders on bench, drive hips up squeezing glutes, lower with control.' },
-    'Single leg extension': { icon: '🦵', description: 'Extend one leg at a time, control the movement, focus on quad engagement.' },
-    'Side lunge': { icon: '🤸', description: 'Step wide to one side, lower into lunge, push back to center.' },
-    'Single leg deadlift': { icon: '⚖️', description: 'Balance on one leg, hinge at hip lowering weight, return to standing.' },
-    'Plank': { icon: '🤸', description: 'Hold straight body position on forearms and toes, engage core throughout.' },
-    'Russian twists': { icon: '🌀', description: 'Sit with knees bent, lean back slightly, rotate torso side to side.' },
-    'Mountain climbers': { icon: '⛰️', description: 'Start in plank, alternate bringing knees to chest in running motion.' },
-    'Bicycle crunches': { icon: '🚲', description: 'Lie on back, alternate elbow to opposite knee in cycling motion.' },
-    'Leg raises': { icon: '🦵', description: 'Lie on back, raise straight legs to 90°, lower slowly without touching ground.' },
-    'Stretch': { icon: '🤸', description: 'Perform gentle stretches to relax muscles and improve flexibility.' }
+    'Dead bug': { icon: '🐛', description: 'Lie on your back, arms up, knees bent at 90°. Lower opposite arm and leg slowly, return to start.', video: null },
+    'Shoulder tap': { icon: '👋', description: 'Start in plank position. Tap opposite shoulder with hand while maintaining stable core.', video: null },
+    'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.', video: 'https://www.youtube.com/watch?v=KEFQyLkDYtI' },
+    'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.', video: null },
+    'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.', video: null },
+    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=tuwHzzPdaGc' },
+    'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.', video: 'https://www.youtube.com/watch?v=Mdp7kuhZD_M' },
+    'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.', video: 'https://www.youtube.com/watch?v=3_RR7ELmcAk' },
+    'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.', video: 'https://www.youtube.com/watch?v=FRxZ6wr5bpA' },
+    'Bicep curls': { icon: '💪', description: 'Curl weights from extended arms to shoulders, control the descent.', video: 'https://www.youtube.com/watch?v=tMEGqKuOa-M' },
+    'Tricep curls': { icon: '💪', description: 'Extend arms overhead, lower weight behind head, press back to start.', video: 'https://www.youtube.com/watch?v=VjmgzEmODnI' },
+    'Back squats': { icon: '🏋️', description: 'Bar on upper back, squat down keeping chest up, drive through heels to stand.', video: 'https://www.youtube.com/watch?v=R2dMsNhN3DE' },
+    'Deadlift': { icon: '🏋️', description: 'Lift bar from ground by extending hips and knees, keep bar close to body.', video: 'https://www.youtube.com/watch?v=wjsu6ceEkAQ' },
+    'Step ups': { icon: '🚆', description: 'Step onto platform with full foot, drive through heel, step down with control.', video: 'https://www.youtube.com/watch?v=elhu-WC1qk4' },
+    'Hip thrust': { icon: '🏋️', description: 'Shoulders on bench, drive hips up squeezing glutes, lower with control.', video: 'https://www.youtube.com/watch?v=aweBS7K71l8' },
+    'Single leg extension': { icon: '🦵', description: 'Extend one leg at a time, control the movement, focus on quad engagement.', video: 'https://www.youtube.com/watch?v=82IuSLk5zNc' },
+    'Side lunge': { icon: '🤸', description: 'Step wide to one side, lower into lunge, push back to center.', video: null },
+    'Single leg deadlift': { icon: '⚖️', description: 'Balance on one leg, hinge at hip lowering weight, return to standing.', video: null },
+    'Plank': { icon: '🤸', description: 'Hold straight body position on forearms and toes, engage core throughout.', video: null },
+    'Russian twists': { icon: '🌀', description: 'Sit with knees bent, lean back slightly, rotate torso side to side.', video: null },
+    'Mountain climbers': { icon: '⛰️', description: 'Start in plank, alternate bringing knees to chest in running motion.', video: null },
+    'Bicycle crunches': { icon: '🚲', description: 'Lie on back, alternate elbow to opposite knee in cycling motion.', video: null },
+    'Leg raises': { icon: '🦵', description: 'Lie on back, raise straight legs to 90°, lower slowly without touching ground.', video: null },
+    'Stretch': { icon: '🤸', description: 'Perform gentle stretches to relax muscles and improve flexibility.', video: null }
 };
 
 // Helper function to get local date key (timezone-neutral)
@@ -301,48 +302,78 @@ function updateDisplay() {
 
 // Global variable to track selected mood for home checkin
 let selectedMood = null;
+let currentCheckinScreen = 'home'; // Track which screen opened the check-in
 
 // Render daily checkin emojis on home page
 function renderDailyCheckin() {
+    renderHomeCheckin();
+    renderCalendarCheckin();
+}
+
+function renderHomeCheckin() {
     const dailyCheckinDiv = document.getElementById('dailyCheckin');
+    if (!dailyCheckinDiv) return;
+    
     const today = new Date();
     const dateKey = getLocalDateKey(today);
     const todayEntry = workoutData.dailyEntries[dateKey];
 
-    // Check if already completed today
-    if (todayEntry && todayEntry.mood) {
-        // Show completed state with selected emoji
-        const moodEmoji = getMoodEmoji(todayEntry.mood);
-        dailyCheckinDiv.innerHTML = `
-            <button class="mood-emoji selected" data-mood="${todayEntry.mood}" onclick="openCheckinPopover('${todayEntry.mood}')">${moodEmoji}</button>
-        `;
-        dailyCheckinDiv.classList.remove('hidden');
-        return;
-    }
-
-    // Show mood emoji options
-    const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
-    const moodEmojis = {
-        'amazing': '🔥',
-        'good': '😊', 
-        'okay': '😐',
-        'tough': '😮‍💨',
-        'terrible': '😞'
-    };
-
-    const moodButtons = moods.map(mood => 
-        `<button class="mood-emoji" data-mood="${mood}" onclick="openCheckinPopover('${mood}')">${moodEmojis[mood]}</button>`
-    ).join('');
-
-    dailyCheckinDiv.innerHTML = moodButtons;
+    let checkinHTML = generateCheckinHTML(todayEntry, 'home');
+    
+    dailyCheckinDiv.innerHTML = checkinHTML;
     dailyCheckinDiv.classList.remove('hidden');
+}
+
+function renderCalendarCheckin() {
+    const calendarDailyCheckinDiv = document.getElementById('calendarDailyCheckin');
+    if (!calendarDailyCheckinDiv) return;
+    
+    const dateKey = getLocalDateKey(selectedCalendarDate);
+    const selectedEntry = workoutData.dailyEntries[dateKey];
+
+    let checkinHTML = generateCheckinHTML(selectedEntry, 'calendar');
+    
+    calendarDailyCheckinDiv.innerHTML = checkinHTML;
+    calendarDailyCheckinDiv.classList.remove('hidden');
+}
+
+function generateCheckinHTML(entry, screen) {
+    if (entry && entry.mood) {
+        // Show completed state with selected emoji, note, and action buttons
+        const moodEmoji = getMoodEmoji(entry.mood);
+        const noteText = entry.note ? entry.note : '';
+        const dateKey = getLocalDateKey(screen === 'calendar' ? selectedCalendarDate : new Date());
+        
+        return `
+            <div style="background: white; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="mood-emoji" style="background: transparent; transform: none; cursor: pointer;" data-mood="${entry.mood}" onclick="openCheckinPopover('${entry.mood}', '${screen}')">${moodEmoji}</button>
+                    ${noteText ? `<p style="margin: 0; font-size: 14px; color: #1c1c1e; flex: 1;">${noteText}</p>` : ''}
+                </div>
+            </div>
+        `;
+    } else {
+        // Show mood emoji options
+        const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
+        const moodEmojis = {
+            'amazing': '🔥',
+            'good': '😊',
+            'okay': '😐',
+            'tough': '😮‍💨',
+            'terrible': '😞'
+        };
+
+        return moods.map(mood => 
+            `<button class="mood-emoji" data-mood="${mood}" onclick="openCheckinPopover('${mood}', '${screen}')">${moodEmojis[mood]}</button>`
+        ).join('');
+    }
 }
 
 // Helper function to get mood emoji
 function getMoodEmoji(mood) {
     const moodEmojis = {
         'amazing': '🔥',
-        'good': '😊', 
+        'good': '😊',
         'okay': '😐',
         'tough': '😮‍💨',
         'terrible': '😞'
@@ -351,8 +382,9 @@ function getMoodEmoji(mood) {
 }
 
 // Open checkin popover
-function openCheckinPopover(initialMood = null) {
+function openCheckinPopover(initialMood = null, screen = 'home') {
     selectedMood = initialMood;
+    currentCheckinScreen = screen;
     
     const popover = document.getElementById('checkinPopover');
     const homeScreen = document.getElementById('homeScreen');
@@ -372,14 +404,23 @@ function openCheckinPopover(initialMood = null) {
     
     // Focus textarea and load existing note if any
     const textarea = document.getElementById('checkinTextarea');
-    const today = new Date();
-    const dateKey = getLocalDateKey(today);
-    const todayEntry = workoutData.dailyEntries[dateKey];
+    const deleteBtn = document.getElementById('deleteCheckinBtn');
+    const targetDate = screen === 'calendar' ? selectedCalendarDate : new Date();
+    const dateKey = getLocalDateKey(targetDate);
+    const existingEntry = workoutData.dailyEntries[dateKey];
     
-    if (todayEntry && todayEntry.note) {
-        textarea.value = todayEntry.note;
+    if (existingEntry && existingEntry.note) {
+        textarea.value = existingEntry.note;
     } else {
         textarea.value = '';
+    }
+    
+    // Show delete button only if editing existing entry
+    if (existingEntry && existingEntry.mood) {
+        deleteBtn.classList.remove('hidden');
+        deleteBtn.onclick = () => deleteCheckinFromPopover(dateKey);
+    } else {
+        deleteBtn.classList.add('hidden');
     }
     
     // Focus textarea after a short delay to ensure it's rendered
@@ -392,7 +433,13 @@ function openCheckinPopover(initialMood = null) {
 function closeCheckinPopover() {
     const popover = document.getElementById('checkinPopover');
     popover.classList.add('hidden');
-    showHomeScreen();
+    
+    // Return to the screen that opened the check-in popover
+    if (currentCheckinScreen === 'calendar') {
+        openCalendar();
+    } else {
+        showHomeScreen();
+    }
 }
 
 // Render mood options in popover
@@ -432,8 +479,8 @@ function saveCheckinFromPopover() {
     const textarea = document.getElementById('checkinTextarea');
     const note = textarea.value.trim();
     
-    const today = new Date();
-    const dateKey = getLocalDateKey(today);
+    const targetDate = currentCheckinScreen === 'calendar' ? selectedCalendarDate : new Date();
+    const dateKey = getLocalDateKey(targetDate);
     
     // Initialize dailyEntries if it doesn't exist
     if (!workoutData.dailyEntries) {
@@ -444,12 +491,54 @@ function saveCheckinFromPopover() {
     workoutData.dailyEntries[dateKey] = {
         mood: selectedMood,
         note: note,
-        date: today.toISOString()
+        date: targetDate.toISOString()
     };
     
     saveWorkoutData();
     closeCheckinPopover();
-    updateDisplay(); // Refresh the home screen
+    
+    // Refresh appropriate screen
+    if (currentCheckinScreen === 'calendar') {
+        renderCalendarCheckin();
+        updateCalendarDisplay(); // Refresh calendar to show dot indicators
+    } else {
+        updateDisplay(); // Refresh the home screen
+    }
+}
+
+// Delete checkin entry
+function deleteCheckinEntry(dateKey) {
+    if (confirm('Are you sure you want to delete this check-in?')) {
+        if (workoutData.dailyEntries && workoutData.dailyEntries[dateKey]) {
+            delete workoutData.dailyEntries[dateKey];
+            saveWorkoutData();
+            
+            // Determine which screen is currently visible and refresh accordingly
+            const calendarScreen = document.getElementById('calendarScreen');
+            const homeScreen = document.getElementById('homeScreen');
+            
+            if (!calendarScreen.classList.contains('hidden')) {
+                renderCalendarCheckin();
+                updateCalendarDisplay(); // Refresh calendar to remove dot indicators
+            } else if (!homeScreen.classList.contains('hidden')) {
+                renderHomeCheckin();
+                updateDisplay(); // Refresh the home screen
+            }
+        }
+    }
+}
+
+// Delete checkin entry from popover
+function deleteCheckinFromPopover(dateKey) {
+    if (confirm('Are you sure you want to delete this check-in?')) {
+        if (workoutData.dailyEntries && workoutData.dailyEntries[dateKey]) {
+            delete workoutData.dailyEntries[dateKey];
+            saveWorkoutData();
+            
+            // Close popover and refresh appropriate screen
+            closeCheckinPopover();
+        }
+    }
 }
 
 // Select soreness for home checkin
@@ -564,8 +653,10 @@ function renderWorkoutCards() {
         }
 
         const workoutCard = document.createElement('div');
-        workoutCard.className = 'workout-card';
-        workoutCard.style.background = workoutColors[type];
+        workoutCard.className = `workout-card ${workoutState === 'ongoing' ? 'ongoing' : ''}`;
+        if (workoutState !== 'ongoing') {
+            workoutCard.style.background = workoutColors[type];
+        }
 
         // Add timer display for ongoing workouts
         let timerHtml = '';
@@ -577,18 +668,19 @@ function renderWorkoutCards() {
         // Determine description text based on workout state
         let descriptionText = workout.description;
 
-        // For ongoing workouts, replace status badge with timer
-        let statusElement;
+        // For ongoing workouts, show timer above title
+        let timerElement = '';
+        let statusElement = '';
+        
         if (workoutState === 'ongoing' && workoutData.pendingWorkouts[type] && workoutData.pendingWorkouts[type].startTime) {
             const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
-            statusElement = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
+            timerElement = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
         } else if (status) {
             statusElement = `<span class="workout-status ${statusClass}">${status}</span>`;
-        } else {
-            statusElement = '';
         }
 
         workoutCard.innerHTML = `
+            ${timerElement}
             <div class="workout-card-header">
                 <h3 class="workout-title">${workout.title}</h3>
                 ${statusElement}
@@ -616,12 +708,20 @@ function renderWorkoutCards() {
 
         const feedbackText = todayWorkout && todayWorkout.feedback ? ` and you felt it was ${todayWorkout.feedback}` : '';
 
+        // Use the emoji selected by the user, or default to 😐
+        const selectedEmoji = todayWorkout && todayWorkout.emoji ? todayWorkout.emoji : '😐';
+
         const messageDiv = document.createElement('div');
         messageDiv.className = 'daily-completion-message';
         messageDiv.innerHTML = `
-            <div class="completion-icon">✅</div>
-            <h3>Great job today!</h3>
-            <p>You've completed your workout for today${feedbackText}.</p>
+            <div class="completion-icon">
+                <img src="images/good-job.png" />
+                <div class="completion-emoji">${selectedEmoji}</div>
+            </div>
+            <div class="completion-content">
+                <h3>Great job today!</h3>
+                <p>You've completed your workout for today${feedbackText}.</p>
+            </div>
         `;
         workoutList.insertBefore(messageDiv, workoutList.firstChild);
     }
@@ -1052,6 +1152,7 @@ function openCalendar() {
 
     currentCalendarDate = new Date();
     updateCalendarDisplay();
+    renderDailyCheckin(); // Render daily check-in on calendar screen
     updateAppBarState('calendar');
 }
 
@@ -1570,6 +1671,17 @@ function recordWorkoutFeedback(feeling) {
     if (workoutData.history.length > 0) {
         const lastWorkout = workoutData.history[workoutData.history.length - 1];
         lastWorkout.feedback = feeling;
+
+        // Store the emoji based on the feeling
+        const emojiMap = {
+            'amazing': '🔥',
+            'good': '😊',
+            'okay': '😐',
+            'tough': '😮‍💨',
+            'terrible': '😞'
+        };
+        lastWorkout.emoji = emojiMap[feeling];
+
         saveWorkoutData();
     }
 
@@ -1708,6 +1820,13 @@ function renderCalendar() {
             
             // Add selection to clicked day
             dayElement.classList.add('selected');
+            
+            // Update selected calendar date for check-ins
+            selectedCalendarDate = new Date(dayDate);
+            
+            // Refresh calendar check-in display for selected date
+            renderCalendarCheckin();
+            
             showWorkoutDetails(dayDate);
         });
         calendar.appendChild(dayElement);
@@ -1833,7 +1952,9 @@ function getFeedbackDisplay(feedback) {
     const feedbackMap = {
         'amazing': { emoji: '🔥', label: 'Amazing' },
         'good': { emoji: '😊', label: 'Good' },
-        'tough': { emoji: '😮‍💨', label: 'Tough' }
+        'okay': { emoji: '😐', label: 'Okay' },
+        'tough': { emoji: '😮‍💨', label: 'Tough' },
+        'terrible': { emoji: '😞', label: 'Terrible' }
     };
 
     const feedbackInfo = feedbackMap[feedback];
@@ -1869,59 +1990,14 @@ function showWorkoutDetails(date) {
     const dailyEntry = workoutData.dailyEntries[dateKey];
 
     if (!workout && !dailyEntry) {
-        // Show option to add daily note for non-workout days with same styling as home check-in
-        workoutDetailsDiv.innerHTML = `
-            <div class="checkin-header">
-                <h3 class="checkin-title">Daily Check-in</h3>
-                <div class="checkin-date">${formatDateForDisplay(date)}</div>
-            </div>
-
-            <div class="checkin-soreness">
-                <div class="checkin-soreness-title">How sore are you?</div>
-                <div class="checkin-soreness-options">
-                    <button class="checkin-soreness-option" data-soreness="none" onclick="selectSoreness('none')">
-                        <span class="checkin-soreness-emoji">😌</span>
-                        <span class="checkin-soreness-label">None</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="mild" onclick="selectSoreness('mild')">
-                        <span class="checkin-soreness-emoji">😐</span>
-                        <span class="checkin-soreness-label">Mild</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="sore" onclick="selectSoreness('sore')">
-                        <span class="checkin-soreness-emoji">😣</span>
-                        <span class="checkin-soreness-label">Sore</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="very-sore" onclick="selectSoreness('very-sore')">
-                        <span class="checkin-soreness-emoji">🤕</span>
-                        <span class="checkin-soreness-label">Very sore</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="checkin-note">
-                <div class="checkin-note-title">How are you feeling today?</div>
-                <textarea class="checkin-note-input" id="dailyNoteInput" placeholder="Any thoughts for today?" maxlength="300"></textarea>
-            </div>
-
-            <button class="checkin-save-btn" onclick="saveDailyNote('${dateKey}')">Save Check-in</button>
-        `;
-        workoutDetailsDiv.classList.remove('hidden');
+        // Hide workout details if no workout or daily entry
+        workoutDetailsDiv.classList.add('hidden');
         return;
     }
 
     if (!workout) {
-        // Show existing daily entry with same styling as home check-in
-        const sorenessDisplay = dailyEntry.soreness ? getSorenessDisplay(dailyEntry.soreness) : '';
-        workoutDetailsDiv.innerHTML = `
-            <div class="checkin-header">
-                <h3 class="checkin-title">Daily Check-in</h3>
-                <div class="checkin-date">${formatDateForDisplay(date)}</div>
-            </div>
-            ${sorenessDisplay ? `<div style="margin-top: 8px;">${sorenessDisplay}</div>` : ''}
-            ${dailyEntry.note ? `<div class="daily-note-display" style="margin-top: 8px; font-size: 14px;">${dailyEntry.note}</div>` : ''}
-            <button class="btn-edit-note" onclick="editDailyNote('${dateKey}', \`${(dailyEntry.note || '').replace(/`/g, '\\`')}\`, '${dailyEntry.soreness || ''}')">Edit Entry</button>
-        `;
-        workoutDetailsDiv.classList.remove('hidden');
+        // Hide workout details if no workout data (daily entry is now handled by calendar check-in)
+        workoutDetailsDiv.classList.add('hidden');
         return;
     }
     
@@ -1933,16 +2009,18 @@ function showWorkoutDetails(date) {
     if (exercisesWithWeights.length === 0) {
         // If no exercises with weights, still show the workout but with a message
         const feedbackDisplay = workout.feedback ? getFeedbackDisplay(workout.feedback) : '';
+        const feedbackEmoji = workout.feedback ? feedbackMap[workout.feedback]?.emoji || '' : '';
+        const workoutDuration = workout.duration ? formatWorkoutDuration(workout.duration) : '';
         workoutDetailsDiv.innerHTML = `
-            <div class="workout-details-header">
-                <div class="workout-details-info">
-                    <h3>${workoutExercises[workout.type].title}</h3>
-                    <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
-                    ${feedbackDisplay}
+            <div class="workout-details-header" onclick="openWorkoutFromCalendar('${workout.type}')" style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                ${feedbackEmoji ? `<span style="font-size: 24px;">${feedbackEmoji}</span>` : ''}
+                <div class="workout-details-info" style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3>${workoutExercises[workout.type].title}</h3>
+                        <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+                    </div>
+                    ${workoutDuration ? `<div style="background: #e8f5e8; padding: 6px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; font-size: 14px; color: #34c759; font-weight: 600;"><i data-lucide="clock" style="width: 16px; height: 16px;"></i>${workoutDuration}</div>` : ''}
                 </div>
-                <button class="workout-details-open-btn" onclick="openWorkoutFromCalendar('${workout.type}')">
-                    <i data-lucide="arrow-right"></i>
-                </button>
             </div>
             <p class="no-weights-message">No weight data recorded for this workout.</p>
         `;
@@ -1956,16 +2034,25 @@ function showWorkoutDetails(date) {
     }
     
     const feedbackDisplay = workout.feedback ? getFeedbackDisplay(workout.feedback) : '';
+    const feedbackMap = {
+        'amazing': { emoji: '🔥', label: 'Amazing' },
+        'good': { emoji: '😊', label: 'Good' },
+        'okay': { emoji: '😐', label: 'Okay' },
+        'tough': { emoji: '😮‍💨', label: 'Tough' },
+        'terrible': { emoji: '😞', label: 'Terrible' }
+    };
+    const feedbackEmoji = workout.feedback ? feedbackMap[workout.feedback]?.emoji || '' : '';
+    const workoutDuration = workout.duration ? formatWorkoutDuration(workout.duration) : '';
     let detailsHtml = `
-        <div class="workout-details-header">
+        <div class="workout-details-header" onclick="openWorkoutFromCalendar('${workout.type}')">
+            ${feedbackEmoji ? `<span class="workout-emoji">${feedbackEmoji}</span>` : ''}
             <div class="workout-details-info">
-                <h3>${workoutExercises[workout.type].title}</h3>
-                <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
-                ${feedbackDisplay}
+                <div>
+                    <h3>${workoutExercises[workout.type].title}</h3>
+                    <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+                </div>
+                ${workoutDuration ? `<div class="workout-duration-badge"><i data-lucide="clock"></i>${workoutDuration}</div>` : ''}
             </div>
-            <button class="workout-details-open-btn" onclick="openWorkoutFromCalendar('${workout.type}')">
-                <i data-lucide="arrow-right"></i>
-            </button>
         </div>
         <div class="workout-details-exercises">
     `;

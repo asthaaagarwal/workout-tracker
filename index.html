@@ -88,13 +88,18 @@
         <div id="calendarScreen" class="screen hidden">
 
             <div class="calendar-navigation">
-                <button id="prevMonthBtn" class="btn-nav">‹</button>
+                <button id="prevMonthBtn" class="btn-nav"><i data-lucide="chevron-left"></i></button>
                 <span id="currentMonth">January 2024</span>
-                <button id="nextMonthBtn" class="btn-nav">›</button>
+                <button id="nextMonthBtn" class="btn-nav"><i data-lucide="chevron-right"></i></button>
             </div>
 
             <div id="calendar" class="calendar-grid">
                 <!-- Calendar will be dynamically generated -->
+            </div>
+
+            <!-- Daily Check-in for Calendar -->
+            <div id="calendarDailyCheckin" class="daily-checkin-simple">
+                <!-- Daily check-in emojis will be dynamically generated -->
             </div>
 
             <div id="workoutDetails" class="workout-details hidden">
@@ -125,7 +130,6 @@
         <div id="confirmationDialog" class="bottom-sheet hidden">
             <div class="bottom-sheet-content">
                 <div class="confirmation-content">
-                    <h3>Complete Workout</h3>
                     <p>Are you sure you are done with the workout?</p>
                     <div class="confirmation-buttons">
                         <button id="confirmYesBtn" class="btn-confirm-yes">Yes</button>
@@ -172,6 +176,7 @@
             </div>
             
             <button id="saveCheckinBtn" class="btn-save-checkin">Save Check-in</button>
+            <button id="deleteCheckinBtn" class="btn-destructive hidden" style="margin-top: 16px;">Delete Check-in</button>
         </div>
 
         <!-- Celebration Overlay -->
@@ -212,9 +217,17 @@
                             <span class="feedback-emoji">😊</span>
                             <span class="feedback-label">Good</span>
                         </button>
+                        <button class="feedback-option" data-feeling="okay" onclick="recordWorkoutFeedback('okay')">
+                            <span class="feedback-emoji">😐</span>
+                            <span class="feedback-label">Okay</span>
+                        </button>
                         <button class="feedback-option" data-feeling="tough" onclick="recordWorkoutFeedback('tough')">
                             <span class="feedback-emoji">😮‍💨</span>
                             <span class="feedback-label">Tough</span>
+                        </button>
+                        <button class="feedback-option" data-feeling="terrible" onclick="recordWorkoutFeedback('terrible')">
+                            <span class="feedback-emoji">😞</span>
+                            <span class="feedback-label">Terrible</span>
                         </button>
                     </div>
 
