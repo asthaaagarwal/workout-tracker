@@ -32,14 +32,14 @@
 <body>
     <div class="container">
         <!-- Home Screen -->
-        <div id="homeScreen" class="screen">
+        <div id="homeScreen" class="screen home-screen">
             <header class="header">
                 <h1>Squat Squad</h1>
             </header>
 
             <!-- Daily Check-in -->
-            <div id="dailyCheckin" class="daily-checkin-card">
-                <!-- Daily check-in will be dynamically generated -->
+            <div id="dailyCheckin" class="daily-checkin-simple">
+                <!-- Daily check-in emojis will be dynamically generated -->
             </div>
 
             <!-- Workout Cards -->
@@ -147,6 +147,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Daily Check-in Popover -->
+        <div id="checkinPopover" class="checkin-popover screen hidden">
+            <header class="checkin-header">
+                <button id="closeCheckinBtn" class="btn-cancel"><i data-lucide="x"></i></button>
+                <h2>Daily Check-in</h2>
+                <div class="header-spacer"></div>
+            </header>
+            
+            <div class="checkin-mood-selector">
+                <div class="mood-options" id="moodOptions">
+                    <!-- Mood options will be generated -->
+                </div>
+            </div>
+            
+            <div class="checkin-note-section">
+                <textarea 
+                    id="checkinTextarea" 
+                    placeholder="How are you feeling today?"
+                    class="checkin-textarea"
+                ></textarea>
+            </div>
+            
+            <button id="saveCheckinBtn" class="btn-save-checkin">Save Check-in</button>
         </div>
 
         <!-- Celebration Overlay -->

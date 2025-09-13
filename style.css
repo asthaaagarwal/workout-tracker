@@ -21,15 +21,34 @@ body {
     margin: 0 auto;
     padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 /* Screen Management */
 .screen {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .screen.hidden {
     display: none;
+}
+
+.home-screen {
+    gap: 16px;
+}
+
+/* Workout Screen Slide Animations */
+.workout-screen {
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workout-screen.slide-in {
+    transform: translateX(0);
 }
 
 /* General Hidden Class */
@@ -42,7 +61,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-bottom: 24px;
 }
 
 .header h1 {
@@ -68,7 +86,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 16px;
 }
 
 .workout-card {
@@ -91,7 +108,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
 }
 
 .workout-title {
@@ -126,8 +142,6 @@ body {
 .workout-description {
     font-size: 14px;
     color: #18222b;
-    margin-bottom: 16px;
-    opacity: 0.7;
 }
 
 .workout-timer {
@@ -169,13 +183,163 @@ body {
     cursor: not-allowed;
 }
 
-/* Daily Check-in Card */
-.daily-checkin-card {
+/* Daily Check-in Simple */
+.daily-checkin-simple {
     background: white;
     border-radius: 16px;
     padding: 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.mood-emoji {
+    font-size: 32px;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+}
+
+.mood-emoji:hover {
+    transform: scale(1.1);
+    background: rgba(0, 122, 255, 0.1);
+}
+
+.mood-emoji.selected {
+    background: #007aff;
+    transform: scale(1.2);
+}
+
+/* Daily Check-in Popover */
+.checkin-popover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #f3eee8;
+    z-index: 2000;
+    padding: 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.checkin-popover:not(.hidden) {
+    transform: translateY(0);
+}
+
+.checkin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.checkin-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+}
+
+.checkin-mood-selector {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.mood-options {
+    display: flex;
+    justify-content: space-around;
+    gap: 16px;
+}
+
+.mood-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    background: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.mood-option:hover {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: rgba(0, 122, 255, 0.3);
+}
+
+.mood-option.selected {
+    background: #007aff;
+    border-color: #007aff;
+    color: white;
+}
+
+.mood-option.selected .mood-label {
+    color: white;
+}
+
+.mood-emoji-large {
+    font-size: 32px;
+}
+
+.mood-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
+}
+
+.checkin-note-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.checkin-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    resize: vertical;
+    background: white;
+}
+
+.checkin-textarea:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.btn-save-checkin {
+    position: fixed;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 20px;
+    right: 20px;
+    max-width: 350px;
+    margin: 0 auto;
+    background: #007aff;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3000;
+}
+
+.btn-save-checkin:hover {
+    background: #0056cc;
 }
 
 .daily-checkin-card.hidden {
@@ -186,7 +350,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
 }
 
 .checkin-title {
@@ -202,14 +365,15 @@ body {
 }
 
 .checkin-soreness {
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .checkin-soreness-title {
     font-size: 14px;
     font-weight: 600;
     color: #1c1c1e;
-    margin-bottom: 8px;
 }
 
 .checkin-soreness-options {
@@ -261,14 +425,15 @@ body {
 }
 
 .checkin-note {
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .checkin-note-title {
     font-size: 14px;
     font-weight: 600;
     color: #1c1c1e;
-    margin-bottom: 8px;
 }
 
 .checkin-note-input {
@@ -336,8 +501,7 @@ body {
     display: block;
     font-size: 32px;
     font-weight: 700;
-    margin-bottom: 4px;
-}
+    }
 
 .stat-label {
     font-size: 12px;
@@ -359,9 +523,8 @@ body {
 .calendar-card-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
+    gap: 16px;
+    }
 
 .calendar-icon {
     font-size: 24px;
@@ -385,8 +548,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-}
+    }
 
 .workout-header h2 {
     font-size: 24px;
@@ -418,8 +580,7 @@ body {
 
 .timer {
     text-align: center;
-    margin-bottom: 24px;
-}
+    }
 
 #workoutTimer {
     font-size: 48px;
@@ -467,8 +628,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-}
+    }
 
 .exercise-name {
     font-size: 18px;
@@ -489,15 +649,14 @@ body {
 .sets-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 16px;
-    padding-bottom: 0px;
+    gap: 16px;
+        padding-bottom: 0px;
 }
 
 .set-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     padding: 12px;
     background: #f8f9fa;
     border-radius: 12px;
@@ -614,8 +773,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    margin-bottom: 8px;
-    transition: background-color 0.2s ease;
+        transition: background-color 0.2s ease;
 }
 
 .btn-add-set:hover {
@@ -654,8 +812,7 @@ body {
 .section-title {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 12px;
-    color: #1c1c1e;
+        color: #1c1c1e;
 }
 
 .section-title-standalone {
@@ -687,7 +844,7 @@ body {
 .section-container-exercises {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
 }
 
 .section-container .exercise-item-simple {
@@ -697,7 +854,7 @@ body {
 .section-exercises {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 16px;
 }
 
 .exercise-chip {
@@ -850,7 +1007,7 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 /* Success Button */
@@ -889,8 +1046,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     width: 100%;
-    margin-bottom: 24px;
-    transition: all 0.3s ease;
+        transition: all 0.3s ease;
 }
 
 .btn-destructive:hover {
@@ -902,8 +1058,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-}
+    }
 
 .calendar-header h2 {
     font-size: 24px;
@@ -916,8 +1071,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-}
+    }
 
 .btn-nav {
     background: white;
@@ -947,8 +1101,7 @@ body {
     background: white;
     border-radius: 16px;
     padding: 16px;
-    margin-bottom: 24px;
-}
+    }
 
 .calendar-day {
     aspect-ratio: 1;
@@ -1011,15 +1164,13 @@ body {
 .workout-details h3 {
     font-size: 20px;
     font-weight: 600;
-    margin-bottom: 16px;
-}
+    }
 
 .workout-details-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
-}
+    }
 
 .workout-details-info {
     flex: 1;
@@ -1083,8 +1234,7 @@ body {
 .daily-note-container h4 {
     font-size: 18px;
     font-weight: 600;
-    margin-bottom: 12px;
-    color: #1c1c1e;
+        color: #1c1c1e;
 }
 
 .daily-note-input {
@@ -1096,8 +1246,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 16px;
     resize: vertical;
-    margin-bottom: 12px;
-}
+    }
 
 .daily-note-input:focus {
     outline: none;
@@ -1110,8 +1259,7 @@ body {
     padding: 12px;
     font-size: 16px;
     line-height: 1.4;
-    margin-bottom: 12px;
-    white-space: pre-wrap;
+        white-space: pre-wrap;
 }
 
 .btn-save-note, .btn-edit-note, .btn-delete-note {
@@ -1157,7 +1305,7 @@ body {
 
 .note-buttons {
     display: flex;
-    gap: 8px;
+    gap: 16px;
 }
 
 .soreness-question, .note-question {
@@ -1169,10 +1317,9 @@ body {
 
 .soreness-options {
     display: flex;
-    gap: 8px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
-}
+    }
 
 .soreness-option {
     background: #f8f9fa;
@@ -1219,7 +1366,7 @@ body {
 .workout-details-exercises {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
 }
 
 .no-weights-message {
@@ -1231,16 +1378,14 @@ body {
 }
 
 .exercise-detail {
-    margin-bottom: 12px;
-    padding: 12px;
+        padding: 12px;
     background: #f8f9fa;
     border-radius: 12px;
 }
 
 .exercise-detail-name {
     font-weight: 600;
-    margin-bottom: 4px;
-}
+    }
 
 .exercise-detail-sets {
     font-size: 14px;
@@ -1284,8 +1429,7 @@ body {
 #modalExerciseTitle {
     font-size: 20px;
     font-weight: 600;
-    margin-bottom: 16px;
-}
+    }
 
 .exercise-image {
     width: 100%;
@@ -1296,8 +1440,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 48px;
-    margin-bottom: 16px;
-}
+    }
 
 #modalExerciseDescription {
     font-size: 14px;
@@ -1380,14 +1523,13 @@ body {
     font-size: 18px;
     font-weight: 600;
     text-align: center;
-    margin-bottom: 16px;
-    opacity: 0.9;
+        opacity: 0.9;
 }
 
 .feedback-options {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
 }
 
@@ -1682,20 +1824,18 @@ body {
 .confirmation-content h3 {
     font-size: 20px;
     font-weight: 600;
-    margin-bottom: 12px;
-    color: #1c1c1e;
+        color: #1c1c1e;
 }
 
 .confirmation-content p {
     font-size: 16px;
     color: #6c6c70;
-    margin-bottom: 24px;
-    line-height: 1.4;
+        line-height: 1.4;
 }
 
 .confirmation-buttons {
     display: flex;
-    gap: 12px;
+    gap: 16px;
 }
 
 .btn-confirm-yes {
@@ -1831,21 +1971,17 @@ body {
     border-radius: 24px;
     padding: 40px 24px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    margin: 20px 0;
 }
 
 .completion-icon {
     font-size: 48px;
-    margin-bottom: 16px;
-}
+    }
 
 .daily-completion-message h3 {
     font-size: 20px;
     font-weight: 600;
     color: #18222b;
-    margin-bottom: 8px;
-}
+    }
 
 .daily-completion-message p {
     font-size: 16px;

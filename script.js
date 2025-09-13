@@ -250,6 +250,10 @@ function setupEventListeners() {
     document.getElementById('startWorkoutBtn').addEventListener('click', startWorkout);
     document.getElementById('completeWorkoutBtn').addEventListener('click', completeWorkout);
     
+    // Daily Check-in Popover
+    document.getElementById('closeCheckinBtn').addEventListener('click', closeCheckinPopover);
+    document.getElementById('saveCheckinBtn').addEventListener('click', saveCheckinFromPopover);
+    
     // Bottom App Bar
     document.getElementById('homeAppBarBtn').addEventListener('click', () => {
         showHomeScreen();
@@ -295,10 +299,10 @@ function updateDisplay() {
     updateStats();
 }
 
-// Global variable to track selected soreness for home checkin
-let homeCheckinSoreness = null;
+// Global variable to track selected mood for home checkin
+let selectedMood = null;
 
-// Render daily checkin card on home page
+// Render daily checkin emojis on home page
 function renderDailyCheckin() {
     const dailyCheckinDiv = document.getElementById('dailyCheckin');
     const today = new Date();
@@ -306,67 +310,146 @@ function renderDailyCheckin() {
     const todayEntry = workoutData.dailyEntries[dateKey];
 
     // Check if already completed today
-    if (todayEntry) {
-        // Show completed state (collapsed by default)
-        const sorenessDisplay = todayEntry.soreness ? getSorenessDisplay(todayEntry.soreness) : '';
+    if (todayEntry && todayEntry.mood) {
+        // Show completed state with selected emoji
+        const moodEmoji = getMoodEmoji(todayEntry.mood);
         dailyCheckinDiv.innerHTML = `
-            <div class="checkin-header collapsible" onclick="toggleDailyCheckin()">
-                <div>
-                    <h3 class="checkin-title">Today's Check-in</h3>
-                    <div class="checkin-date">${formatDateForHomeDisplay(today)}</div>
-                </div>
-                <div class="checkin-toggle">›</div>
-            </div>
-            <div class="checkin-content collapsed">
-                ${sorenessDisplay ? `<div style="margin-top: 8px;">${sorenessDisplay}</div>` : ''}
-                ${todayEntry.note ? `<div class="daily-note-display" style="margin-top: 8px; font-size: 14px;">${todayEntry.note}</div>` : ''}
-            </div>
+            <button class="mood-emoji selected" data-mood="${todayEntry.mood}" onclick="openCheckinPopover('${todayEntry.mood}')">${moodEmoji}</button>
         `;
         dailyCheckinDiv.classList.remove('hidden');
         return;
     }
 
-    // Show input form (collapsed by default)
-    dailyCheckinDiv.innerHTML = `
-        <div class="checkin-header collapsible" onclick="toggleDailyCheckin()">
-            <div>
-                <h3 class="checkin-title">Daily Check-in</h3>
-                <div class="checkin-date">${formatDateForHomeDisplay(today)}</div>
-            </div>
-            <div class="checkin-toggle">›</div>
-        </div>
-        <div class="checkin-content collapsed">
-            <div class="checkin-soreness">
-                <div class="checkin-soreness-title">How sore are you?</div>
-                <div class="checkin-soreness-options">
-                    <button class="checkin-soreness-option" data-soreness="none" onclick="selectHomeCheckinSoreness('none')">
-                        <span class="checkin-soreness-emoji">😌</span>
-                        <span class="checkin-soreness-label">None</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="mild" onclick="selectHomeCheckinSoreness('mild')">
-                        <span class="checkin-soreness-emoji">😐</span>
-                        <span class="checkin-soreness-label">Mild</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="sore" onclick="selectHomeCheckinSoreness('sore')">
-                        <span class="checkin-soreness-emoji">😣</span>
-                        <span class="checkin-soreness-label">Sore</span>
-                    </button>
-                    <button class="checkin-soreness-option" data-soreness="very-sore" onclick="selectHomeCheckinSoreness('very-sore')">
-                        <span class="checkin-soreness-emoji">🤕</span>
-                        <span class="checkin-soreness-label">Very sore</span>
-                    </button>
-                </div>
-            </div>
+    // Show mood emoji options
+    const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
+    const moodEmojis = {
+        'amazing': '🔥',
+        'good': '😊', 
+        'okay': '😐',
+        'tough': '😮‍💨',
+        'terrible': '😞'
+    };
 
-            <div class="checkin-note">
-                <div class="checkin-note-title">How are you feeling today?</div>
-                <textarea class="checkin-note-input" id="homeCheckinNoteInput" placeholder="Any thoughts for today?" maxlength="300"></textarea>
-            </div>
+    const moodButtons = moods.map(mood => 
+        `<button class="mood-emoji" data-mood="${mood}" onclick="openCheckinPopover('${mood}')">${moodEmojis[mood]}</button>`
+    ).join('');
 
-            <button class="checkin-save-btn" onclick="saveHomeCheckin()">Save Check-in</button>
-        </div>
-    `;
+    dailyCheckinDiv.innerHTML = moodButtons;
     dailyCheckinDiv.classList.remove('hidden');
+}
+
+// Helper function to get mood emoji
+function getMoodEmoji(mood) {
+    const moodEmojis = {
+        'amazing': '🔥',
+        'good': '😊', 
+        'okay': '😐',
+        'tough': '😮‍💨',
+        'terrible': '😞'
+    };
+    return moodEmojis[mood] || '😊';
+}
+
+// Open checkin popover
+function openCheckinPopover(initialMood = null) {
+    selectedMood = initialMood;
+    
+    const popover = document.getElementById('checkinPopover');
+    const homeScreen = document.getElementById('homeScreen');
+    const workoutScreen = document.getElementById('workoutScreen');
+    const calendarScreen = document.getElementById('calendarScreen');
+    
+    // Hide other screens
+    homeScreen.classList.add('hidden');
+    workoutScreen.classList.add('hidden');
+    calendarScreen.classList.add('hidden');
+    
+    // Show popover
+    popover.classList.remove('hidden');
+    
+    // Render mood options
+    renderMoodOptions();
+    
+    // Focus textarea and load existing note if any
+    const textarea = document.getElementById('checkinTextarea');
+    const today = new Date();
+    const dateKey = getLocalDateKey(today);
+    const todayEntry = workoutData.dailyEntries[dateKey];
+    
+    if (todayEntry && todayEntry.note) {
+        textarea.value = todayEntry.note;
+    } else {
+        textarea.value = '';
+    }
+    
+    // Focus textarea after a short delay to ensure it's rendered
+    setTimeout(() => {
+        textarea.focus();
+    }, 100);
+}
+
+// Close checkin popover
+function closeCheckinPopover() {
+    const popover = document.getElementById('checkinPopover');
+    popover.classList.add('hidden');
+    showHomeScreen();
+}
+
+// Render mood options in popover
+function renderMoodOptions() {
+    const moodOptionsDiv = document.getElementById('moodOptions');
+    const moods = [
+        { id: 'amazing', emoji: '🔥', label: 'Amazing' },
+        { id: 'good', emoji: '😊', label: 'Good' },
+        { id: 'okay', emoji: '😐', label: 'Okay' },
+        { id: 'tough', emoji: '😮‍💨', label: 'Tough' },
+        { id: 'terrible', emoji: '😞', label: 'Terrible' }
+    ];
+    
+    const moodButtons = moods.map(mood => {
+        const isSelected = mood.id === selectedMood ? 'selected' : '';
+        return `
+            <button class="mood-emoji ${isSelected}" data-mood="${mood.id}" onclick="selectMood('${mood.id}')">${mood.emoji}</button>
+        `;
+    }).join('');
+    
+    moodOptionsDiv.innerHTML = moodButtons;
+}
+
+// Select mood in popover
+function selectMood(mood) {
+    selectedMood = mood;
+    renderMoodOptions(); // Re-render to update selection
+}
+
+// Save checkin from popover
+function saveCheckinFromPopover() {
+    if (!selectedMood) {
+        alert('Please select how you\'re feeling first');
+        return;
+    }
+    
+    const textarea = document.getElementById('checkinTextarea');
+    const note = textarea.value.trim();
+    
+    const today = new Date();
+    const dateKey = getLocalDateKey(today);
+    
+    // Initialize dailyEntries if it doesn't exist
+    if (!workoutData.dailyEntries) {
+        workoutData.dailyEntries = {};
+    }
+    
+    // Save the entry
+    workoutData.dailyEntries[dateKey] = {
+        mood: selectedMood,
+        note: note,
+        date: today.toISOString()
+    };
+    
+    saveWorkoutData();
+    closeCheckinPopover();
+    updateDisplay(); // Refresh the home screen
 }
 
 // Select soreness for home checkin
@@ -475,8 +558,8 @@ function renderWorkoutCards() {
                     status = '';
                     statusClass = '';
                 } else {
-                    status = 'Ready to start';
-                    statusClass = 'status-available';
+                    status = '';
+                    statusClass = '';
                 }
         }
 
@@ -603,10 +686,26 @@ function openWorkout(type, fromScreen = 'home') {
         initializeFreshExerciseData(type);
     }
     
-    // Show workout screen
-    document.getElementById('homeScreen').classList.add('hidden');
-    document.getElementById('workoutScreen').classList.remove('hidden');
-    document.getElementById('calendarScreen').classList.add('hidden');
+    // Show workout screen with slide-in animation
+    const workoutScreen = document.getElementById('workoutScreen');
+    const homeScreen = document.getElementById('homeScreen');
+    const calendarScreen = document.getElementById('calendarScreen');
+    
+    // Hide other screens
+    homeScreen.classList.add('hidden');
+    calendarScreen.classList.add('hidden');
+    
+    // Show workout screen initially positioned off-screen
+    workoutScreen.classList.remove('hidden');
+    workoutScreen.classList.remove('slide-in');
+    
+    // Force reflow to ensure the screen is positioned off-screen
+    workoutScreen.offsetHeight;
+    
+    // Trigger slide-in animation
+    requestAnimationFrame(() => {
+        workoutScreen.classList.add('slide-in');
+    });
     
     document.getElementById('workoutTitle').textContent = workoutExercises[currentWorkout].title;
     
@@ -2043,6 +2142,95 @@ if ('serviceWorker' in navigator) {
         console.error('SW registration failed:', error);
     });
 }
+
+// Swipe gesture handling with visual feedback
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+let isDragging = false;
+let workoutScreen = null;
+
+// Handle swipe gesture with visual feedback
+function handleSwipeStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    workoutScreen = document.getElementById('workoutScreen');
+    
+    // Only enable dragging if we're on the workout screen
+    if (!workoutScreen.classList.contains('hidden')) {
+        isDragging = false;
+        // Disable transition during drag
+        workoutScreen.style.transition = 'none';
+    }
+}
+
+function handleSwipeMove(e) {
+    if (!workoutScreen || workoutScreen.classList.contains('hidden')) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartX;
+    const diffY = currentY - touchStartY;
+    
+    // Only start dragging if horizontal movement is significant
+    if (!isDragging && Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+        isDragging = true;
+        e.preventDefault(); // Prevent scrolling
+    }
+    
+    if (isDragging && diffX > 0) {
+        // Only allow dragging to the right (positive direction)
+        const dragDistance = Math.min(diffX, window.innerWidth);
+        workoutScreen.style.transform = `translateX(${dragDistance}px)`;
+        
+        // Add subtle opacity effect
+        const opacity = Math.max(0.3, 1 - (dragDistance / (window.innerWidth * 0.7)));
+        workoutScreen.style.opacity = opacity;
+    }
+}
+
+function handleSwipeEnd(e) {
+    if (!workoutScreen || workoutScreen.classList.contains('hidden')) return;
+    
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+    
+    const diffX = touchEndX - touchStartX;
+    const threshold = window.innerWidth * 0.3; // 30% of screen width
+    
+    // Re-enable transition for smooth animation
+    workoutScreen.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+    
+    if (isDragging && diffX > threshold) {
+        // Complete the swipe - animate off screen then go back
+        workoutScreen.style.transform = `translateX(${window.innerWidth}px)`;
+        workoutScreen.style.opacity = '0';
+        
+        setTimeout(() => {
+            goBackHome();
+            // Reset styles after navigation
+            workoutScreen.style.transform = '';
+            workoutScreen.style.opacity = '';
+            workoutScreen.style.transition = '';
+        }, 300);
+    } else {
+        // Snap back to original position
+        workoutScreen.style.transform = '';
+        workoutScreen.style.opacity = '';
+        
+        setTimeout(() => {
+            workoutScreen.style.transition = '';
+        }, 300);
+    }
+    
+    isDragging = false;
+}
+
+// Add touch event listeners
+document.addEventListener('touchstart', handleSwipeStart, { passive: false });
+document.addEventListener('touchmove', handleSwipeMove, { passive: false });
+document.addEventListener('touchend', handleSwipeEnd, { passive: false });
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
