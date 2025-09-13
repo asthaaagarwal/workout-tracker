@@ -110,26 +110,46 @@ const exerciseInfo = {
     'Stretch': { icon: '🤸', description: 'Perform gentle stretches to relax muscles and improve flexibility.' }
 };
 
+// Helper function to get local date key (timezone-neutral)
+function getLocalDateKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 // Initialize workout data structure
 let workoutData = {
-    currentCycle: [],
     totalWorkouts: 0,
-    totalCycles: 0,
     lastWeights: {},
     lastReps: {},
     lastSets: {},
     lastExerciseData: {}, // Store full exercise data (sets with weights and reps)
-    weekStartDate: null,
     history: [],
     pendingWorkouts: {},
-    workoutStates: {} // Track workout states: 'pending', 'ongoing', 'completed'
+    workoutStates: {}, // Track workout states: 'pending', 'ongoing', 'completed'
+    dailyEntries: {} // Track daily wellness entries: date -> {note, soreness}
 };
 
 // Load data from localStorage on page load
 function loadWorkoutData() {
     const saved = localStorage.getItem('workoutTrackerData');
     if (saved) {
-        workoutData = { ...workoutData, ...JSON.parse(saved) };
+        const parsedData = JSON.parse(saved);
+        workoutData = { ...workoutData, ...parsedData };
+
+        // Migration: Remove cycle-related properties if they exist
+        if (workoutData.currentCycle) {
+            delete workoutData.currentCycle;
+        }
+        if (workoutData.totalCycles) {
+            delete workoutData.totalCycles;
+        }
+        if (workoutData.weekStartDate) {
+            delete workoutData.weekStartDate;
+        }
+
+        // If any changes were made, save the migrated data
+        if (parsedData.currentCycle || parsedData.totalCycles || parsedData.weekStartDate) {
+            saveWorkoutData();
+        }
     }
 }
 
@@ -250,8 +270,6 @@ function setupEventListeners() {
         if (e.target.id === 'exerciseBottomSheet') closeExerciseSheet();
     });
     
-    // Close celebration overlay on click
-    document.getElementById('celebrationOverlay').addEventListener('click', closeCelebration);
     
     // Confirmation dialog event listeners
     document.getElementById('confirmYesBtn').addEventListener('click', confirmCompleteWorkout);
@@ -272,8 +290,150 @@ function setupEventListeners() {
 // Update the main display
 function updateDisplay() {
     updateAppName();
+    renderDailyCheckin();
     renderWorkoutCards();
     updateStats();
+}
+
+// Global variable to track selected soreness for home checkin
+let homeCheckinSoreness = null;
+
+// Render daily checkin card on home page
+function renderDailyCheckin() {
+    const dailyCheckinDiv = document.getElementById('dailyCheckin');
+    const today = new Date();
+    const dateKey = getLocalDateKey(today);
+    const todayEntry = workoutData.dailyEntries[dateKey];
+
+    // Check if already completed today
+    if (todayEntry) {
+        // Show completed state (collapsed by default)
+        const sorenessDisplay = todayEntry.soreness ? getSorenessDisplay(todayEntry.soreness) : '';
+        dailyCheckinDiv.innerHTML = `
+            <div class="checkin-header collapsible" onclick="toggleDailyCheckin()">
+                <div>
+                    <h3 class="checkin-title">Today's Check-in</h3>
+                    <div class="checkin-date">${formatDateForHomeDisplay(today)}</div>
+                </div>
+                <div class="checkin-toggle">›</div>
+            </div>
+            <div class="checkin-content collapsed">
+                ${sorenessDisplay ? `<div style="margin-top: 8px;">${sorenessDisplay}</div>` : ''}
+                ${todayEntry.note ? `<div class="daily-note-display" style="margin-top: 8px; font-size: 14px;">${todayEntry.note}</div>` : ''}
+            </div>
+        `;
+        dailyCheckinDiv.classList.remove('hidden');
+        return;
+    }
+
+    // Show input form (collapsed by default)
+    dailyCheckinDiv.innerHTML = `
+        <div class="checkin-header collapsible" onclick="toggleDailyCheckin()">
+            <div>
+                <h3 class="checkin-title">Daily Check-in</h3>
+                <div class="checkin-date">${formatDateForHomeDisplay(today)}</div>
+            </div>
+            <div class="checkin-toggle">›</div>
+        </div>
+        <div class="checkin-content collapsed">
+            <div class="checkin-soreness">
+                <div class="checkin-soreness-title">How sore are you?</div>
+                <div class="checkin-soreness-options">
+                    <button class="checkin-soreness-option" data-soreness="none" onclick="selectHomeCheckinSoreness('none')">
+                        <span class="checkin-soreness-emoji">😌</span>
+                        <span class="checkin-soreness-label">None</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="mild" onclick="selectHomeCheckinSoreness('mild')">
+                        <span class="checkin-soreness-emoji">😐</span>
+                        <span class="checkin-soreness-label">Mild</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="sore" onclick="selectHomeCheckinSoreness('sore')">
+                        <span class="checkin-soreness-emoji">😣</span>
+                        <span class="checkin-soreness-label">Sore</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="very-sore" onclick="selectHomeCheckinSoreness('very-sore')">
+                        <span class="checkin-soreness-emoji">🤕</span>
+                        <span class="checkin-soreness-label">Very sore</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="checkin-note">
+                <div class="checkin-note-title">How are you feeling today?</div>
+                <textarea class="checkin-note-input" id="homeCheckinNoteInput" placeholder="Any thoughts for today?" maxlength="300"></textarea>
+            </div>
+
+            <button class="checkin-save-btn" onclick="saveHomeCheckin()">Save Check-in</button>
+        </div>
+    `;
+    dailyCheckinDiv.classList.remove('hidden');
+}
+
+// Select soreness for home checkin
+function selectHomeCheckinSoreness(soreness) {
+    homeCheckinSoreness = soreness;
+
+    // Update visual selection
+    const sorenessOptions = document.querySelectorAll('.checkin-soreness-option');
+    sorenessOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.soreness === soreness) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+// Save home checkin
+function saveHomeCheckin() {
+    const noteInput = document.getElementById('homeCheckinNoteInput');
+    const noteText = noteInput.value.trim();
+    const today = new Date();
+    const dateKey = getLocalDateKey(today);
+
+    // Require at least soreness selection or note text
+    if (homeCheckinSoreness || noteText) {
+        workoutData.dailyEntries[dateKey] = {
+            note: noteText,
+            soreness: homeCheckinSoreness,
+            date: dateKey
+        };
+        saveWorkoutData();
+
+        // Reset selected soreness
+        homeCheckinSoreness = null;
+
+        // Refresh the display
+        renderDailyCheckin();
+
+        // If calendar is currently visible, refresh it too
+        const calendarScreen = document.getElementById('calendarScreen');
+        if (!calendarScreen.classList.contains('hidden')) {
+            updateCalendarDisplay();
+        }
+    }
+}
+
+// Toggle daily check-in collapse
+function toggleDailyCheckin() {
+    const content = document.querySelector('.checkin-content');
+    const toggle = document.querySelector('.checkin-toggle');
+
+    if (content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        toggle.textContent = '⌄';
+    } else {
+        content.classList.add('collapsed');
+        toggle.textContent = '›';
+    }
+}
+
+// Format date for home display
+function formatDateForHomeDisplay(date) {
+    return date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'short'
+    });
 }
 
 // Update app bar active state
@@ -288,87 +448,63 @@ function updateAppBarState(activeTab) {
 function renderWorkoutCards() {
     const workoutList = document.getElementById('workoutList');
     workoutList.innerHTML = '';
-    
-    // Check if we need to start a new cycle
-    checkNewWeekCycle();
-    
-    // Check if current cycle is complete and reset if needed
-    const allWorkoutTypes = Object.keys(workoutExercises);
-    const cycleComplete = allWorkoutTypes.every(type => workoutData.currentCycle.includes(type));
-    
-    if (cycleComplete) {
-        workoutData.totalCycles++;
-        workoutData.currentCycle = [];
-        workoutData.workoutStates = {}; // Reset all workout states to pending
-        workoutData.weekStartDate = new Date().toISOString();
-        saveWorkoutData();
-    }
-    
+
     const workoutTypes = Object.keys(workoutExercises);
-    
-    // Sort workouts: ongoing first, then available, then completed
+    const hasCompletedToday = hasCompletedWorkoutToday();
+
+    // Sort workouts: ongoing first, then available
     workoutTypes.sort((a, b) => {
         const aState = getWorkoutState(a);
         const bState = getWorkoutState(b);
-        const stateOrder = { 'ongoing': 0, 'pending': 1, 'completed': 2 };
+        const stateOrder = { 'ongoing': 0, 'pending': 1 };
         return stateOrder[aState] - stateOrder[bState];
     });
-    
+
     workoutTypes.forEach(type => {
         const workout = workoutExercises[type];
         const workoutState = getWorkoutState(type);
-        
+
         let status, statusClass;
         switch (workoutState) {
             case 'ongoing':
                 status = 'Ongoing';
                 statusClass = 'status-ongoing';
                 break;
-            case 'completed':
-                status = 'Completed';
-                statusClass = 'status-completed';
-                break;
-            default: // 'pending'
-                status = 'Ready to start';
-                statusClass = 'status-available';
+            default: // 'pending' or any other state
+                if (hasCompletedToday) {
+                    status = '';
+                    statusClass = '';
+                } else {
+                    status = 'Ready to start';
+                    statusClass = 'status-available';
+                }
         }
-        
+
         const workoutCard = document.createElement('div');
         workoutCard.className = 'workout-card';
         workoutCard.style.background = workoutColors[type];
-        
+
         // Add timer display for ongoing workouts
         let timerHtml = '';
         if (workoutState === 'ongoing' && workoutData.pendingWorkouts[type] && workoutData.pendingWorkouts[type].startTime) {
             const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
             timerHtml = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
         }
-        
+
         // Determine description text based on workout state
         let descriptionText = workout.description;
-        
+
         // For ongoing workouts, replace status badge with timer
-        // For completed workouts, replace status badge with duration
         let statusElement;
         if (workoutState === 'ongoing' && workoutData.pendingWorkouts[type] && workoutData.pendingWorkouts[type].startTime) {
             const elapsedTime = getFormattedElapsedTime(workoutData.pendingWorkouts[type].startTime);
             statusElement = `<div class="workout-timer" data-workout-type="${type}">⏱️ ${elapsedTime}</div>`;
-        } else if (workoutState === 'completed') {
-            // Find the most recent completed workout to get duration
-            const completedWorkout = workoutData.history
-                .filter(h => h.type === type)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-            
-            if (completedWorkout && completedWorkout.duration) {
-                const duration = formatWorkoutDuration(completedWorkout.duration);
-                statusElement = `<div class="workout-timer completed-timer"><i data-lucide="check" style="color: #46725e; width: 16px; height: 16px;"></i> ${duration}</div>`;
-            } else {
-                statusElement = `<span class="workout-status ${statusClass}">${status}</span>`;
-            }
-        } else {
+        } else if (status) {
             statusElement = `<span class="workout-status ${statusClass}">${status}</span>`;
+        } else {
+            statusElement = '';
         }
-        
+
         workoutCard.innerHTML = `
             <div class="workout-card-header">
                 <h3 class="workout-title">${workout.title}</h3>
@@ -376,18 +512,37 @@ function renderWorkoutCards() {
             </div>
             <p class="workout-description">${descriptionText}</p>
         `;
-        
-        // Add click event to card for all workout states
+
+        // Add click event to card
         workoutCard.addEventListener('click', () => openWorkout(type));
-        
-        // Style completed workouts differently but keep them clickable
-        if (workoutState === 'completed') {
-            workoutCard.style.background = '#e1f0b8';
-        }
-        
+
         workoutList.appendChild(workoutCard);
     });
-    
+
+    // Show completion message above cards if workout completed today
+    if (hasCompletedToday) {
+        // Get today's workout feedback
+        const today = new Date();
+        const todayDateString = today.toDateString();
+        const todayWorkout = workoutData.history.find(workout => {
+            const workoutDate = new Date(workout.date);
+            return workoutDate.toDateString() === todayDateString;
+        });
+
+        const feedbackDisplay = todayWorkout && todayWorkout.feedback ? getFeedbackDisplay(todayWorkout.feedback) : '';
+
+        const feedbackText = todayWorkout && todayWorkout.feedback ? ` and you felt it was ${todayWorkout.feedback}` : '';
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'daily-completion-message';
+        messageDiv.innerHTML = `
+            <div class="completion-icon">✅</div>
+            <h3>Great job today!</h3>
+            <p>You've completed your workout for today${feedbackText}.</p>
+        `;
+        workoutList.insertBefore(messageDiv, workoutList.firstChild);
+    }
+
     // Reinitialize Lucide icons for the newly added content
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -401,12 +556,12 @@ function openWorkout(type, fromScreen = 'home') {
     const workoutState = getWorkoutState(type);
     
     // Load or initialize exercise data based on workout state
-    if (workoutState === 'completed') {
-        // Load completed workout data from history
+    if (workoutState === 'completed' && fromScreen === 'calendar') {
+        // Load completed workout data from history for calendar view
         const completedWorkout = workoutData.history
             .filter(h => h.type === type)
             .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-        
+
         if (completedWorkout) {
             // Initialize exercise data with completed workout data
             exerciseData = {};
@@ -472,6 +627,10 @@ function openWorkout(type, fromScreen = 'home') {
                 startBtn.classList.remove('hidden');
                 startBtn.disabled = true;
                 startBtn.textContent = `Complete ${workoutExercises[getOngoingWorkoutType()].title} First`;
+            } else if (hasCompletedWorkoutToday()) {
+                startBtn.classList.remove('hidden');
+                startBtn.disabled = true;
+                startBtn.textContent = 'Workout Already Completed Today';
             } else {
                 startBtn.classList.remove('hidden');
                 startBtn.disabled = false;
@@ -490,15 +649,26 @@ function openWorkout(type, fromScreen = 'home') {
             }
             break;
         case 'completed':
-            // Show delete button for completed workouts
-            deleteBtn.classList.remove('hidden');
-            // Show completed workout duration in timer
-            if (workoutStartTime) {
-                const completedWorkout = workoutData.history
-                    .filter(h => h.type === type)
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-                if (completedWorkout && completedWorkout.duration) {
-                    displayCompletedWorkoutDuration(completedWorkout.duration);
+            // Only show delete button when opened from calendar
+            if (fromScreen === 'calendar') {
+                deleteBtn.classList.remove('hidden');
+                // Show completed workout duration in timer
+                if (workoutStartTime) {
+                    const completedWorkout = workoutData.history
+                        .filter(h => h.type === type)
+                        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                    if (completedWorkout && completedWorkout.duration) {
+                        displayCompletedWorkoutDuration(completedWorkout.duration);
+                    }
+                }
+            } else {
+                // If not from calendar, treat as pending
+                startBtn.classList.remove('hidden');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Workout';
+                const timerElement = document.getElementById('workoutTimer');
+                if (timerElement) {
+                    timerElement.textContent = '00:00:00';
                 }
             }
             break;
@@ -708,9 +878,11 @@ function confirmCompleteWorkout() {
     const workoutDuration = workoutStartTime ? new Date() - workoutStartTime : 0;
     
     // Save workout data and set state to completed
-    workoutData.currentCycle.push(currentWorkout);
     workoutData.totalWorkouts++;
     setWorkoutState(currentWorkout, 'completed');
+
+    // Reset completed workout to pending immediately so it's available again
+    setWorkoutState(currentWorkout, 'pending');
     
     // Update last weights, reps, and sets for completed exercises
     Object.entries(exerciseData).forEach(([exerciseName, data]) => {
@@ -757,7 +929,8 @@ function confirmCompleteWorkout() {
             Object.entries(exerciseData)
                 .filter(([_, data]) => data.completed && data.sets.some(set => set.weight && set.weight > 0))
                 .map(([name, data]) => [name, data.sets.filter(set => set.weight && set.weight > 0)])
-        )
+        ),
+        feedback: null // Will be updated when user provides feedback
     });
     
     saveWorkoutData();
@@ -768,11 +941,8 @@ function confirmCompleteWorkout() {
         saveWorkoutData();
     }
     
-    // Show celebration for 5 seconds, then return to home screen
-    showCelebration();
-    setTimeout(() => {
-        closeCelebration();
-    }, 5000);
+    // Show celebration screen
+    showCelebration(workoutDuration);
 }
 
 // 8. Open calendar screen
@@ -780,7 +950,7 @@ function openCalendar() {
     document.getElementById('homeScreen').classList.add('hidden');
     document.getElementById('workoutScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.remove('hidden');
-    
+
     currentCalendarDate = new Date();
     updateCalendarDisplay();
     updateAppBarState('calendar');
@@ -809,35 +979,12 @@ function updateStats() {
     
     daysSinceElement.textContent = daysSince;
     totalWorkoutsElement.textContent = workoutData.totalWorkouts;
-    totalCyclesElement.textContent = workoutData.totalCycles || 0;
 }
 
-// Check if we need to start a new week cycle
-function checkNewWeekCycle() {
-    const today = new Date();
-    const weekStart = workoutData.weekStartDate ? new Date(workoutData.weekStartDate) : null;
-    
-    if (!weekStart || (today - weekStart) >= 7 * 24 * 60 * 60 * 1000) {
-        // Start new cycle if more than 7 days have passed or no week start date
-        if (workoutData.currentCycle.length > 0) {
-            workoutData.currentCycle = [];
-            workoutData.weekStartDate = today.toISOString();
-            workoutData.workoutStates = {}; // Reset workout states for new cycle
-            saveWorkoutData();
-        } else if (!workoutData.weekStartDate) {
-            workoutData.weekStartDate = today.toISOString();
-            saveWorkoutData();
-        }
-    }
-}
 
 // Get workout state
 function getWorkoutState(type) {
-    // If workout is in current cycle (completed), return 'completed'
-    if (workoutData.currentCycle.includes(type)) {
-        return 'completed';
-    }
-    // Otherwise check stored state, default to 'pending'
+    // Check stored state, default to 'pending'
     return workoutData.workoutStates[type] || 'pending';
 }
 
@@ -849,9 +996,20 @@ function setWorkoutState(type, state) {
 
 
 
+// Check if any workout was completed today
+function hasCompletedWorkoutToday() {
+    const today = new Date();
+    const todayDateString = today.toDateString();
+
+    return workoutData.history.some(workout => {
+        const workoutDate = new Date(workout.date);
+        return workoutDate.toDateString() === todayDateString;
+    });
+}
+
 // Check if any workout is currently ongoing
 function hasOngoingWorkout() {
-    return Object.keys(workoutData.workoutStates).some(type => 
+    return Object.keys(workoutData.workoutStates).some(type =>
         workoutData.workoutStates[type] === 'ongoing'
     );
 }
@@ -1005,11 +1163,11 @@ function updateExerciseList() {
         let className = 'exercise-item';
         if (isCompleted) className += ' completed';
         else if (isInProgress) className += ' in-progress';
-        
+
         exerciseItem.className = className;
-        
+
         const info = exerciseInfo[exercise.name];
-        
+
         exerciseItem.innerHTML = `
             ${isCompleted ? '<i class="exercise-check-icon" data-lucide="check" style="color: #46725e; width: 16px; height: 16px;"></i>' : ''}
             <div class="exercise-name">${exercise.name}</div>
@@ -1290,19 +1448,54 @@ function updateSheetSets() {
 
 
 // Show celebration
-function showCelebration() {
+function showCelebration(duration) {
     document.getElementById('celebrationOverlay').classList.remove('hidden');
+
+    // Display the workout duration
+    if (duration && duration > 0) {
+        const durationElement = document.getElementById('celebrationDuration');
+        const formattedDuration = formatWorkoutDuration(duration);
+        durationElement.textContent = `in ${formattedDuration}`;
+    }
+
+    // Reset feedback and soreness selection
+    const feedbackOptions = document.querySelectorAll('.feedback-option');
+    feedbackOptions.forEach(option => {
+        option.classList.remove('selected');
+    });
 }
+
+// Record workout feedback
+function recordWorkoutFeedback(feeling) {
+    // Find the most recent workout in history and update its feedback
+    if (workoutData.history.length > 0) {
+        const lastWorkout = workoutData.history[workoutData.history.length - 1];
+        lastWorkout.feedback = feeling;
+        saveWorkoutData();
+    }
+
+    // Highlight the selected feedback option
+    const feedbackOptions = document.querySelectorAll('.feedback-option');
+    feedbackOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.feeling === feeling) {
+            option.classList.add('selected');
+        }
+    });
+}
+
 
 // Close celebration
 function closeCelebration() {
     document.getElementById('celebrationOverlay').classList.add('hidden');
-    
+
     // Navigate back to the screen that opened the workout
     if (previousScreen === 'calendar') {
         openCalendar();
     } else {
         showHomeScreen();
+        // Force refresh of home screen to show updated workout states
+        updateDisplay();
     }
 }
 
@@ -1370,7 +1563,11 @@ function renderCalendar() {
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day';
-        dayElement.textContent = day;
+
+        const dayNumber = document.createElement('span');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayElement.appendChild(dayNumber);
         
         // Check if workout was done on this day and get workout type
         const dayDate = new Date(year, month, day);
@@ -1378,13 +1575,24 @@ function renderCalendar() {
             const workoutDate = new Date(workout.date);
             return workoutDate.toDateString() === dayDate.toDateString();
         });
-        
+
+        // Check if there's a daily note for this day
+        const dateKey = getLocalDateKey(dayDate);
+        const dailyNote = workoutData.dailyEntries[dateKey];
+
         // Check if this is today's date
         const today = new Date();
         const isToday = dayDate.toDateString() === today.toDateString();
-        
+
         if (dayWorkout) {
             dayElement.classList.add('workout-day');
+        }
+
+        // Add dot indicator for daily notes
+        if (dailyNote) {
+            const dotElement = document.createElement('div');
+            dotElement.className = 'note-dot';
+            dayElement.appendChild(dotElement);
         }
         
         if (isToday) {
@@ -1407,6 +1615,149 @@ function renderCalendar() {
     }
 }
 
+// Global variable to track selected soreness for calendar
+let calendarSelectedSoreness = null;
+
+// Select soreness level for calendar
+function selectSoreness(soreness) {
+    calendarSelectedSoreness = soreness;
+
+    // Update visual selection (handles both old and new class names)
+    const sorenessOptions = document.querySelectorAll('.soreness-option, .checkin-soreness-option');
+    sorenessOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.soreness === soreness) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+// Save daily note
+function saveDailyNote(dateKey) {
+    const noteInput = document.getElementById('dailyNoteInput');
+    const noteText = noteInput.value.trim();
+
+    // Require at least soreness selection or note text
+    if (calendarSelectedSoreness || noteText) {
+        workoutData.dailyEntries[dateKey] = {
+            note: noteText,
+            soreness: calendarSelectedSoreness,
+            date: dateKey
+        };
+        saveWorkoutData();
+
+        // Reset selected soreness
+        calendarSelectedSoreness = null;
+
+        // Refresh the calendar display to show the dot indicator
+        updateCalendarDisplay();
+
+        // Refresh the selected date details
+        const selectedDate = new Date(dateKey + 'T00:00:00');
+        showWorkoutDetails(selectedDate);
+    } else {
+        // Provide feedback if nothing was entered
+        alert('Please select a soreness level or enter a note before saving.');
+    }
+}
+
+// Edit daily note
+function editDailyNote(dateKey, currentNote, currentSoreness) {
+    // Set the selected soreness for editing
+    calendarSelectedSoreness = currentSoreness || null;
+
+    const workoutDetailsDiv = document.getElementById('workoutDetails');
+    workoutDetailsDiv.innerHTML = `
+        <div class="checkin-header">
+            <h3 class="checkin-title">Daily Check-in</h3>
+            <div class="checkin-date">${formatDateForDisplay(new Date(dateKey + 'T00:00:00'))}</div>
+        </div>
+
+        <div class="checkin-soreness">
+            <div class="checkin-soreness-title">How sore are you?</div>
+            <div class="checkin-soreness-options">
+                <button class="checkin-soreness-option ${currentSoreness === 'none' ? 'selected' : ''}" data-soreness="none" onclick="selectSoreness('none')">
+                    <span class="checkin-soreness-emoji">😌</span>
+                    <span class="checkin-soreness-label">None</span>
+                </button>
+                <button class="checkin-soreness-option ${currentSoreness === 'mild' ? 'selected' : ''}" data-soreness="mild" onclick="selectSoreness('mild')">
+                    <span class="checkin-soreness-emoji">😐</span>
+                    <span class="checkin-soreness-label">Mild</span>
+                </button>
+                <button class="checkin-soreness-option ${currentSoreness === 'sore' ? 'selected' : ''}" data-soreness="sore" onclick="selectSoreness('sore')">
+                    <span class="checkin-soreness-emoji">😣</span>
+                    <span class="checkin-soreness-label">Sore</span>
+                </button>
+                <button class="checkin-soreness-option ${currentSoreness === 'very-sore' ? 'selected' : ''}" data-soreness="very-sore" onclick="selectSoreness('very-sore')">
+                    <span class="checkin-soreness-emoji">🤕</span>
+                    <span class="checkin-soreness-label">Very sore</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="checkin-note">
+            <div class="checkin-note-title">How are you feeling today?</div>
+            <textarea class="checkin-note-input" id="dailyNoteInput" placeholder="Any thoughts for today?" maxlength="300">${currentNote}</textarea>
+        </div>
+
+        <div class="note-buttons">
+            <button class="checkin-save-btn" onclick="saveDailyNote('${dateKey}')">Save Check-in</button>
+            <button class="btn-delete-note" onclick="deleteDailyNote('${dateKey}')">Delete</button>
+        </div>
+    `;
+}
+
+// Delete daily note
+function deleteDailyNote(dateKey) {
+    delete workoutData.dailyEntries[dateKey];
+    saveWorkoutData();
+
+    // Refresh the calendar display to remove the dot indicator
+    updateCalendarDisplay();
+
+    // Refresh the selected date details
+    const selectedDate = new Date(dateKey + 'T00:00:00');
+    showWorkoutDetails(selectedDate);
+}
+
+// Format date for display
+function formatDateForDisplay(date) {
+    return date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'short'
+    });
+}
+
+// Helper function to get feedback display HTML
+function getFeedbackDisplay(feedback) {
+    const feedbackMap = {
+        'amazing': { emoji: '🔥', label: 'Amazing' },
+        'good': { emoji: '😊', label: 'Good' },
+        'tough': { emoji: '😮‍💨', label: 'Tough' }
+    };
+
+    const feedbackInfo = feedbackMap[feedback];
+    if (!feedbackInfo) return '';
+
+    return `<p class="workout-feedback"><span class="feedback-emoji">${feedbackInfo.emoji}</span> ${feedbackInfo.label}</p>`;
+}
+
+// Helper function to get soreness display HTML
+function getSorenessDisplay(soreness) {
+    const sorenessMap = {
+        'none': { emoji: '😌', label: 'No soreness' },
+        'mild': { emoji: '😐', label: 'Mild soreness' },
+        'sore': { emoji: '😣', label: 'Sore' },
+        'very-sore': { emoji: '🤕', label: 'Very sore' }
+    };
+
+    const sorenessInfo = sorenessMap[soreness];
+    if (!sorenessInfo) return '';
+
+    return `<p class="workout-feedback"><span class="feedback-emoji">${sorenessInfo.emoji}</span> ${sorenessInfo.label}</p>`;
+}
+
 // Show workout details for selected date
 function showWorkoutDetails(date) {
     const workoutDetailsDiv = document.getElementById('workoutDetails');
@@ -1414,9 +1765,64 @@ function showWorkoutDetails(date) {
         const workoutDate = new Date(w.date);
         return workoutDate.toDateString() === date.toDateString();
     });
-    
+
+    const dateKey = getLocalDateKey(date);
+    const dailyEntry = workoutData.dailyEntries[dateKey];
+
+    if (!workout && !dailyEntry) {
+        // Show option to add daily note for non-workout days with same styling as home check-in
+        workoutDetailsDiv.innerHTML = `
+            <div class="checkin-header">
+                <h3 class="checkin-title">Daily Check-in</h3>
+                <div class="checkin-date">${formatDateForDisplay(date)}</div>
+            </div>
+
+            <div class="checkin-soreness">
+                <div class="checkin-soreness-title">How sore are you?</div>
+                <div class="checkin-soreness-options">
+                    <button class="checkin-soreness-option" data-soreness="none" onclick="selectSoreness('none')">
+                        <span class="checkin-soreness-emoji">😌</span>
+                        <span class="checkin-soreness-label">None</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="mild" onclick="selectSoreness('mild')">
+                        <span class="checkin-soreness-emoji">😐</span>
+                        <span class="checkin-soreness-label">Mild</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="sore" onclick="selectSoreness('sore')">
+                        <span class="checkin-soreness-emoji">😣</span>
+                        <span class="checkin-soreness-label">Sore</span>
+                    </button>
+                    <button class="checkin-soreness-option" data-soreness="very-sore" onclick="selectSoreness('very-sore')">
+                        <span class="checkin-soreness-emoji">🤕</span>
+                        <span class="checkin-soreness-label">Very sore</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="checkin-note">
+                <div class="checkin-note-title">How are you feeling today?</div>
+                <textarea class="checkin-note-input" id="dailyNoteInput" placeholder="Any thoughts for today?" maxlength="300"></textarea>
+            </div>
+
+            <button class="checkin-save-btn" onclick="saveDailyNote('${dateKey}')">Save Check-in</button>
+        `;
+        workoutDetailsDiv.classList.remove('hidden');
+        return;
+    }
+
     if (!workout) {
-        workoutDetailsDiv.classList.add('hidden');
+        // Show existing daily entry with same styling as home check-in
+        const sorenessDisplay = dailyEntry.soreness ? getSorenessDisplay(dailyEntry.soreness) : '';
+        workoutDetailsDiv.innerHTML = `
+            <div class="checkin-header">
+                <h3 class="checkin-title">Daily Check-in</h3>
+                <div class="checkin-date">${formatDateForDisplay(date)}</div>
+            </div>
+            ${sorenessDisplay ? `<div style="margin-top: 8px;">${sorenessDisplay}</div>` : ''}
+            ${dailyEntry.note ? `<div class="daily-note-display" style="margin-top: 8px; font-size: 14px;">${dailyEntry.note}</div>` : ''}
+            <button class="btn-edit-note" onclick="editDailyNote('${dateKey}', \`${(dailyEntry.note || '').replace(/`/g, '\\`')}\`, '${dailyEntry.soreness || ''}')">Edit Entry</button>
+        `;
+        workoutDetailsDiv.classList.remove('hidden');
         return;
     }
     
@@ -1427,11 +1833,13 @@ function showWorkoutDetails(date) {
     
     if (exercisesWithWeights.length === 0) {
         // If no exercises with weights, still show the workout but with a message
+        const feedbackDisplay = workout.feedback ? getFeedbackDisplay(workout.feedback) : '';
         workoutDetailsDiv.innerHTML = `
             <div class="workout-details-header">
                 <div class="workout-details-info">
                     <h3>${workoutExercises[workout.type].title}</h3>
                     <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+                    ${feedbackDisplay}
                 </div>
                 <button class="workout-details-open-btn" onclick="openWorkoutFromCalendar('${workout.type}')">
                     <i data-lucide="arrow-right"></i>
@@ -1448,11 +1856,13 @@ function showWorkoutDetails(date) {
         return;
     }
     
+    const feedbackDisplay = workout.feedback ? getFeedbackDisplay(workout.feedback) : '';
     let detailsHtml = `
         <div class="workout-details-header">
             <div class="workout-details-info">
                 <h3>${workoutExercises[workout.type].title}</h3>
                 <p class="workout-details-date">${formatWorkoutDateTime(workout.date)}</p>
+                ${feedbackDisplay}
             </div>
             <button class="workout-details-open-btn" onclick="openWorkoutFromCalendar('${workout.type}')">
                 <i data-lucide="arrow-right"></i>
@@ -1535,11 +1945,6 @@ function confirmDeleteWorkout() {
     // Remove workout from history
     workoutData.history = workoutData.history.filter(workout => workout.type !== currentWorkout);
     
-    // Remove workout from current cycle if it exists
-    const cycleIndex = workoutData.currentCycle.indexOf(currentWorkout);
-    if (cycleIndex > -1) {
-        workoutData.currentCycle.splice(cycleIndex, 1);
-    }
     
     // Reset workout state to pending
     setWorkoutState(currentWorkout, 'pending');

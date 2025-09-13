@@ -37,6 +37,11 @@
                 <h1>Squat Squad</h1>
             </header>
 
+            <!-- Daily Check-in -->
+            <div id="dailyCheckin" class="daily-checkin-card">
+                <!-- Daily check-in will be dynamically generated -->
+            </div>
+
             <!-- Workout Cards -->
             <div id="workoutList" class="workout-list">
                 <!-- Workout cards will be dynamically generated -->
@@ -51,10 +56,6 @@
                 <div class="stat">
                     <span class="stat-value" id="totalWorkouts">0</span>
                     <span class="stat-label">Total workouts completed</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value" id="totalCycles">0</span>
-                    <span class="stat-label">Cycles completed</span>
                 </div>
             </div>
 
@@ -174,6 +175,28 @@
             </div>
             <div class="celebration-content">
                 <div class="celebration-text">Crushed it</div>
+                <div class="celebration-duration" id="celebrationDuration"></div>
+                <div class="celebration-feedback">
+                    <div class="feedback-question">How did you feel?</div>
+                    <div class="feedback-options">
+                        <button class="feedback-option" data-feeling="amazing" onclick="recordWorkoutFeedback('amazing')">
+                            <span class="feedback-emoji">🔥</span>
+                            <span class="feedback-label">Amazing</span>
+                        </button>
+                        <button class="feedback-option" data-feeling="good" onclick="recordWorkoutFeedback('good')">
+                            <span class="feedback-emoji">😊</span>
+                            <span class="feedback-label">Good</span>
+                        </button>
+                        <button class="feedback-option" data-feeling="tough" onclick="recordWorkoutFeedback('tough')">
+                            <span class="feedback-emoji">😮‍💨</span>
+                            <span class="feedback-label">Tough</span>
+                        </button>
+                    </div>
+
+                    <button class="celebration-continue-btn" id="celebrationContinueBtn" onclick="closeCelebration()">
+                        Continue
+                    </button>
+                </div>
             </div>
         </div>
 

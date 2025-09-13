@@ -169,6 +169,154 @@ body {
     cursor: not-allowed;
 }
 
+/* Daily Check-in Card */
+.daily-checkin-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.daily-checkin-card.hidden {
+    display: none;
+}
+
+.checkin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.checkin-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin: 0;
+}
+
+.checkin-date {
+    font-size: 14px;
+    color: #6c6c70;
+}
+
+.checkin-soreness {
+    margin-bottom: 16px;
+}
+
+.checkin-soreness-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin-bottom: 8px;
+}
+
+.checkin-soreness-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.checkin-soreness-option {
+    background: #f8f9fa;
+    border: 2px solid #e5e5e7;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    flex: 1;
+}
+
+.checkin-soreness-option:hover {
+    background: #f0f0f0;
+    border-color: #007aff;
+}
+
+.checkin-soreness-option.selected {
+    background: #007aff;
+    border-color: #007aff;
+    color: white;
+}
+
+.checkin-soreness-option.selected .checkin-soreness-label {
+    color: white;
+}
+
+.checkin-soreness-emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.checkin-soreness-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
+}
+
+.checkin-note {
+    margin-bottom: 16px;
+}
+
+.checkin-note-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin-bottom: 8px;
+}
+
+.checkin-note-input {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px 12px;
+    border: 2px solid #e5e5e7;
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.checkin-note-input:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.checkin-save-btn {
+    background: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.checkin-save-btn:hover {
+    background: #0056cc;
+}
+
+.checkin-complete {
+    text-align: center;
+    color: #34c759;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.checkin-complete-emoji {
+    font-size: 16px;
+}
+
 /* Stats Card */
 .stats-card {
     background: #fff;
@@ -812,6 +960,22 @@ body {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
+}
+
+.day-number {
+    display: block;
+}
+
+.note-dot {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: #007aff;
+    border-radius: 50%;
+    opacity: 0.8;
 }
 
 .calendar-day:hover {
@@ -897,6 +1061,159 @@ body {
     font-size: 14px;
     color: #6c6c70;
     margin: 0;
+}
+
+.workout-feedback {
+    font-size: 14px;
+    color: #1c1c1e;
+    margin: 6px 0 0 0;
+    font-weight: 500;
+}
+
+.workout-feedback .feedback-emoji {
+    margin-right: 6px;
+}
+
+.daily-note-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.daily-note-container h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1c1c1e;
+}
+
+.daily-note-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    resize: vertical;
+    margin-bottom: 12px;
+}
+
+.daily-note-input:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.daily-note-display {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+}
+
+.btn-save-note, .btn-edit-note, .btn-delete-note {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-save-note {
+    background: #007aff;
+    color: white;
+}
+
+.btn-save-note:hover {
+    background: #0056cc;
+}
+
+.btn-edit-note {
+    background: #007aff;
+    color: white;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    margin-top: 12px;
+}
+
+.btn-edit-note:hover {
+    background: #0056cc;
+}
+
+.btn-delete-note {
+    background: #ff3b30;
+    color: white;
+}
+
+.btn-delete-note:hover {
+    background: #d70015;
+}
+
+.note-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.soreness-question, .note-question {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+    color: #1c1c1e;
+}
+
+.soreness-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.soreness-option {
+    background: #f8f9fa;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    flex: 1;
+}
+
+.soreness-option:hover {
+    background: #f0f0f0;
+    border-color: #007aff;
+}
+
+.soreness-option.selected {
+    background: #007aff;
+    border-color: #007aff;
+    color: white;
+}
+
+.soreness-option.selected .soreness-label {
+    color: white;
+}
+
+.soreness-emoji {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.soreness-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
 }
 
 .workout-details-exercises {
@@ -1039,6 +1356,97 @@ body {
     font-weight: 800;
     color: white;
     text-align: center;
+}
+
+.celebration-duration {
+    position: relative;
+    z-index: 10;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    margin-top: 12px;
+    opacity: 0.9;
+}
+
+.celebration-feedback {
+    position: relative;
+    z-index: 10;
+    margin-top: 32px;
+}
+
+.feedback-question {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.feedback-options {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.feedback-option {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    min-width: 70px;
+}
+
+.feedback-option:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.feedback-option.selected {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: scale(1.05);
+}
+
+.feedback-emoji {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.feedback-label {
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.celebration-continue-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 24px;
+    padding: 14px 32px;
+    color: #1c1c1e;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.celebration-continue-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
 }
 
 .confetti-container {
@@ -1389,5 +1797,59 @@ body {
 
 .app-bar-item span {
     margin-top: 2px;
+}
+
+/* Daily Check-in Collapsible */
+.checkin-header.collapsible {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.checkin-toggle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6c6c70;
+    transition: transform 0.2s ease;
+}
+
+.checkin-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    max-height: 500px;
+}
+
+.checkin-content.collapsed {
+    max-height: 0;
+}
+
+/* Daily Completion Message */
+.daily-completion-message {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin: 20px 0;
+}
+
+.completion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.daily-completion-message h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #18222b;
+    margin-bottom: 8px;
+}
+
+.daily-completion-message p {
+    font-size: 16px;
+    color: #6c6c70;
+    line-height: 1.4;
 }
 
