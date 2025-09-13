@@ -143,7 +143,6 @@
         <div id="deleteConfirmationDialog" class="bottom-sheet hidden">
             <div class="bottom-sheet-content">
                 <div class="confirmation-content">
-                    <h3>Delete Workout</h3>
                     <p>Are you sure you want to delete this workout? All your hardwork will vanish in an instance.</p>
                     <div class="confirmation-buttons">
                         <button id="confirmDeleteBtn" class="btn-confirm-delete">Delete</button>
@@ -204,31 +203,13 @@
                 <div class="confetti confetti-20"></div>
             </div>
             <div class="celebration-content">
-                <div class="celebration-text">Crushed it</div>
+                <div class="celebration-text">Crushed it!</div>
                 <div class="celebration-duration" id="celebrationDuration"></div>
+                <img src="images/celebration.gif" alt="Celebration" class="celebration-gif">
                 <div class="celebration-feedback">
                     <div class="feedback-question">How did you feel?</div>
-                    <div class="feedback-options">
-                        <button class="feedback-option" data-feeling="amazing" onclick="recordWorkoutFeedback('amazing')">
-                            <span class="feedback-emoji">🔥</span>
-                            <span class="feedback-label">Amazing</span>
-                        </button>
-                        <button class="feedback-option" data-feeling="good" onclick="recordWorkoutFeedback('good')">
-                            <span class="feedback-emoji">😊</span>
-                            <span class="feedback-label">Good</span>
-                        </button>
-                        <button class="feedback-option" data-feeling="okay" onclick="recordWorkoutFeedback('okay')">
-                            <span class="feedback-emoji">😐</span>
-                            <span class="feedback-label">Okay</span>
-                        </button>
-                        <button class="feedback-option" data-feeling="tough" onclick="recordWorkoutFeedback('tough')">
-                            <span class="feedback-emoji">😮‍💨</span>
-                            <span class="feedback-label">Tough</span>
-                        </button>
-                        <button class="feedback-option" data-feeling="terrible" onclick="recordWorkoutFeedback('terrible')">
-                            <span class="feedback-emoji">😞</span>
-                            <span class="feedback-label">Terrible</span>
-                        </button>
+                    <div class="celebration-emoji-row" id="celebrationMoodOptions">
+                        <!-- Emojis will be dynamically generated using daily checkin style -->
                     </div>
 
                     <button class="celebration-continue-btn" id="celebrationContinueBtn" onclick="closeCelebration()">

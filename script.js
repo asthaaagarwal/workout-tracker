@@ -21,8 +21,17 @@ const appNames = [
 // Workout colors
 const workoutColors = {
     'upper-body': '#fcd5c1',    // Default workout card color
-    'lower-body': '#fcd5c1',    // Default workout card color  
+    'lower-body': '#fcd5c1',    // Default workout card color
     'full-body': '#fcd5c1'      // Default workout card color
+};
+
+// Feedback emoji mapping
+const feedbackMap = {
+    'amazing': { emoji: '🔥', label: 'Amazing' },
+    'good': { emoji: '😊', label: 'Good' },
+    'okay': { emoji: '😐', label: 'Okay' },
+    'tough': { emoji: '😮‍💨', label: 'Tough' },
+    'terrible': { emoji: '😞', label: 'Terrible' }
 };
 
 // Workout exercises data
@@ -1586,7 +1595,19 @@ function openExerciseSheet(exerciseName) {
         
         doneBtn.disabled = false;
         doneBtn.onclick = () => {
-            markExerciseComplete(exerciseName);
+            // Check if exercise should be marked as completed or reverted to pending
+            const hasValidSets = exerciseData[exerciseName].sets.some(set =>
+                set.weight && parseFloat(set.weight) > 0
+            );
+
+            if (hasValidSets) {
+                // Mark as completed if there are sets with weights
+                markExerciseComplete(exerciseName);
+            } else {
+                // Mark as not completed if no valid weights
+                exerciseData[exerciseName].completed = false;
+                updatePendingWorkout();
+            }
             closeExerciseSheet();
         };
     } else {
@@ -1658,11 +1679,20 @@ function showCelebration(duration) {
         durationElement.textContent = `in ${formattedDuration}`;
     }
 
-    // Reset feedback and soreness selection
-    const feedbackOptions = document.querySelectorAll('.feedback-option');
-    feedbackOptions.forEach(option => {
-        option.classList.remove('selected');
-    });
+    // Generate emoji options using daily checkin style
+    const celebrationMoodOptions = document.getElementById('celebrationMoodOptions');
+    const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
+    const moodEmojis = {
+        'amazing': '🔥',
+        'good': '😊',
+        'okay': '😐',
+        'tough': '😮‍💨',
+        'terrible': '😞'
+    };
+
+    celebrationMoodOptions.innerHTML = moods.map(mood =>
+        `<button class="mood-emoji" data-mood="${mood}" onclick="recordWorkoutFeedback('${mood}')">${moodEmojis[mood]}</button>`
+    ).join('');
 }
 
 // Record workout feedback
@@ -1685,11 +1715,11 @@ function recordWorkoutFeedback(feeling) {
         saveWorkoutData();
     }
 
-    // Highlight the selected feedback option
-    const feedbackOptions = document.querySelectorAll('.feedback-option');
-    feedbackOptions.forEach(option => {
+    // Highlight the selected mood emoji
+    const moodOptions = document.querySelectorAll('#celebrationMoodOptions .mood-emoji');
+    moodOptions.forEach(option => {
         option.classList.remove('selected');
-        if (option.dataset.feeling === feeling) {
+        if (option.dataset.mood === feeling) {
             option.classList.add('selected');
         }
     });
@@ -1949,14 +1979,6 @@ function formatDateForDisplay(date) {
 
 // Helper function to get feedback display HTML
 function getFeedbackDisplay(feedback) {
-    const feedbackMap = {
-        'amazing': { emoji: '🔥', label: 'Amazing' },
-        'good': { emoji: '😊', label: 'Good' },
-        'okay': { emoji: '😐', label: 'Okay' },
-        'tough': { emoji: '😮‍💨', label: 'Tough' },
-        'terrible': { emoji: '😞', label: 'Terrible' }
-    };
-
     const feedbackInfo = feedbackMap[feedback];
     if (!feedbackInfo) return '';
 
@@ -2034,13 +2056,6 @@ function showWorkoutDetails(date) {
     }
     
     const feedbackDisplay = workout.feedback ? getFeedbackDisplay(workout.feedback) : '';
-    const feedbackMap = {
-        'amazing': { emoji: '🔥', label: 'Amazing' },
-        'good': { emoji: '😊', label: 'Good' },
-        'okay': { emoji: '😐', label: 'Okay' },
-        'tough': { emoji: '😮‍💨', label: 'Tough' },
-        'terrible': { emoji: '😞', label: 'Terrible' }
-    };
     const feedbackEmoji = workout.feedback ? feedbackMap[workout.feedback]?.emoji || '' : '';
     const workoutDuration = workout.duration ? formatWorkoutDuration(workout.duration) : '';
     let detailsHtml = `
