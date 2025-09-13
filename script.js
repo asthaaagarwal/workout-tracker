@@ -438,6 +438,11 @@ function openCheckinPopover(initialMood = null, screen = 'home') {
     } else {
         textarea.value = '';
     }
+
+    // Auto-focus on textarea with slight delay for smooth transition
+    setTimeout(() => {
+        textarea.focus();
+    }, 300);
     
     // Show delete button only if editing existing entry
     if (existingEntry && existingEntry.mood) {
@@ -2410,13 +2415,11 @@ function handleVisualViewportChange() {
 
         if (keyboardHeight > 50) { // Keyboard is open
             popover.classList.add('keyboard-open');
-            saveBtn.style.bottom = '20px'; // Keep button at fixed position
             // Prevent body scroll
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
         } else { // Keyboard is closed
             popover.classList.remove('keyboard-open');
-            saveBtn.style.bottom = '20px';
             // Restore body scroll
             document.body.style.position = '';
             document.body.style.width = '';
