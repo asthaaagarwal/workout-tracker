@@ -99,7 +99,7 @@ const exerciseInfo = {
     'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.', video: 'https://www.youtube.com/watch?v=KEFQyLkDYtI' },
     'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.', video: null },
     'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.', video: null },
-    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=tuwHzzPdaGc' },
+    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
     'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.', video: 'https://www.youtube.com/watch?v=Mdp7kuhZD_M' },
     'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.', video: 'https://www.youtube.com/watch?v=3_RR7ELmcAk' },
     'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.', video: 'https://www.youtube.com/watch?v=FRxZ6wr5bpA' },
@@ -166,6 +166,321 @@ function loadWorkoutData() {
 // Save data to localStorage
 function saveWorkoutData() {
     localStorage.setItem('workoutTrackerData', JSON.stringify(workoutData));
+}
+
+// Test data functions for development/testing
+function addTestData() {
+    const workoutTypes = ['upper-body', 'lower-body', 'full-body'];
+    const testWorkouts = [];
+
+    // Generate workouts for the last 2 months (8-9 weeks)
+    const today = new Date();
+    const yesterday = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000)); // Start from yesterday
+    const startDate = new Date(yesterday.getTime() - (60 * 24 * 60 * 60 * 1000)); // 60 days before yesterday
+
+    // Sample exercise data for each workout type
+    const sampleExercises = {
+        'upper-body': {
+            'Chest press': { baseWeight: 20, sets: 3 },
+            'Lat pull downs': { baseWeight: 30, sets: 3 },
+            'Bent over rows': { baseWeight: 25, sets: 3 },
+            'Shoulder press': { baseWeight: 15, sets: 3 },
+            'Bicep curls': { baseWeight: 10, sets: 2 },
+            'Tricep curls': { baseWeight: 12, sets: 2 }
+        },
+        'lower-body': {
+            'Back squats': { baseWeight: 40, sets: 3 },
+            'Deadlift': { baseWeight: 50, sets: 3 },
+            'Step ups': { baseWeight: 15, sets: 3 },
+            'Hip thrust': { baseWeight: 35, sets: 3 },
+            'Single leg extension': { baseWeight: 20, sets: 2 },
+            'Side lunge': { baseWeight: 0, sets: 2 }
+        },
+        'full-body': {
+            'Back squats': { baseWeight: 35, sets: 3 },
+            'Chest press': { baseWeight: 18, sets: 3 },
+            'Bent over rows': { baseWeight: 22, sets: 3 },
+            'Shoulder press': { baseWeight: 12, sets: 3 },
+            'Hip thrust': { baseWeight: 30, sets: 3 }
+        }
+    };
+
+    // Generate 2-3 workouts per week for the last 2 months with dynamic scheduling
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const daysToGenerate = 61; // 60 days before yesterday + yesterday
+    const weeksToGenerate = Math.ceil(daysToGenerate / 7);
+
+    for (let week = 0; week < weeksToGenerate; week++) {
+        const weekStartDate = new Date(startDate.getTime() + (week * 7 * msPerDay));
+
+        // Randomly decide 2 or 3 workouts this week (weighted towards 3)
+        const workoutsThisWeek = Math.random() < 0.7 ? 3 : 2;
+
+        // Define possible workout days (Mon-Sat, avoiding Sunday)
+        const possibleDays = [1, 2, 3, 4, 5, 6]; // Mon-Sat
+
+        // Randomly select workout days for this week with minimum rest day between workouts
+        const selectedDays = [];
+        if (workoutsThisWeek === 2) {
+            // For 2 workouts, use predefined patterns to ensure variety and proper spacing
+            const twoWorkoutPatterns = [
+                [1, 4], // Mon, Thu
+                [1, 5], // Mon, Fri
+                [1, 6], // Mon, Sat
+                [2, 5], // Tue, Fri
+                [2, 6], // Tue, Sat
+                [3, 6], // Wed, Sat
+                [1, 3], // Mon, Wed
+                [3, 5], // Wed, Fri
+            ];
+            const patternIndex = (week + Math.floor(Math.random() * 2)) % twoWorkoutPatterns.length;
+            const pattern = twoWorkoutPatterns[patternIndex];
+            selectedDays.push(...pattern);
+        } else {
+            // For 3 workouts, use a more varied pattern based on week number for consistent variety
+            const patterns = [
+                [1, 3, 5], // Mon, Wed, Fri - classic
+                [1, 3, 6], // Mon, Wed, Sat
+                [2, 4, 6], // Tue, Thu, Sat
+                [1, 4, 6], // Mon, Thu, Sat
+                [2, 4, 5], // Tue, Thu, Fri
+                [1, 2, 4], // Mon, Tue, Thu
+                [3, 5, 6], // Wed, Fri, Sat
+            ];
+            // Use week number to ensure different patterns across weeks, but with some randomness
+            const patternIndex = (week + Math.floor(Math.random() * 3)) % patterns.length;
+            const pattern = patterns[patternIndex];
+            selectedDays.push(...pattern);
+        }
+
+        // Sort selected days
+        selectedDays.sort((a, b) => a - b);
+
+        selectedDays.forEach((dayOfWeek, workoutIndex) => {
+            // Calculate the actual date for this workout
+            const daysFromWeekStart = dayOfWeek - weekStartDate.getDay();
+            const adjustedDaysFromWeekStart = daysFromWeekStart < 0 ? daysFromWeekStart + 7 : daysFromWeekStart;
+            const workoutDate = new Date(weekStartDate.getTime() + (adjustedDaysFromWeekStart * msPerDay));
+
+            // Only add workout if it's within our date range and not in the future
+            if (workoutDate >= startDate && workoutDate <= yesterday) {
+                // Cycle through workout types in order for consistency
+                const workoutType = workoutTypes[workoutIndex % workoutTypes.length];
+                const exercises = sampleExercises[workoutType];
+
+                // Set realistic workout times with more variety
+                let hour;
+                const timePreference = Math.random();
+                if (timePreference < 0.3) { // 30% morning workouts
+                    hour = 6 + Math.floor(Math.random() * 3); // 6-8 AM
+                } else if (timePreference < 0.7) { // 40% evening workouts
+                    hour = 17 + Math.floor(Math.random() * 4); // 5-8 PM
+                } else { // 30% afternoon/lunch workouts
+                    hour = 12 + Math.floor(Math.random() * 3); // 12-2 PM
+                }
+                workoutDate.setHours(hour, Math.floor(Math.random() * 60), 0, 0);
+
+                // Generate exercise data with more realistic progressive overload
+                const workoutExercises = {};
+                Object.entries(exercises).forEach(([exerciseName, config]) => {
+                    const sets = [];
+
+                    // Calculate base weight for this week with realistic progression
+                    const weeksOfTraining = week;
+                    let baseWeightForWeek = config.baseWeight;
+
+                    // Progressive overload pattern: increase weight every 2-3 weeks
+                    const progressionCycle = Math.floor(weeksOfTraining / 3); // Every 3 weeks
+                    const weekInCycle = weeksOfTraining % 3;
+
+                    // Add progression based on exercise type (compound vs isolation)
+                    const isCompoundMovement = ['Back squats', 'Deadlift', 'Chest press', 'Bent over rows'].includes(exerciseName);
+                    const progressionRate = isCompoundMovement ? 2.5 : 1.25; // Compounds progress faster
+
+                    baseWeightForWeek += progressionCycle * progressionRate;
+
+                    // Add small week-to-week variations within the cycle
+                    if (weekInCycle === 1) {
+                        baseWeightForWeek += 0.5; // Slight increase in week 2
+                    } else if (weekInCycle === 2) {
+                        baseWeightForWeek += 1; // Small increase in week 3
+                    }
+
+                    // Handle deload weeks (every 4th cycle = every 12 weeks)
+                    const isDeloadCycle = progressionCycle > 0 && progressionCycle % 4 === 0;
+                    if (isDeloadCycle) {
+                        baseWeightForWeek *= 0.9; // 10% reduction for deload
+                    }
+
+                    // Occasional plateau periods (simulate training plateaus)
+                    const plateauProbability = Math.max(0, (progressionCycle - 3) * 0.1); // Higher chance after week 9
+                    const isPlateauWeek = Math.random() < plateauProbability;
+                    if (isPlateauWeek && weekInCycle === 0) {
+                        baseWeightForWeek = Math.max(config.baseWeight, baseWeightForWeek - progressionRate); // Slight regression
+                    }
+
+                    for (let setNum = 0; setNum < config.sets; setNum++) {
+                        // Small variations between sets (realistic training)
+                        let setWeight = baseWeightForWeek;
+
+                        // First set: sometimes lighter for warm-up
+                        if (setNum === 0 && Math.random() < 0.3) {
+                            setWeight -= 2.5;
+                        }
+
+                        // Last set: sometimes heavier for top set
+                        if (setNum === config.sets - 1 && Math.random() < 0.4) {
+                            setWeight += 1.25;
+                        }
+
+                        // Small random variation (±1.25kg)
+                        const randomVariation = (Math.random() - 0.5) * 2.5;
+                        setWeight += randomVariation;
+
+                        // Round to nearest 1.25kg (realistic plate increments)
+                        setWeight = Math.max(5, Math.round(setWeight * 0.8) / 0.8);
+
+                        // Realistic rep ranges based on weight progression
+                        let reps;
+                        if (setWeight >= baseWeightForWeek + 2.5) {
+                            reps = 6 + Math.floor(Math.random() * 4); // 6-9 reps for heavier sets
+                        } else if (setWeight <= baseWeightForWeek - 2.5) {
+                            reps = 12 + Math.floor(Math.random() * 4); // 12-15 reps for lighter sets
+                        } else {
+                            reps = 8 + Math.floor(Math.random() * 5); // 8-12 reps for normal sets
+                        }
+
+                        sets.push({ weight: setWeight, reps });
+                    }
+
+                    if (sets.length > 0) {
+                        workoutExercises[exerciseName] = sets;
+                    }
+                });
+
+                // Realistic workout duration based on workout type
+                const baseDuration = 40 * 60 * 1000; // 40 minutes base
+                const variation = Math.floor(Math.random() * 40 * 60 * 1000); // ±40 minutes variation
+                const duration = baseDuration + variation;
+
+                testWorkouts.push({
+                    date: workoutDate.toISOString(),
+                    type: workoutType,
+                    duration: duration,
+                    exercises: workoutExercises,
+                    feedback: null,
+                    isTestData: true // Mark as test data for easy removal
+                });
+            }
+        });
+    }
+
+    // Add test workouts to history
+    workoutData.history.push(...testWorkouts);
+    workoutData.totalWorkouts = (workoutData.totalWorkouts || 0) + testWorkouts.length;
+
+    // Sort history by date
+    workoutData.history.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Generate fake daily check-in data
+    const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
+    const sorenessLevels = ['none', 'mild', 'sore', 'very-sore'];
+    const sampleNotes = [
+        "Feeling energized today!",
+        "Great workout session",
+        "A bit tired but motivated",
+        "Recovery day needed",
+        "Pushed through the soreness",
+        "Feeling strong and focused",
+        "Had a challenging day",
+        "Loving the progress",
+        "Need to stretch more",
+        "Perfect workout weather",
+        "",
+        "",
+        "" // Some entries with no notes
+    ];
+
+    // Initialize dailyEntries if it doesn't exist
+    if (!workoutData.dailyEntries) {
+        workoutData.dailyEntries = {};
+    }
+
+    // Add daily check-ins for the same date range, with some gaps
+    for (let i = 0; i < daysToGenerate; i++) { // 2 months
+        // Skip some days randomly to make it realistic (about 25% skip rate)
+        if (Math.random() < 0.25) continue;
+
+        const checkInDate = new Date(startDate.getTime() + (i * msPerDay));
+        const dateKey = getLocalDateKey(checkInDate);
+
+        // Don't add check-ins for future dates
+        if (checkInDate > yesterday) continue;
+
+        // Don't overwrite existing real check-ins
+        if (!workoutData.dailyEntries[dateKey]) {
+            const randomMood = moods[Math.floor(Math.random() * moods.length)];
+            const randomSoreness = sorenessLevels[Math.floor(Math.random() * sorenessLevels.length)];
+            const randomNote = sampleNotes[Math.floor(Math.random() * sampleNotes.length)];
+
+            workoutData.dailyEntries[dateKey] = {
+                mood: randomMood,
+                soreness: randomSoreness,
+                note: randomNote,
+                date: checkInDate.toISOString(),
+                isTestData: true // Mark as test data for easy removal
+            };
+        }
+    }
+
+    saveWorkoutData();
+
+    const checkinCount = Object.values(workoutData.dailyEntries).filter(entry => entry.isTestData).length;
+    console.log(`Added ${testWorkouts.length} test workouts and ${checkinCount} daily check-ins to your history!`);
+
+    // Refresh the display if we're on the home page
+    if (typeof updateDisplay === 'function') {
+        updateDisplay();
+    }
+
+    return testWorkouts.length;
+}
+
+function removeTestData() {
+    const initialWorkoutCount = workoutData.history.length;
+    const initialCheckinCount = workoutData.dailyEntries ? Object.keys(workoutData.dailyEntries).length : 0;
+
+    // Remove all workouts marked as test data
+    workoutData.history = workoutData.history.filter(workout => !workout.isTestData);
+
+    const removedWorkoutCount = initialWorkoutCount - workoutData.history.length;
+
+    // Remove all daily check-ins marked as test data
+    let removedCheckinCount = 0;
+    if (workoutData.dailyEntries) {
+        const testEntryKeys = Object.keys(workoutData.dailyEntries).filter(key =>
+            workoutData.dailyEntries[key].isTestData
+        );
+
+        testEntryKeys.forEach(key => {
+            delete workoutData.dailyEntries[key];
+            removedCheckinCount++;
+        });
+    }
+
+    // Update total workout count
+    workoutData.totalWorkouts = Math.max(0, (workoutData.totalWorkouts || 0) - removedWorkoutCount);
+
+    saveWorkoutData();
+
+    console.log(`Removed ${removedWorkoutCount} test workouts and ${removedCheckinCount} daily check-ins from your history!`);
+
+    // Refresh the display if we're on the home page
+    if (typeof updateDisplay === 'function') {
+        updateDisplay();
+    }
+
+    return removedWorkoutCount;
 }
 
 // Update pending workout data if current workout is in progress or save to history if completed
@@ -273,13 +588,21 @@ function setupEventListeners() {
         openCalendar();
         updateAppBarState('calendar');
     });
+    document.getElementById('statsAppBarBtn').addEventListener('click', () => {
+        openStats();
+    });
+
+    // Exercise dropdown change
+    document.getElementById('exerciseDropdown').addEventListener('change', (e) => {
+        renderStats(e.target.value);
+    });
     
     // Calendar navigation
     document.getElementById('prevMonthBtn').addEventListener('click', () => navigateMonth(-1));
     document.getElementById('nextMonthBtn').addEventListener('click', () => navigateMonth(1));
     
     // Bottom Sheet
-    document.getElementById('closeSheetBtn').addEventListener('click', closeExerciseSheet);
+    // Close button removed - sheet can be closed by clicking background
     document.getElementById('exerciseBottomSheet').addEventListener('click', (e) => {
         if (e.target.id === 'exerciseBottomSheet') closeExerciseSheet();
     });
@@ -305,6 +628,18 @@ function setupEventListeners() {
     document.getElementById('cancelDeleteCheckinBtn').addEventListener('click', closeDeleteCheckinConfirmationDialog);
     document.getElementById('deleteCheckinConfirmationDialog').addEventListener('click', (e) => {
         if (e.target.id === 'deleteCheckinConfirmationDialog') closeDeleteCheckinConfirmationDialog();
+    });
+
+    // Developer controls event listeners
+    document.getElementById('addTestDataBtn').addEventListener('click', () => {
+        const count = addTestData();
+        alert(`Added ${count} test workouts to your history!`);
+    });
+    document.getElementById('removeTestDataBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to remove all test data? This cannot be undone.')) {
+            const count = removeTestData();
+            alert(`Removed ${count} test workouts from your history!`);
+        }
     });
 }
 
@@ -625,8 +960,429 @@ function formatDateForHomeDisplay(date) {
 
 // Update app bar active state
 function updateAppBarState(activeTab) {
-    document.getElementById('homeAppBarBtn').classList.toggle('active', activeTab === 'home');
-    document.getElementById('calendarAppBarBtn').classList.toggle('active', activeTab === 'calendar');
+    console.log('updateAppBarState called with:', activeTab);
+
+    // Remove active class from all buttons
+    document.getElementById('homeAppBarBtn').classList.remove('active');
+    document.getElementById('calendarAppBarBtn').classList.remove('active');
+    document.getElementById('statsAppBarBtn').classList.remove('active');
+
+    // Add active class to the selected tab
+    if (activeTab === 'home') {
+        document.getElementById('homeAppBarBtn').classList.add('active');
+    } else if (activeTab === 'calendar') {
+        document.getElementById('calendarAppBarBtn').classList.add('active');
+    } else if (activeTab === 'stats') {
+        document.getElementById('statsAppBarBtn').classList.add('active');
+        console.log('Added active class to stats button');
+    }
+}
+
+// Open stats screen
+function openStats() {
+    console.log('openStats() called');
+    document.getElementById('homeScreen').classList.add('hidden');
+    document.getElementById('calendarScreen').classList.add('hidden');
+    document.getElementById('workoutScreen').classList.add('hidden');
+    document.getElementById('statsScreen').classList.remove('hidden');
+    populateExerciseDropdown();
+    renderStats();
+    updateAppBarState('stats');
+    console.log('openStats() completed');
+}
+
+// Populate exercise dropdown
+function populateExerciseDropdown() {
+    const dropdown = document.getElementById('exerciseDropdown');
+    const allExercises = new Set();
+
+    // Collect all exercises from all workout types
+    Object.values(workoutExercises).forEach(workout => {
+        workout.exercises.forEach(exercise => {
+            // Only add main exercises (not warmup/cooldown)
+            if (!exercise.type) {
+                allExercises.add(exercise.name);
+            }
+        });
+    });
+
+    // Sort exercises alphabetically
+    const sortedExercises = Array.from(allExercises).sort();
+
+    // Clear existing options except "All Exercises"
+    dropdown.innerHTML = '<option value="all">All Exercises</option>';
+
+    // Add exercise options
+    sortedExercises.forEach(exercise => {
+        const option = document.createElement('option');
+        option.value = exercise;
+        option.textContent = exercise;
+        dropdown.appendChild(option);
+    });
+}
+
+// Render stats content
+function renderStats(selectedExercise = 'all') {
+    const statsContent = document.getElementById('statsContent');
+
+    if (selectedExercise === 'all') {
+        // Show general workout stats
+        const totalWorkouts = workoutData.totalWorkouts || 0;
+        const totalCycles = workoutData.totalCycles || 0;
+        const daysSinceLastWorkout = calculateDaysSinceLastWorkout();
+        const currentStreak = calculateCurrentStreak();
+        const mostActiveDay = calculateMostActiveDay();
+        const favoriteWorkout = calculateFavoriteWorkout();
+
+        statsContent.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card wide">
+                    <div class="stat-value">${mostActiveDay}</div>
+                    <div class="stat-label">Most Active Day</div>
+                </div>
+
+                <div class="stat-card wide">
+                    <div class="stat-value">${favoriteWorkout}</div>
+                    <div class="stat-label">Favorite Workout</div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Show exercise-specific stats
+        const exerciseStats = calculateExerciseStats(selectedExercise);
+
+        statsContent.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">${exerciseStats.totalSessions}</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value">${exerciseStats.averageSetsPerSession}</div>
+                    <div class="stat-label">Average Sets Per Session</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value">${exerciseStats.maxWeight}kg</div>
+                    <div class="stat-label">Max Weight</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value">${exerciseStats.startWeight}kg</div>
+                    <div class="stat-label">Start Weight</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render the weight progression graph
+    renderWeightProgressionGraph(selectedExercise);
+}
+
+// Get weight progression data for an exercise
+function getWeightProgressionData(exerciseName) {
+    const history = workoutData.history || [];
+    const progressionData = [];
+
+    history.forEach(workout => {
+        if (workout.exercises && workout.exercises[exerciseName]) {
+            const workoutDate = new Date(workout.date);
+            const exerciseData = workout.exercises[exerciseName];
+
+            // Get the average weight for this workout
+            const weights = exerciseData.map(set => parseFloat(set.weight)).filter(w => w > 0);
+
+            if (weights.length > 0) {
+                const averageWeight = weights.reduce((sum, w) => sum + w, 0) / weights.length;
+
+                progressionData.push({
+                    date: workoutDate,
+                    weight: Math.round(averageWeight * 4) / 4 // Round to nearest 0.25kg
+                });
+            }
+        }
+    });
+
+    // Sort by date
+    progressionData.sort((a, b) => a.date - b.date);
+    return progressionData;
+}
+
+// Render weight progression graph
+function renderWeightProgressionGraph(exerciseName) {
+    const graphContainer = document.getElementById('weightProgressionGraph');
+    const svg = document.getElementById('progressionSvg');
+    const noDataMessage = document.getElementById('noDataMessage');
+    const graphSubtitle = document.getElementById('graphSubtitle');
+
+    if (exerciseName === 'all') {
+        graphContainer.classList.add('hidden');
+        return;
+    }
+
+    const progressionData = getWeightProgressionData(exerciseName);
+
+    if (progressionData.length === 0) {
+        graphContainer.classList.remove('hidden');
+        svg.classList.add('hidden');
+        noDataMessage.classList.remove('hidden');
+        graphSubtitle.textContent = `No weight data available for ${exerciseName}`;
+        return;
+    }
+
+    // Show graph and hide no data message
+    graphContainer.classList.remove('hidden');
+    svg.classList.remove('hidden');
+    noDataMessage.classList.add('hidden');
+    graphSubtitle.textContent = `${exerciseName} weight progression over time`;
+
+    // Clear previous graph
+    svg.innerHTML = '';
+
+    // Graph dimensions and margins
+    const margin = { top: 14, right: 30, bottom: 14, left: 30 };
+    const containerWidth = svg.clientWidth || 350; // Use actual SVG width
+    const width = containerWidth - margin.left - margin.right;
+    const height = 140 - margin.top - margin.bottom;
+
+    // Set SVG viewBox to ensure proper scaling
+    svg.setAttribute('viewBox', `0 0 ${containerWidth} 140`);
+
+    // Create scales
+    const minWeight = Math.min(...progressionData.map(d => d.weight));
+    const maxWeight = Math.max(...progressionData.map(d => d.weight));
+    const weightPadding = (maxWeight - minWeight) * 0.1 || 5;
+
+    const minDate = progressionData[0].date;
+    const maxDate = progressionData[progressionData.length - 1].date;
+
+    // Scale functions
+    const xScale = (date) => {
+        const ratio = (date - minDate) / (maxDate - minDate) || 0;
+        return margin.left + ratio * width;
+    };
+
+    const yScale = (weight) => {
+        const ratio = (weight - (minWeight - weightPadding)) / ((maxWeight + weightPadding) - (minWeight - weightPadding));
+        return margin.top + height - ratio * height;
+    };
+
+
+    // Draw smooth line
+    if (progressionData.length > 1) {
+        const points = progressionData.map(d => ({
+            x: xScale(d.date),
+            y: yScale(d.weight)
+        }));
+
+        let pathData = `M ${points[0].x} ${points[0].y}`;
+
+        if (points.length === 2) {
+            // For just 2 points, use a straight line
+            pathData += ` L ${points[1].x} ${points[1].y}`;
+        } else {
+            // For 3+ points, create smooth curves
+            for (let i = 1; i < points.length; i++) {
+                const current = points[i];
+                const previous = points[i - 1];
+                const next = points[i + 1];
+
+                if (i === 1) {
+                    // First curve - control point based on next point
+                    const cp1x = previous.x + (current.x - previous.x) * 0.3;
+                    const cp1y = previous.y;
+                    const cp2x = current.x - (current.x - previous.x) * 0.3;
+                    const cp2y = current.y;
+                    pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
+                } else if (i === points.length - 1) {
+                    // Last curve - control point based on previous point
+                    const cp1x = previous.x + (current.x - previous.x) * 0.3;
+                    const cp1y = previous.y;
+                    const cp2x = current.x - (current.x - previous.x) * 0.3;
+                    const cp2y = current.y;
+                    pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
+                } else {
+                    // Middle curves - smoother control points
+                    const prevDx = current.x - previous.x;
+                    const prevDy = current.y - previous.y;
+                    const nextDx = next.x - current.x;
+                    const nextDy = next.y - current.y;
+
+                    const cp1x = previous.x + prevDx * 0.5;
+                    const cp1y = previous.y + prevDy * 0.3;
+                    const cp2x = current.x - nextDx * 0.3;
+                    const cp2y = current.y - nextDy * 0.3;
+
+                    pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${current.x} ${current.y}`;
+                }
+            }
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('class', 'chart-line');
+        svg.appendChild(path);
+    }
+
+    // Draw points
+    progressionData.forEach((d, i) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.date));
+        circle.setAttribute('cy', yScale(d.weight));
+        circle.setAttribute('class', 'chart-point');
+
+        // Add tooltip
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = `${d.weight}kg (${d.date.toLocaleDateString()})`;
+        circle.appendChild(title);
+
+        svg.appendChild(circle);
+    });
+
+}
+
+// Calculate exercise-specific stats
+function calculateExerciseStats(exerciseName) {
+    const history = workoutData.history || [];
+    let totalSessions = 0;
+    let totalSets = 0;
+    let totalReps = 0;
+    let totalVolume = 0;
+    let maxWeight = 0;
+    let startWeight = 0;
+    let allWeights = [];
+
+    // Sort history by date to get chronological order
+    const sortedHistory = [...history].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sortedHistory.forEach((workout, workoutIndex) => {
+        if (workout.exercises && workout.exercises[exerciseName]) {
+            totalSessions++;
+            const exerciseData = workout.exercises[exerciseName];
+
+            exerciseData.forEach(set => {
+                if (set.weight && set.reps) {
+                    totalSets++;
+                    totalReps += set.reps;
+                    const weight = parseFloat(set.weight);
+                    const volume = weight * set.reps;
+                    totalVolume += volume;
+                    maxWeight = Math.max(maxWeight, weight);
+                    allWeights.push(weight);
+
+                    // Set start weight from the first workout's first set
+                    if (workoutIndex === 0 && startWeight === 0) {
+                        startWeight = weight;
+                    }
+                }
+            });
+        }
+    });
+
+    const averageWeight = allWeights.length > 0
+        ? Math.round((allWeights.reduce((sum, w) => sum + w, 0) / allWeights.length) * 10) / 10
+        : 0;
+
+    const averageSetsPerSession = totalSessions > 0
+        ? Math.round((totalSets / totalSessions) * 10) / 10
+        : 0;
+
+    return {
+        totalSessions,
+        totalSets,
+        averageSetsPerSession,
+        totalReps,
+        totalVolume: Math.round(totalVolume),
+        maxWeight: maxWeight || 0,
+        startWeight: startWeight || 0,
+        averageWeight
+    };
+}
+
+// Calculate current streak
+function calculateCurrentStreak() {
+    if (!workoutData.history || workoutData.history.length === 0) return 0;
+
+    const sortedHistory = workoutData.history
+        .map(w => new Date(w.date).toDateString())
+        .sort((a, b) => new Date(b) - new Date(a));
+
+    let streak = 0;
+    let currentDate = new Date();
+
+    for (let i = 0; i < sortedHistory.length; i++) {
+        const workoutDate = new Date(sortedHistory[i]);
+        const daysDiff = Math.floor((currentDate - workoutDate) / (1000 * 60 * 60 * 24));
+
+        if (daysDiff === streak) {
+            streak++;
+        } else if (daysDiff > streak + 1) {
+            break;
+        }
+    }
+
+    return streak;
+}
+
+// Calculate most active day of week
+function calculateMostActiveDay() {
+    if (!workoutData.history || workoutData.history.length === 0) return 'None';
+
+    const dayCount = {};
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    workoutData.history.forEach(workout => {
+        const dayOfWeek = new Date(workout.date).getDay();
+        const dayName = dayNames[dayOfWeek];
+        dayCount[dayName] = (dayCount[dayName] || 0) + 1;
+    });
+
+    let mostActiveDay = 'None';
+    let maxCount = 0;
+
+    Object.entries(dayCount).forEach(([day, count]) => {
+        if (count > maxCount) {
+            maxCount = count;
+            mostActiveDay = day;
+        }
+    });
+
+    return mostActiveDay;
+}
+
+// Calculate favorite workout type
+function calculateFavoriteWorkout() {
+    if (!workoutData.history || workoutData.history.length === 0) return 'None';
+
+    const workoutCount = {};
+
+    workoutData.history.forEach(workout => {
+        const workoutTitle = workoutExercises[workout.type]?.title || workout.type;
+        workoutCount[workoutTitle] = (workoutCount[workoutTitle] || 0) + 1;
+    });
+
+    let favoriteWorkout = 'None';
+    let maxCount = 0;
+
+    Object.entries(workoutCount).forEach(([workout, count]) => {
+        if (count > maxCount) {
+            maxCount = count;
+            favoriteWorkout = workout;
+        }
+    });
+
+    return favoriteWorkout;
+}
+
+function calculateDaysSinceLastWorkout() {
+    let daysSince = 0;
+    if (workoutData.history && workoutData.history.length > 0) {
+        const lastWorkoutDate = new Date(workoutData.history[workoutData.history.length - 1].date);
+        const today = new Date();
+        daysSince = Math.floor((today - lastWorkoutDate) / (1000 * 60 * 60 * 24));
+    }
+    return daysSince;
 }
 
 // ==== SIMPLIFIED CORE FUNCTIONS ====
@@ -1163,6 +1919,7 @@ function confirmCompleteWorkout() {
 function openCalendar() {
     document.getElementById('homeScreen').classList.add('hidden');
     document.getElementById('workoutScreen').classList.add('hidden');
+    document.getElementById('statsScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.remove('hidden');
 
     currentCalendarDate = new Date();
@@ -1337,7 +2094,13 @@ function formatWorkoutDuration(durationMs) {
 function updateExerciseList() {
     const exerciseList = document.getElementById('exerciseList');
     exerciseList.innerHTML = '';
-    
+
+    // Hide feedback section by default
+    const feedbackSection = document.getElementById('workoutFeedbackSection');
+    if (feedbackSection) {
+        feedbackSection.classList.add('hidden');
+    }
+
     const exercises = workoutExercises[currentWorkout].exercises;
     
     // Separate exercises by type
@@ -1573,6 +2336,7 @@ function showHomeScreen() {
     document.getElementById('homeScreen').classList.remove('hidden');
     document.getElementById('workoutScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.add('hidden');
+    document.getElementById('statsScreen').classList.add('hidden');
     updateDisplay();
     updateAppBarState('home');
 }
@@ -1583,13 +2347,16 @@ let currentSheetExercise = null;
 function openExerciseSheet(exerciseName) {
     currentSheetExercise = exerciseName;
     document.getElementById('sheetExerciseTitle').textContent = exerciseName;
-    
+
+    // Show play button if video is available
+    showPlayButton(exerciseName);
+
     // Check if workout has been started
     const workoutState = getWorkoutState(currentWorkout);
     const isWorkoutStarted = workoutState === 'ongoing' || workoutState === 'completed';
-    
+
     updateSheetSets();
-    
+
     // Set up dynamic event listeners and disable state based on workout status
     const addSetBtn = document.getElementById('sheetAddSetBtn');
     const doneBtn = document.getElementById('sheetDoneBtn');
@@ -1644,6 +2411,50 @@ function openExerciseSheet(exerciseName) {
     });
 }
 
+// Show play button if video is available
+function showPlayButton(exerciseName) {
+    const playBtn = document.getElementById('playVideoBtn');
+    const exerciseData = exerciseInfo[exerciseName];
+
+    if (exerciseData && exerciseData.video) {
+        playBtn.onclick = () => openYouTubeVideo(exerciseData.video);
+        playBtn.classList.remove('hidden');
+
+        // Initialize Lucide icons for the play button
+        setTimeout(() => {
+            lucide.createIcons();
+        }, 100);
+    } else {
+        playBtn.classList.add('hidden');
+        playBtn.onclick = null;
+    }
+}
+
+// Extract video ID from YouTube URL
+function extractVideoId(url) {
+    if (!url) return '';
+
+    let videoId = '';
+
+    if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/embed/')) {
+        videoId = url.split('embed/')[1].split('?')[0];
+    }
+
+    return videoId;
+}
+
+// Open YouTube video in YouTube app or browser
+function openYouTubeVideo(url) {
+    if (!url) return;
+
+    // Try to open in YouTube app first, fallback to browser
+    window.open(url, '_blank');
+}
+
 // Close exercise bottom sheet
 function closeExerciseSheet() {
     const bottomSheet = document.getElementById('exerciseBottomSheet');
@@ -1656,6 +2467,12 @@ function closeExerciseSheet() {
     setTimeout(() => {
         bottomSheet.classList.add('hidden');
         currentSheetExercise = null;
+
+        // Hide play button
+        const playBtn = document.getElementById('playVideoBtn');
+        playBtn.classList.add('hidden');
+        playBtn.onclick = null;
+
         updateExerciseList();
     }, 300); // Match the CSS transition duration
 }
@@ -2110,6 +2927,66 @@ function openWorkoutFromCalendar(workoutType) {
     
     // Open the workout normally - it will load as completed
     openWorkout(workoutType, 'calendar');
+
+    // Show feedback section for completed workout
+    showWorkoutFeedbackSection(workoutType);
+}
+
+// Show workout feedback section
+function showWorkoutFeedbackSection(workoutType) {
+    const feedbackSection = document.getElementById('workoutFeedbackSection');
+    const feedbackOptions = document.getElementById('workoutFeedbackOptions');
+
+    // Get current feedback for this workout
+    const completedWorkout = workoutData.history
+        .filter(h => h.type === workoutType)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+    const currentFeedback = completedWorkout?.feedback || null;
+
+    // Create mood options (same as daily checkin)
+    const moods = ['amazing', 'good', 'okay', 'tough', 'terrible'];
+    const moodEmojis = {
+        'amazing': '🔥',
+        'good': '😊',
+        'okay': '😐',
+        'tough': '😮‍💨',
+        'terrible': '😞'
+    };
+
+    const moodButtons = moods.map(mood => {
+        const isSelected = mood === currentFeedback ? 'selected' : '';
+        return `<button class="mood-emoji ${isSelected}" data-mood="${mood}" onclick="updateWorkoutFeedback('${workoutType}', '${mood}')">${moodEmojis[mood]}</button>`;
+    }).join('');
+
+    feedbackOptions.innerHTML = moodButtons;
+    feedbackSection.classList.remove('hidden');
+}
+
+// Update workout feedback
+function updateWorkoutFeedback(workoutType, feedback) {
+    // Find the most recent workout of this type and update its feedback
+    const workoutIndex = workoutData.history
+        .map((h, index) => ({ ...h, originalIndex: index }))
+        .filter(h => h.type === workoutType)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0]?.originalIndex;
+
+    if (workoutIndex !== undefined) {
+        workoutData.history[workoutIndex].feedback = feedback;
+        saveWorkoutData();
+
+        // Update UI to show selection
+        const feedbackOptions = document.querySelectorAll('#workoutFeedbackOptions .mood-emoji');
+        feedbackOptions.forEach(option => {
+            option.classList.remove('selected');
+            if (option.dataset.mood === feedback) {
+                option.classList.add('selected');
+            }
+        });
+
+        // Update calendar display if we're coming from calendar
+        updateDisplay();
+    }
 }
 
 // Show delete confirmation dialog
@@ -2426,6 +3303,41 @@ function handleVisualViewportChange() {
         }
     }
 }
+
+// Developer controls toggle functions
+function showDevControls() {
+    const devControls = document.getElementById('devControls');
+    if (devControls) {
+        devControls.classList.remove('hidden');
+        console.log('Developer controls are now visible');
+    }
+}
+
+function hideDevControls() {
+    const devControls = document.getElementById('devControls');
+    if (devControls) {
+        devControls.classList.add('hidden');
+        console.log('Developer controls are now hidden');
+    }
+}
+
+function toggleDevControls() {
+    const devControls = document.getElementById('devControls');
+    if (devControls) {
+        if (devControls.classList.contains('hidden')) {
+            showDevControls();
+        } else {
+            hideDevControls();
+        }
+    }
+}
+
+// Make dev functions available globally for console access
+window.showDevControls = showDevControls;
+window.hideDevControls = hideDevControls;
+window.toggleDevControls = toggleDevControls;
+window.addTestData = addTestData;
+window.removeTestData = removeTestData;
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);

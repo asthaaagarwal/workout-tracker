@@ -59,6 +59,7 @@
                 </div>
             </div>
 
+
         </div>
 
         <!-- Workout Screen -->
@@ -77,6 +78,14 @@
 
             <div id="exerciseList" class="exercise-list">
                 <!-- Exercise items will be dynamically generated -->
+            </div>
+
+            <!-- Workout Feedback Section -->
+            <div id="workoutFeedbackSection" class="workout-feedback-section hidden">
+                <h3>How did you feel?</h3>
+                <div id="workoutFeedbackOptions" class="daily-checkin-simple">
+                    <!-- Feedback emoji options will be dynamically generated -->
+                </div>
             </div>
 
             <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
@@ -107,13 +116,58 @@
             </div>
         </div>
 
+        <!-- Stats Screen -->
+        <div id="statsScreen" class="screen hidden">
+            <div class="exercise-filter">
+                <select id="exerciseDropdown" class="exercise-dropdown">
+                    <option value="all">All Exercises</option>
+                    <!-- Exercise options will be dynamically generated -->
+                </select>
+            </div>
+
+            <!-- Weight Progression Graph -->
+            <div id="weightProgressionGraph" class="graph-container hidden">
+                <div class="graph-header">
+                    <h3>Weight Progression</h3>
+                    <p id="graphSubtitle">Select an exercise to see weight progression over time</p>
+                </div>
+                <div class="graph-content">
+                    <svg id="progressionSvg" class="progression-chart" width="100%" height="140">
+                        <!-- Graph will be dynamically generated -->
+                    </svg>
+                    <div id="noDataMessage" class="no-data-message hidden">
+                        <p>No weight data available for this exercise</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statsContent" class="stats-content">
+                <!-- Stats content will be dynamically generated -->
+            </div>
+
+            <!-- Developer Controls -->
+            <div id="statsDevControls" class="dev-controls">
+                <div class="dev-controls-header">
+                    <h3>Test Data Controls</h3>
+                    <small>For testing purposes only</small>
+                </div>
+                <div class="dev-controls-buttons">
+                    <button id="addTestDataBtn" class="btn-dev">Add Test Data</button>
+                    <button id="removeTestDataBtn" class="btn-dev">Remove Test Data</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Exercise Bottom Sheet -->
         <div id="exerciseBottomSheet" class="bottom-sheet hidden">
             <div class="bottom-sheet-content">
                 <div class="bottom-sheet-header">
                     <h3 id="sheetExerciseTitle">Exercise</h3>
-                    <button class="sheet-close" id="closeSheetBtn">×</button>
+                    <button id="playVideoBtn" class="play-video-btn hidden">
+                        <i data-lucide="play"></i>
+                    </button>
                 </div>
+
                 <div id="sheetSetsContainer" class="sheet-sets-container">
                     <!-- Sets will be dynamically generated -->
                 </div>
@@ -168,9 +222,9 @@
         <!-- Daily Check-in Popover -->
         <div id="checkinPopover" class="checkin-popover screen hidden">
             <header class="checkin-header">
-                <button id="closeCheckinBtn" class="btn-cancel"><i data-lucide="x"></i></button>
+                <button id="closeCheckinBtn" class="btn-cancel"><i data-lucide="chevron-left"></i>Back</button>
                 <h2>Daily Check-in</h2>
-                <div class="header-spacer"></div>
+                <button id="deleteCheckinBtn" class="btn-delete-icon hidden"><i data-lucide="trash-2"></i></button>
             </header>
 
             <div class="checkin-content">
@@ -188,7 +242,6 @@
                     ></textarea>
                 </div>
 
-                <button id="deleteCheckinBtn" class="btn-destructive hidden" style="margin-top: 16px;">Delete Check-in</button>
             </div>
 
             <button id="saveCheckinBtn" class="btn-save-checkin">Save Check-in</button>
@@ -242,6 +295,9 @@
             </button>
             <button class="app-bar-item" id="calendarAppBarBtn">
                 <i data-lucide="calendar"></i>
+            </button>
+            <button class="app-bar-item" id="statsAppBarBtn">
+                <i data-lucide="bar-chart-3"></i>
             </button>
         </div>
     </div>
