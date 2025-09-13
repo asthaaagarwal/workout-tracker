@@ -244,6 +244,7 @@ body {
     z-index: 2000;
     padding: 20px;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden; /* Prevent scrolling when keyboard opens */
 }
 
 .checkin-popover:not(.hidden) {
@@ -357,33 +358,27 @@ body {
     z-index: 3000;
 }
 
-/* Better mobile keyboard handling */
-@supports (height: 100vh) {
-    .checkin-popover {
-        height: 100vh;
-        height: 100dvh; /* Dynamic viewport height */
-        overflow-y: auto;
-        padding-bottom: 100px; /* Space for save button */
-    }
-
-    .btn-save-checkin {
-        bottom: max(20px, env(keyboard-inset-height, 20px));
-    }
+/* Mobile keyboard handling - prevent page movement */
+.checkin-popover {
+    height: 100vh; /* Use static viewport height */
+    height: 100svh; /* Small viewport height for mobile */
 }
 
-/* Fallback for when keyboard is open (detected by small height) */
-@media screen and (max-height: 500px), screen and (max-height: 60vh) {
-    .checkin-popover {
-        height: 100vh;
-        overflow-y: auto;
-        padding-bottom: 100px;
-    }
+.checkin-popover .checkin-content {
+    height: calc(100% - 120px); /* Reserve space for header and save button */
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
 
-    .btn-save-checkin {
-        position: fixed;
-        bottom: 20px;
-        z-index: 3001;
-    }
+/* Prevent viewport changes when keyboard opens */
+.checkin-popover.keyboard-open {
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+.checkin-popover.keyboard-open .checkin-content {
+    height: calc(100vh - 140px) !important;
+    overflow-y: auto;
 }
 
 .btn-save-checkin:hover {

@@ -2401,16 +2401,25 @@ document.addEventListener('touchend', handleSwipeEnd, { passive: false });
 // Handle mobile keyboard for save button positioning
 function handleVisualViewportChange() {
     const saveBtn = document.querySelector('.btn-save-checkin');
-    if (!saveBtn) return;
+    const popover = document.querySelector('.checkin-popover');
+    if (!saveBtn || !popover) return;
 
     if (window.visualViewport) {
         const viewport = window.visualViewport;
         const keyboardHeight = window.innerHeight - viewport.height;
 
         if (keyboardHeight > 50) { // Keyboard is open
-            saveBtn.style.bottom = `${20 + keyboardHeight}px`;
+            popover.classList.add('keyboard-open');
+            saveBtn.style.bottom = '20px'; // Keep button at fixed position
+            // Prevent body scroll
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
         } else { // Keyboard is closed
+            popover.classList.remove('keyboard-open');
             saveBtn.style.bottom = '20px';
+            // Restore body scroll
+            document.body.style.position = '';
+            document.body.style.width = '';
         }
     }
 }

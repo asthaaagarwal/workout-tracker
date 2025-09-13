@@ -172,23 +172,26 @@
                 <h2>Daily Check-in</h2>
                 <div class="header-spacer"></div>
             </header>
-            
-            <div class="checkin-mood-selector">
-                <div class="mood-options" id="moodOptions">
-                    <!-- Mood options will be generated -->
+
+            <div class="checkin-content">
+                <div class="checkin-mood-selector">
+                    <div class="mood-options" id="moodOptions">
+                        <!-- Mood options will be generated -->
+                    </div>
                 </div>
+
+                <div class="checkin-note-section">
+                    <textarea
+                        id="checkinTextarea"
+                        placeholder="How are you feeling today?"
+                        class="checkin-textarea"
+                    ></textarea>
+                </div>
+
+                <button id="deleteCheckinBtn" class="btn-destructive hidden" style="margin-top: 16px;">Delete Check-in</button>
             </div>
-            
-            <div class="checkin-note-section">
-                <textarea 
-                    id="checkinTextarea" 
-                    placeholder="How are you feeling today?"
-                    class="checkin-textarea"
-                ></textarea>
-            </div>
-            
+
             <button id="saveCheckinBtn" class="btn-save-checkin">Save Check-in</button>
-            <button id="deleteCheckinBtn" class="btn-destructive hidden" style="margin-top: 16px;">Delete Check-in</button>
         </div>
 
         <!-- Celebration Overlay -->
