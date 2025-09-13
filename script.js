@@ -299,6 +299,13 @@ function setupEventListeners() {
     document.getElementById('deleteConfirmationDialog').addEventListener('click', (e) => {
         if (e.target.id === 'deleteConfirmationDialog') closeDeleteConfirmationDialog();
     });
+
+    // Checkin deletion dialog event listeners
+    document.getElementById('confirmDeleteCheckinBtn').addEventListener('click', confirmDeleteCheckin);
+    document.getElementById('cancelDeleteCheckinBtn').addEventListener('click', closeDeleteCheckinConfirmationDialog);
+    document.getElementById('deleteCheckinConfirmationDialog').addEventListener('click', (e) => {
+        if (e.target.id === 'deleteCheckinConfirmationDialog') closeDeleteCheckinConfirmationDialog();
+    });
 }
 
 // Update the main display
@@ -517,37 +524,14 @@ function saveCheckinFromPopover() {
 
 // Delete checkin entry
 function deleteCheckinEntry(dateKey) {
-    if (confirm('Are you sure you want to delete this check-in?')) {
-        if (workoutData.dailyEntries && workoutData.dailyEntries[dateKey]) {
-            delete workoutData.dailyEntries[dateKey];
-            saveWorkoutData();
-            
-            // Determine which screen is currently visible and refresh accordingly
-            const calendarScreen = document.getElementById('calendarScreen');
-            const homeScreen = document.getElementById('homeScreen');
-            
-            if (!calendarScreen.classList.contains('hidden')) {
-                renderCalendarCheckin();
-                updateCalendarDisplay(); // Refresh calendar to remove dot indicators
-            } else if (!homeScreen.classList.contains('hidden')) {
-                renderHomeCheckin();
-                updateDisplay(); // Refresh the home screen
-            }
-        }
-    }
+    checkinToDelete = dateKey;
+    showDeleteCheckinConfirmationDialog();
 }
 
 // Delete checkin entry from popover
 function deleteCheckinFromPopover(dateKey) {
-    if (confirm('Are you sure you want to delete this check-in?')) {
-        if (workoutData.dailyEntries && workoutData.dailyEntries[dateKey]) {
-            delete workoutData.dailyEntries[dateKey];
-            saveWorkoutData();
-            
-            // Close popover and refresh appropriate screen
-            closeCheckinPopover();
-        }
-    }
+    checkinToDelete = dateKey;
+    showDeleteCheckinConfirmationDialog();
 }
 
 // Select soreness for home checkin
@@ -2126,14 +2110,77 @@ function showDeleteConfirmationDialog() {
 function closeDeleteConfirmationDialog() {
     const dialog = document.getElementById('deleteConfirmationDialog');
     const dialogContent = dialog.querySelector('.bottom-sheet-content');
-    
+
     // Start slide down animation
     dialogContent.classList.remove('show');
-    
+
     // Hide the dialog after animation completes
     setTimeout(() => {
         dialog.classList.add('hidden');
     }, 300); // Match the CSS transition duration
+}
+
+// Show checkin delete confirmation dialog
+function showDeleteCheckinConfirmationDialog() {
+    const dialog = document.getElementById('deleteCheckinConfirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+
+    dialog.classList.remove('hidden');
+
+    // Force reflow to ensure the dialog is visible before animation
+    dialog.offsetHeight;
+
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+        dialogContent.classList.add('show');
+    });
+}
+
+// Close checkin delete confirmation dialog
+function closeDeleteCheckinConfirmationDialog() {
+    const dialog = document.getElementById('deleteCheckinConfirmationDialog');
+    const dialogContent = dialog.querySelector('.bottom-sheet-content');
+
+    // Start slide down animation
+    dialogContent.classList.remove('show');
+
+    // Hide the dialog after animation completes
+    setTimeout(() => {
+        dialog.classList.add('hidden');
+    }, 300); // Match the CSS transition duration
+}
+
+// Variable to store the dateKey for checkin deletion
+let checkinToDelete = null;
+
+// Confirm and actually delete the checkin
+function confirmDeleteCheckin() {
+    if (checkinToDelete && workoutData.dailyEntries && workoutData.dailyEntries[checkinToDelete]) {
+        delete workoutData.dailyEntries[checkinToDelete];
+        saveWorkoutData();
+
+        // Determine which screen is currently visible and refresh accordingly
+        const calendarScreen = document.getElementById('calendarScreen');
+        const homeScreen = document.getElementById('homeScreen');
+
+        if (!calendarScreen.classList.contains('hidden')) {
+            renderCalendarCheckin();
+            updateCalendarDisplay(); // Refresh calendar to remove dot indicators
+        } else if (!homeScreen.classList.contains('hidden')) {
+            renderHomeCheckin();
+            updateDisplay(); // Refresh the home screen
+        }
+
+        // Close popover if it's open
+        const popover = document.getElementById('checkinPopover');
+        if (!popover.classList.contains('hidden')) {
+            closeCheckinPopover();
+        }
+    }
+
+    // Close the confirmation dialog and reset
+    closeDeleteCheckinConfirmationDialog();
+    checkinToDelete = null;
 }
 
 // Confirm and actually delete the workout
