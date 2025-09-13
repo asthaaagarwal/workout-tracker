@@ -343,12 +343,20 @@ function renderHomeCheckin() {
 function renderCalendarCheckin() {
     const calendarDailyCheckinDiv = document.getElementById('calendarDailyCheckin');
     if (!calendarDailyCheckinDiv) return;
-    
+
+    // Check if selected date is in the future
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (selectedCalendarDate > today) {
+        calendarDailyCheckinDiv.classList.add('hidden');
+        return;
+    }
+
     const dateKey = getLocalDateKey(selectedCalendarDate);
     const selectedEntry = workoutData.dailyEntries[dateKey];
 
     let checkinHTML = generateCheckinHTML(selectedEntry, 'calendar');
-    
+
     calendarDailyCheckinDiv.innerHTML = checkinHTML;
     calendarDailyCheckinDiv.classList.remove('hidden');
 }
@@ -491,11 +499,20 @@ function saveCheckinFromPopover() {
         alert('Please select how you\'re feeling first');
         return;
     }
-    
+
     const textarea = document.getElementById('checkinTextarea');
     const note = textarea.value.trim();
-    
+
     const targetDate = currentCheckinScreen === 'calendar' ? selectedCalendarDate : new Date();
+
+    // Prevent future date check-ins
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Set to end of today
+    if (targetDate > today) {
+        alert('Cannot add check-ins for future dates');
+        return;
+    }
+
     const dateKey = getLocalDateKey(targetDate);
     
     // Initialize dailyEntries if it doesn't exist
