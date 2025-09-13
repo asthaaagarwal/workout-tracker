@@ -357,23 +357,32 @@ body {
     z-index: 3000;
 }
 
-/* Mobile keyboard support */
-@supports (height: 100dvh) {
+/* Better mobile keyboard handling */
+@supports (height: 100vh) {
+    .checkin-popover {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height */
+        overflow-y: auto;
+        padding-bottom: 100px; /* Space for save button */
+    }
+
     .btn-save-checkin {
-        bottom: calc(20px + env(keyboard-inset-height, env(safe-area-inset-bottom)));
+        bottom: max(20px, env(keyboard-inset-height, 20px));
     }
 }
 
-/* Alternative approach for better mobile keyboard handling */
-@media screen and (max-height: 500px) {
-    .btn-save-checkin {
-        position: sticky;
-        bottom: 20px;
-        margin-top: 20px;
+/* Fallback for when keyboard is open (detected by small height) */
+@media screen and (max-height: 500px), screen and (max-height: 60vh) {
+    .checkin-popover {
+        height: 100vh;
+        overflow-y: auto;
+        padding-bottom: 100px;
     }
 
-    .checkin-popover {
-        padding-bottom: 80px;
+    .btn-save-checkin {
+        position: fixed;
+        bottom: 20px;
+        z-index: 3001;
     }
 }
 

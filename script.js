@@ -2398,5 +2398,27 @@ document.addEventListener('touchstart', handleSwipeStart, { passive: false });
 document.addEventListener('touchmove', handleSwipeMove, { passive: false });
 document.addEventListener('touchend', handleSwipeEnd, { passive: false });
 
+// Handle mobile keyboard for save button positioning
+function handleVisualViewportChange() {
+    const saveBtn = document.querySelector('.btn-save-checkin');
+    if (!saveBtn) return;
+
+    if (window.visualViewport) {
+        const viewport = window.visualViewport;
+        const keyboardHeight = window.innerHeight - viewport.height;
+
+        if (keyboardHeight > 50) { // Keyboard is open
+            saveBtn.style.bottom = `${20 + keyboardHeight}px`;
+        } else { // Keyboard is closed
+            saveBtn.style.bottom = '20px';
+        }
+    }
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Handle virtual keyboard on mobile
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+}
