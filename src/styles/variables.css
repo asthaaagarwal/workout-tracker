@@ -1,0 +1,310 @@
+/* Ionic Variables and Theming. */
+/* For more info, please see:
+http://ionicframework.com/docs/theming/ */
+
+/** Ionic CSS Variables **/
+:root {
+  /* Workout Tracker Brand Colors */
+  --wt-blue: #153EFC;
+  --wt-orange: #fa7427;
+  --wt-gray: #6c6c70;
+  --wt-background: #f3eee8;
+  --wt-text: #18222b;
+  --wt-card: #fcd5c1;
+  --wt-ongoing: #F75500;
+  --wt-completed: #46725e;
+  --wt-white: #ffffff;
+
+  /** Ionic Primary Colors - Using Design System Primary **/
+  --ion-color-primary: var(--primary);
+  --ion-color-primary-contrast: var(--primary-foreground);
+  --ion-color-primary-shade: oklch(0.66 0.15 293.40);
+  --ion-color-primary-tint: oklch(0.76 0.17 293.40);
+
+  /** Ionic Secondary Colors - Using Design System Secondary **/
+  --ion-color-secondary: var(--secondary);
+  --ion-color-secondary-contrast: var(--secondary-foreground);
+  --ion-color-secondary-shade: oklch(0.86 0.04 306.07);
+  --ion-color-secondary-tint: oklch(0.94 0.06 306.07);
+
+  /** Ionic Tertiary Colors - Using Design System Accent **/
+  --ion-color-tertiary: var(--accent);
+  --ion-color-tertiary-contrast: var(--accent-foreground);
+  --ion-color-tertiary-shade: oklch(0.89 0.02 322.47);
+  --ion-color-tertiary-tint: oklch(0.96 0.04 322.47);
+
+  /** Ionic Success Colors **/
+  --ion-color-success: oklch(0.43 0.21 292.63);
+  --ion-color-success-contrast: oklch(1.00 0 0);
+  --ion-color-success-shade: oklch(0.38 0.19 292.63);
+  --ion-color-success-tint: oklch(0.48 0.23 292.63);
+
+  /** Ionic Warning Colors - Using Design System Muted **/
+  --ion-color-warning: var(--muted);
+  --ion-color-warning-contrast: var(--muted-foreground);
+  --ion-color-warning-shade: oklch(0.90 0.02 307.19);
+  --ion-color-warning-tint: oklch(0.97 0.04 307.19);
+
+  /** Ionic Danger Colors - Using Design System Destructive **/
+  --ion-color-danger: var(--destructive);
+  --ion-color-danger-contrast: oklch(1.00 0 0);
+  --ion-color-danger-shade: oklch(0.76 0.09 19.47);
+  --ion-color-danger-tint: oklch(0.86 0.11 19.47);
+
+  /** Ionic Dark Colors - Using Design System Foreground **/
+  --ion-color-dark: var(--foreground);
+  --ion-color-dark-contrast: oklch(1.00 0 0);
+  --ion-color-dark-shade: oklch(0.32 0.02 259.73);
+  --ion-color-dark-tint: oklch(0.42 0.04 259.73);
+
+  /** Ionic Medium Colors - Using Design System Muted Foreground **/
+  --ion-color-medium: var(--muted-foreground);
+  --ion-color-medium-contrast: oklch(1.00 0 0);
+  --ion-color-medium-shade: oklch(0.50 0.01 264.41);
+  --ion-color-medium-tint: oklch(0.60 0.03 264.41);
+
+  /** Ionic Light Colors - Using Design System Background **/
+  --ion-color-light: var(--background);
+  --ion-color-light-contrast: var(--foreground);
+  --ion-color-light-shade: oklch(0.92 0.00 316.68);
+  --ion-color-light-tint: oklch(0.98 0.01 316.68);
+
+  /** Background Colors **/
+  --ion-background-color: var(--background);
+  --ion-text-color: var(--foreground);
+
+  --ion-color-step-50: #f6f2ed;
+  --ion-color-step-100: #f0eae2;
+  --ion-color-step-150: #e9e1d7;
+  --ion-color-step-200: #e3d9cc;
+  --ion-color-step-250: #dcd0c1;
+  --ion-color-step-300: #d6c8b6;
+  --ion-color-step-350: #cfbfab;
+  --ion-color-step-400: #c9b7a0;
+  --ion-color-step-450: #c2ae95;
+  --ion-color-step-500: #bca68a;
+  --ion-color-step-550: #b59d7f;
+  --ion-color-step-600: #af9574;
+  --ion-color-step-650: #a88c69;
+  --ion-color-step-700: #a2845e;
+  --ion-color-step-750: #9b7b53;
+  --ion-color-step-800: #957348;
+  --ion-color-step-850: #8e6a3d;
+  --ion-color-step-900: #886232;
+  --ion-color-step-950: #815927;
+
+  /** Card and Surface Colors **/
+  --ion-card-background: var(--card);
+  --ion-item-background: var(--card);
+
+  /** iOS Specific Overrides **/
+  --ion-toolbar-background: var(--background);
+  --ion-toolbar-color: var(--foreground);
+
+  --ion-tab-bar-background: var(--card);
+  --ion-tab-bar-color: var(--muted-foreground);
+  --ion-tab-bar-color-selected: var(--primary);
+
+  /** Workout-specific Custom Properties **/
+  --workout-card-background: #fcd5c1;
+  --workout-card-ongoing: #F75500;
+  --workout-card-completed: #e1f0b8;
+  --workout-timer-color: #153EFC;
+  --celebration-gradient: linear-gradient(135deg,
+    #ffe8a3 0%,
+    #ffb3d4 25%,
+    #c8a2ff 50%,
+    #a2d2ff 75%,
+    #ffe8a3 100%);
+
+  /** Typography **/
+  --ion-font-family: var(--font-sans);
+
+  /** Font Family Variables **/
+  --font-sans: Poppins, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: IBM Plex Mono, monospace;
+
+  /** Design System Variables - Light Mode **/
+  --background: oklch(0.97 0.01 316.68);
+  --foreground: oklch(0.37 0.03 259.73);
+  --card: oklch(1.00 0 0);
+  --card-foreground: oklch(0.37 0.03 259.73);
+  --popover: oklch(1.00 0 0);
+  --popover-foreground: oklch(0.37 0.03 259.73);
+  --primary: oklch(0.71 0.16 293.40);
+  --primary-foreground: oklch(1.00 0 0);
+  --secondary: oklch(0.91 0.05 306.07);
+  --secondary-foreground: oklch(0.45 0.03 257.68);
+  --muted: oklch(0.95 0.03 307.19);
+  --muted-foreground: oklch(0.55 0.02 264.41);
+  --accent: oklch(0.94 0.03 322.47);
+  --accent-foreground: oklch(0.37 0.03 259.73);
+  --destructive: oklch(0.81 0.10 19.47);
+  --border: oklch(0.91 0.05 306.07);
+  --input: oklch(0.91 0.05 306.07);
+  --ring: oklch(0.71 0.16 293.40);
+  --chart-1: oklch(0.71 0.16 293.40);
+  --chart-2: oklch(0.61 0.22 292.63);
+  --chart-3: oklch(0.54 0.25 293.03);
+  --chart-4: oklch(0.49 0.24 292.70);
+  --chart-5: oklch(0.43 0.21 292.63);
+  --sidebar: oklch(0.91 0.05 306.07);
+  --sidebar-foreground: oklch(0.37 0.03 259.73);
+  --sidebar-primary: oklch(0.71 0.16 293.40);
+  --sidebar-primary-foreground: oklch(1.00 0 0);
+  --sidebar-accent: oklch(0.94 0.03 322.47);
+  --sidebar-accent-foreground: oklch(0.37 0.03 259.73);
+  --sidebar-border: oklch(0.91 0.05 306.07);
+  --sidebar-ring: oklch(0.71 0.16 293.40);
+
+  /** Border Radius **/
+  --radius: 1.975rem;
+
+  /** Shadows - Disabled **/
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+}
+
+/** Dark Mode Support **/
+.dark {
+  --background: oklch(0.22 0.01 52.96);
+  --foreground: oklch(0.93 0.03 273.66);
+  --card: oklch(0.28 0.03 307.25);
+  --card-foreground: oklch(0.93 0.03 273.66);
+  --popover: oklch(0.28 0.03 307.25);
+  --popover-foreground: oklch(0.93 0.03 273.66);
+  --primary: oklch(0.79 0.12 295.97);
+  --primary-foreground: oklch(0.22 0.01 52.96);
+  --secondary: oklch(0.34 0.04 309.13);
+  --secondary-foreground: oklch(0.87 0.01 261.81);
+  --muted: oklch(0.28 0.03 307.25);
+  --muted-foreground: oklch(0.71 0.02 261.33);
+  --accent: oklch(0.39 0.05 304.68);
+  --accent-foreground: oklch(0.87 0.01 261.81);
+  --destructive: oklch(0.81 0.10 19.47);
+  --border: oklch(0.34 0.04 309.13);
+  --input: oklch(0.34 0.04 309.13);
+  --ring: oklch(0.79 0.12 295.97);
+  --chart-1: oklch(0.79 0.12 295.97);
+  --chart-2: oklch(0.71 0.16 293.40);
+  --chart-3: oklch(0.61 0.22 292.63);
+  --chart-4: oklch(0.54 0.25 293.03);
+  --chart-5: oklch(0.49 0.24 292.70);
+  --sidebar: oklch(0.34 0.04 309.13);
+  --sidebar-foreground: oklch(0.93 0.03 273.66);
+  --sidebar-primary: oklch(0.79 0.12 295.97);
+  --sidebar-primary-foreground: oklch(0.22 0.01 52.96);
+  --sidebar-accent: oklch(0.39 0.05 304.68);
+  --sidebar-accent-foreground: oklch(0.87 0.01 261.81);
+  --sidebar-border: oklch(0.34 0.04 309.13);
+  --sidebar-ring: oklch(0.79 0.12 295.97);
+
+  /** Dark Mode Shadows - Disabled **/
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+
+  /** Dark Mode Ionic Colors **/
+  --ion-background-color: var(--background);
+  --ion-text-color: var(--foreground);
+  --ion-card-background: var(--card);
+  --ion-item-background: var(--card);
+  --ion-toolbar-background: var(--background);
+  --ion-toolbar-color: var(--foreground);
+  --ion-tab-bar-background: var(--card);
+  --ion-tab-bar-color: var(--muted-foreground);
+  --ion-tab-bar-color-selected: var(--primary);
+}
+
+@media (prefers-color-scheme: light) {
+  /*
+   * Light Colors
+   */
+  .ios body {
+    --ion-background-color: #f3eee8;
+    --ion-background-color-rgb: 243,238,232;
+    --ion-text-color: #18222b;
+    --ion-text-color-rgb: 24,34,43;
+    --ion-color-step-50: #f6f2ed;
+    --ion-color-step-100: #f0eae2;
+    --ion-color-step-150: #e9e1d7;
+    --ion-color-step-200: #e3d9cc;
+    --ion-color-step-250: #dcd0c1;
+    --ion-color-step-300: #d6c8b6;
+    --ion-color-step-350: #cfbfab;
+    --ion-color-step-400: #c9b7a0;
+    --ion-color-step-450: #c2ae95;
+    --ion-color-step-500: #bca68a;
+    --ion-color-step-550: #b59d7f;
+    --ion-color-step-600: #af9574;
+    --ion-color-step-650: #a88c69;
+    --ion-color-step-700: #a2845e;
+    --ion-color-step-750: #9b7b53;
+    --ion-color-step-800: #957348;
+    --ion-color-step-850: #8e6a3d;
+    --ion-color-step-900: #886232;
+    --ion-color-step-950: #815927;
+  }
+
+  .md body {
+    --ion-background-color: #f3eee8;
+    --ion-background-color-rgb: 243,238,232;
+    --ion-text-color: #18222b;
+    --ion-text-color-rgb: 24,34,43;
+    --ion-color-step-50: #f6f2ed;
+    --ion-color-step-100: #f0eae2;
+    --ion-color-step-150: #e9e1d7;
+    --ion-color-step-200: #e3d9cc;
+    --ion-color-step-250: #dcd0c1;
+    --ion-color-step-300: #d6c8b6;
+    --ion-color-step-350: #cfbfab;
+    --ion-color-step-400: #c9b7a0;
+    --ion-color-step-450: #c2ae95;
+    --ion-color-step-500: #bca68a;
+    --ion-color-step-550: #b59d7f;
+    --ion-color-step-600: #af9574;
+    --ion-color-step-650: #a88c69;
+    --ion-color-step-700: #a2845e;
+    --ion-color-step-750: #9b7b53;
+    --ion-color-step-800: #957348;
+    --ion-color-step-850: #8e6a3d;
+    --ion-color-step-900: #886232;
+    --ion-color-step-950: #815927;
+  }
+}
+
+/* Custom workout tracker classes */
+.workout-card {
+  background: var(--muted) !important;
+  border-radius: var(--radius);
+  box-shadow: none;
+  padding: 24px;
+}
+
+.workout-card.ongoing {
+  background: var(--workout-card-ongoing);
+  color: white;
+}
+
+.workout-card.completed {
+  background: var(--workout-card-completed);
+}
+
+.stats-card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 24px;
+}

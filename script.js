@@ -94,30 +94,30 @@ const workoutExercises = {
 
 // Exercise information with descriptions and emojis
 const exerciseInfo = {
-    'Dead bug': { icon: '🐛', description: 'Lie on your back, arms up, knees bent at 90°. Lower opposite arm and leg slowly, return to start.', video: null },
-    'Shoulder tap': { icon: '👋', description: 'Start in plank position. Tap opposite shoulder with hand while maintaining stable core.', video: null },
-    'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.', video: 'https://www.youtube.com/watch?v=KEFQyLkDYtI' },
-    'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.', video: null },
-    'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.', video: null },
-    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=tuwHzzPdaGc' },
-    'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.', video: 'https://www.youtube.com/watch?v=Mdp7kuhZD_M' },
-    'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.', video: 'https://www.youtube.com/watch?v=3_RR7ELmcAk' },
-    'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.', video: 'https://www.youtube.com/watch?v=FRxZ6wr5bpA' },
-    'Bicep curls': { icon: '💪', description: 'Curl weights from extended arms to shoulders, control the descent.', video: 'https://www.youtube.com/watch?v=tMEGqKuOa-M' },
-    'Tricep curls': { icon: '💪', description: 'Extend arms overhead, lower weight behind head, press back to start.', video: 'https://www.youtube.com/watch?v=VjmgzEmODnI' },
-    'Back squats': { icon: '🏋️', description: 'Bar on upper back, squat down keeping chest up, drive through heels to stand.', video: 'https://www.youtube.com/watch?v=R2dMsNhN3DE' },
-    'Deadlift': { icon: '🏋️', description: 'Lift bar from ground by extending hips and knees, keep bar close to body.', video: 'https://www.youtube.com/watch?v=wjsu6ceEkAQ' },
-    'Step ups': { icon: '🚆', description: 'Step onto platform with full foot, drive through heel, step down with control.', video: 'https://www.youtube.com/watch?v=elhu-WC1qk4' },
-    'Hip thrust': { icon: '🏋️', description: 'Shoulders on bench, drive hips up squeezing glutes, lower with control.', video: 'https://www.youtube.com/watch?v=aweBS7K71l8' },
-    'Single leg extension': { icon: '🦵', description: 'Extend one leg at a time, control the movement, focus on quad engagement.', video: 'https://www.youtube.com/watch?v=82IuSLk5zNc' },
-    'Side lunge': { icon: '🤸', description: 'Step wide to one side, lower into lunge, push back to center.', video: null },
-    'Single leg deadlift': { icon: '⚖️', description: 'Balance on one leg, hinge at hip lowering weight, return to standing.', video: null },
-    'Plank': { icon: '🤸', description: 'Hold straight body position on forearms and toes, engage core throughout.', video: null },
-    'Russian twists': { icon: '🌀', description: 'Sit with knees bent, lean back slightly, rotate torso side to side.', video: null },
-    'Mountain climbers': { icon: '⛰️', description: 'Start in plank, alternate bringing knees to chest in running motion.', video: null },
-    'Bicycle crunches': { icon: '🚲', description: 'Lie on back, alternate elbow to opposite knee in cycling motion.', video: null },
-    'Leg raises': { icon: '🦵', description: 'Lie on back, raise straight legs to 90°, lower slowly without touching ground.', video: null },
-    'Stretch': { icon: '🤸', description: 'Perform gentle stretches to relax muscles and improve flexibility.', video: null }
+    'Dead bug': { icon: '🐛', description: 'Lie on your back, arms up, knees bent at 90°. Lower opposite arm and leg slowly, return to start.', video: null, exerciseType: 'bodyweight' },
+    'Shoulder tap': { icon: '👋', description: 'Start in plank position. Tap opposite shoulder with hand while maintaining stable core.', video: null, exerciseType: 'bodyweight' },
+    'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.', video: 'https://www.youtube.com/watch?v=KEFQyLkDYtI', exerciseType: 'bodyweight' },
+    'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.', video: null, exerciseType: 'bodyweight' },
+    'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.', video: null, exerciseType: 'bodyweight' },
+    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=tuwHzzPdaGc', exerciseType: 'weighted' },
+    'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.', video: 'https://www.youtube.com/watch?v=Mdp7kuhZD_M', exerciseType: 'weighted' },
+    'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.', video: 'https://www.youtube.com/watch?v=3_RR7ELmcAk', exerciseType: 'weighted' },
+    'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.', video: 'https://www.youtube.com/watch?v=FRxZ6wr5bpA', exerciseType: 'weighted' },
+    'Bicep curls': { icon: '💪', description: 'Curl weights from extended arms to shoulders, control the descent.', video: 'https://www.youtube.com/watch?v=tMEGqKuOa-M', exerciseType: 'weighted' },
+    'Tricep curls': { icon: '💪', description: 'Extend arms overhead, lower weight behind head, press back to start.', video: 'https://www.youtube.com/watch?v=VjmgzEmODnI', exerciseType: 'weighted' },
+    'Back squats': { icon: '🏋️', description: 'Bar on upper back, squat down keeping chest up, drive through heels to stand.', video: 'https://www.youtube.com/watch?v=R2dMsNhN3DE', exerciseType: 'weighted' },
+    'Deadlift': { icon: '🏋️', description: 'Lift bar from ground by extending hips and knees, keep bar close to body.', video: 'https://www.youtube.com/watch?v=wjsu6ceEkAQ', exerciseType: 'weighted' },
+    'Step ups': { icon: '🚆', description: 'Step onto platform with full foot, drive through heel, step down with control.', video: 'https://www.youtube.com/watch?v=elhu-WC1qk4', exerciseType: 'weighted' },
+    'Hip thrust': { icon: '🏋️', description: 'Shoulders on bench, drive hips up squeezing glutes, lower with control.', video: 'https://www.youtube.com/watch?v=aweBS7K71l8', exerciseType: 'weighted' },
+    'Single leg extension': { icon: '🦵', description: 'Extend one leg at a time, control the movement, focus on quad engagement.', video: 'https://www.youtube.com/watch?v=82IuSLk5zNc', exerciseType: 'weighted' },
+    'Side lunge': { icon: '🤸', description: 'Step wide to one side, lower into lunge, push back to center.', video: null, exerciseType: 'bodyweight' },
+    'Single leg deadlift': { icon: '⚖️', description: 'Balance on one leg, hinge at hip lowering weight, return to standing.', video: null, exerciseType: 'weighted' },
+    'Plank': { icon: '🤸', description: 'Hold straight body position on forearms and toes, engage core throughout.', video: null, exerciseType: 'bodyweight' },
+    'Russian twists': { icon: '🌀', description: 'Sit with knees bent, lean back slightly, rotate torso side to side.', video: null, exerciseType: 'bodyweight' },
+    'Mountain climbers': { icon: '⛰️', description: 'Start in plank, alternate bringing knees to chest in running motion.', video: null, exerciseType: 'bodyweight' },
+    'Bicycle crunches': { icon: '🚲', description: 'Lie on back, alternate elbow to opposite knee in cycling motion.', video: null, exerciseType: 'bodyweight' },
+    'Leg raises': { icon: '🦵', description: 'Lie on back, raise straight legs to 90°, lower slowly without touching ground.', video: null, exerciseType: 'bodyweight' },
+    'Stretch': { icon: '🤸', description: 'Perform gentle stretches to relax muscles and improve flexibility.', video: null, exerciseType: 'bodyweight' }
 };
 
 // Helper function to get local date key (timezone-neutral)
@@ -436,7 +436,6 @@ function addTestData() {
     saveWorkoutData();
 
     const checkinCount = Object.values(workoutData.dailyEntries).filter(entry => entry.isTestData).length;
-    console.log(`Added ${testWorkouts.length} test workouts and ${checkinCount} daily check-ins to your history!`);
 
     // Refresh the display if we're on the home page
     if (typeof updateDisplay === 'function') {
@@ -473,7 +472,6 @@ function removeTestData() {
 
     saveWorkoutData();
 
-    console.log(`Removed ${removedWorkoutCount} test workouts and ${removedCheckinCount} daily check-ins from your history!`);
 
     // Refresh the display if we're on the home page
     if (typeof updateDisplay === 'function') {
@@ -971,7 +969,6 @@ function formatDateForHomeDisplay(date) {
 
 // Update app bar active state
 function updateAppBarState(activeTab) {
-    console.log('updateAppBarState called with:', activeTab);
 
     // Remove active class from all buttons
     document.getElementById('homeAppBarBtn').classList.remove('active');
@@ -985,13 +982,11 @@ function updateAppBarState(activeTab) {
         document.getElementById('calendarAppBarBtn').classList.add('active');
     } else if (activeTab === 'stats') {
         document.getElementById('statsAppBarBtn').classList.add('active');
-        console.log('Added active class to stats button');
     }
 }
 
 // Open stats screen
 function openStats() {
-    console.log('openStats() called');
     document.getElementById('homeScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.add('hidden');
     document.getElementById('workoutScreen').classList.add('hidden');
@@ -999,7 +994,6 @@ function openStats() {
     populateExerciseDropdown();
     renderStats();
     updateAppBarState('stats');
-    console.log('openStats() completed');
 }
 
 // Populate exercise dropdown
@@ -1044,6 +1038,8 @@ function renderStats(selectedExercise = 'all') {
         const currentStreak = calculateCurrentStreak();
         const mostActiveDay = calculateMostActiveDay();
         const favoriteWorkout = calculateFavoriteWorkout();
+        const averageDuration = calculateAverageWorkoutDuration();
+        const totalTimeInGym = calculateTotalTimeInGym();
 
         statsContent.innerHTML = `
             <div class="stats-grid">
@@ -1055,6 +1051,16 @@ function renderStats(selectedExercise = 'all') {
                 <div class="stat-card wide">
                     <div class="stat-value">${favoriteWorkout}</div>
                     <div class="stat-label">Favorite Workout</div>
+                </div>
+
+                <div class="stat-card wide">
+                    <div class="stat-value">${averageDuration}</div>
+                    <div class="stat-label">Average Workout Duration</div>
+                </div>
+
+                <div class="stat-card wide">
+                    <div class="stat-value">${totalTimeInGym}</div>
+                    <div class="stat-label">Total Time Spent in Gym</div>
                 </div>
             </div>
         `;
@@ -1394,6 +1400,42 @@ function calculateDaysSinceLastWorkout() {
         daysSince = Math.floor((today - lastWorkoutDate) / (1000 * 60 * 60 * 24));
     }
     return daysSince;
+}
+
+function calculateAverageWorkoutDuration() {
+    if (!workoutData.history || workoutData.history.length === 0) return '0m';
+
+    let totalDurationMinutes = 0;
+    let workoutsWithDuration = 0;
+
+    workoutData.history.forEach(workout => {
+        if (workout.duration && workout.duration > 0) {
+            totalDurationMinutes += Math.round(workout.duration / 60000); // Convert ms to minutes
+            workoutsWithDuration++;
+        }
+    });
+
+    if (workoutsWithDuration === 0) return '0m';
+
+    const averageMinutes = Math.round(totalDurationMinutes / workoutsWithDuration);
+    return `${averageMinutes}m`;
+}
+
+function calculateTotalTimeInGym() {
+    if (!workoutData.history || workoutData.history.length === 0) return '0h';
+
+    let totalDurationMinutes = 0;
+
+    workoutData.history.forEach(workout => {
+        if (workout.duration && workout.duration > 0) {
+            totalDurationMinutes += Math.round(workout.duration / 60000); // Convert ms to minutes
+        }
+    });
+
+    if (totalDurationMinutes === 0) return '0h';
+
+    const totalHours = Math.round(totalDurationMinutes / 60 * 10) / 10; // Round to 1 decimal place
+    return `${totalHours}h`;
 }
 
 // ==== SIMPLIFIED CORE FUNCTIONS ====
@@ -2201,41 +2243,50 @@ function updateExerciseList() {
 function renderSets(exerciseName) {
     const sets = exerciseData[exerciseName].sets;
     const fallbackWeight = workoutData.lastWeights[`${currentWorkout}-${exerciseName}`];
-    
+
     // Check if workout has been started
     const workoutState = getWorkoutState(currentWorkout);
     const isWorkoutStarted = workoutState === 'ongoing' || workoutState === 'completed';
-    
+
+    // Check exercise type
+    const exerciseType = exerciseInfo[exerciseName]?.exerciseType || 'weighted';
+    const isWeighted = exerciseType === 'weighted';
+
     return sets.map((set, index) => {
         // Use individual set's last weight if available, otherwise use fallback
         const placeholderWeight = set.lastWeight || fallbackWeight;
         const placeholder = placeholderWeight ? placeholderWeight + 'kg' : 'KG';
-        
+
         // Determine if controls should be disabled
         const disabled = isWorkoutStarted ? '' : 'disabled';
         const removeButtonStyle = isWorkoutStarted ? '' : 'style="opacity: 0.5; cursor: not-allowed;"';
         const removeButtonClick = isWorkoutStarted ? `onclick="removeSet('${exerciseName}', ${index})"` : '';
         const weightChange = isWorkoutStarted ? `onchange="updateWeight('${exerciseName}', ${index}, this.value)"` : '';
         const repsChange = isWorkoutStarted ? `onchange="updateReps('${exerciseName}', ${index}, this.value)"` : '';
-        
+
+        // Render weight input only for weighted exercises
+        const weightInput = isWeighted ? `
+            <input type="number"
+                   class="weight-input"
+                   placeholder="${placeholder}"
+                   value="${set.weight && set.weight !== '' ? set.weight : ''}"
+                   ${weightChange}
+                   min="0"
+                   step="0.25"
+                   inputmode="decimal"
+                   ${disabled}>
+        ` : '';
+
         return `
-            <div class="set-item" data-exercise="${exerciseName}" data-index="${index}">
-                <input type="number" 
-                       class="weight-input" 
-                       placeholder="${placeholder}" 
-                       value="${set.weight && set.weight !== '' ? set.weight : ''}" 
-                       ${weightChange}
-                       min="0"
-                       step="0.25"
-                       inputmode="decimal"
-                       ${disabled}>
+            <div class="set-item ${isWeighted ? 'weighted' : 'bodyweight'}" data-exercise="${exerciseName}" data-index="${index}">
+                ${weightInput}
                 <div class="reps-container">
-                    <button class="btn-reps" 
-                            ${disabled} 
+                    <button class="btn-reps"
+                            ${disabled}
                             onclick="adjustReps('${exerciseName}', ${index}, -1)">-</button>
                     <div class="reps-display">${set.reps}</div>
-                    <button class="btn-reps" 
-                            ${disabled} 
+                    <button class="btn-reps"
+                            ${disabled}
                             onclick="adjustReps('${exerciseName}', ${index}, 1)">+</button>
                 </div>
                 <button class="delete-btn" ${removeButtonClick} ${removeButtonStyle}>
@@ -2248,10 +2299,19 @@ function renderSets(exerciseName) {
 
 // Add a set to an exercise
 function addSet(exerciseName) {
-    exerciseData[exerciseName].sets.push({
-        weight: '',
+    const exerciseType = exerciseInfo[exerciseName]?.exerciseType || 'weighted';
+    const isWeighted = exerciseType === 'weighted';
+
+    const newSet = {
         reps: workoutData.lastReps[`${currentWorkout}-${exerciseName}`] || 12
-    });
+    };
+
+    // Only add weight property for weighted exercises
+    if (isWeighted) {
+        newSet.weight = '';
+    }
+
+    exerciseData[exerciseName].sets.push(newSet);
     updatePendingWorkout();
     if (currentSheetExercise === exerciseName) {
         updateSheetSets();
@@ -2273,8 +2333,12 @@ function removeSet(exerciseName, setIndex) {
 
 // Update weight for a set
 function updateWeight(exerciseName, setIndex, weight) {
-    exerciseData[exerciseName].sets[setIndex].weight = weight;
-    updatePendingWorkout();
+    // Only update weight for weighted exercises
+    const exerciseType = exerciseInfo[exerciseName]?.exerciseType || 'weighted';
+    if (exerciseType === 'weighted') {
+        exerciseData[exerciseName].sets[setIndex].weight = weight;
+        updatePendingWorkout();
+    }
 }
 
 // Update reps for a set
@@ -2369,9 +2433,9 @@ function openExerciseSheet(exerciseName) {
     updateSheetSets();
 
     // Set up dynamic event listeners and disable state based on workout status
-    const addSetBtn = document.getElementById('sheetAddSetBtn');
+    const addSetBtn = document.getElementById('sheetAddSetBtnHeader');
     const doneBtn = document.getElementById('sheetDoneBtn');
-    
+
     if (isWorkoutStarted) {
         // Enable buttons for started workouts
         addSetBtn.disabled = false;
@@ -2380,15 +2444,27 @@ function openExerciseSheet(exerciseName) {
         doneBtn.disabled = false;
         doneBtn.onclick = () => {
             // Check if exercise should be marked as completed or reverted to pending
-            const hasValidSets = exerciseData[exerciseName].sets.some(set =>
-                set.weight && parseFloat(set.weight) > 0
-            );
+            const exerciseType = exerciseInfo[exerciseName]?.exerciseType || 'weighted';
+            const isWeighted = exerciseType === 'weighted';
+
+            let hasValidSets;
+            if (isWeighted) {
+                // For weighted exercises, check if there are sets with weights
+                hasValidSets = exerciseData[exerciseName].sets.some(set =>
+                    set.weight && parseFloat(set.weight) > 0
+                );
+            } else {
+                // For bodyweight exercises, just check if there are sets with valid reps
+                hasValidSets = exerciseData[exerciseName].sets.some(set =>
+                    set.reps && parseInt(set.reps) > 0
+                );
+            }
 
             if (hasValidSets) {
-                // Mark as completed if there are sets with weights
+                // Mark as completed if there are valid sets
                 markExerciseComplete(exerciseName);
             } else {
-                // Mark as not completed if no valid weights
+                // Mark as not completed if no valid sets
                 exerciseData[exerciseName].completed = false;
                 updatePendingWorkout();
             }
@@ -3158,7 +3234,6 @@ if ('serviceWorker' in navigator) {
     let refreshing = false;
     
     navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(registration => {
-        console.log('SW registered:', registration);
         
         // Check for updates every time the app is opened
         registration.update();
@@ -3166,16 +3241,13 @@ if ('serviceWorker' in navigator) {
         // Listen for updates
         registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
-            console.log('New SW found, installing...');
             
             newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed') {
                     if (navigator.serviceWorker.controller) {
-                        console.log('New SW installed, activating...');
                         // Force the new service worker to take control
                         newWorker.postMessage({ type: 'SKIP_WAITING' });
                     } else {
-                        console.log('SW installed for the first time');
                     }
                 }
             });
@@ -3185,14 +3257,12 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (refreshing) return;
             refreshing = true;
-            console.log('SW controller changed, reloading...');
             window.location.reload();
         });
         
         // Check for updates on visibility change (iOS PWA switching)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && registration) {
-                console.log('App became visible, checking for updates...');
                 registration.update();
             }
         });
@@ -3200,7 +3270,6 @@ if ('serviceWorker' in navigator) {
         // Check for updates on focus (when returning to the app)
         window.addEventListener('focus', () => {
             if (registration) {
-                console.log('App focused, checking for updates...');
                 registration.update();
             }
         });
@@ -3305,7 +3374,6 @@ function showDevControls() {
     const devControls = document.getElementById('devControls');
     if (devControls) {
         devControls.classList.remove('hidden');
-        console.log('Developer controls are now visible');
     }
 }
 
@@ -3313,7 +3381,6 @@ function hideDevControls() {
     const devControls = document.getElementById('devControls');
     if (devControls) {
         devControls.classList.add('hidden');
-        console.log('Developer controls are now hidden');
     }
 }
 
@@ -3337,8 +3404,3 @@ window.removeTestData = removeTestData;
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
-
-// Handle virtual keyboard on mobile
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', handleVisualViewportChange);
-}

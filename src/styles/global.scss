@@ -1,0 +1,613 @@
+/* Global Workout Tracker Styles */
+@import 'variables.css';
+
+/* Import CSS files from css directory */
+@import '../../css/base.css';
+@import '../../css/layout.css';
+@import '../../css/components.css';
+@import '../../css/screens.css';
+@import '../../css/animations.css';
+
+/* Core Ionic CSS required for the framework to work */
+@import '@ionic/react/css/core.css';
+
+/* Basic CSS for apps built with Ionic */
+@import '@ionic/react/css/normalize.css';
+@import '@ionic/react/css/structure.css';
+@import '@ionic/react/css/typography.css';
+
+/* Optional CSS utils that can be commented out */
+@import '@ionic/react/css/padding.css';
+@import '@ionic/react/css/float-elements.css';
+@import '@ionic/react/css/text-alignment.css';
+@import '@ionic/react/css/text-transformation.css';
+@import '@ionic/react/css/flex-utils.css';
+@import '@ionic/react/css/display.css';
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* import '@ionic/react/css/palettes/dark.always.css'; */
+/* import '@ionic/react/css/palettes/dark.class.css'; */
+/* import '@ionic/react/css/palettes/dark.system.css'; */
+
+/* Global App Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ion-background-color);
+  color: var(--ion-text-color);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* App Container */
+.app-container {
+  max-width: 390px;
+  width: 100vw;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Typography */
+.workout-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.body-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ion-color-medium);
+  line-height: 1.4;
+}
+
+.small-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+}
+
+/* Buttons */
+.btn-success {
+  background: #282826;
+  color: white;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #3c3c3a;
+  }
+}
+
+.btn-danger {
+  background: var(--ion-color-danger);
+  color: white;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ion-color-danger-shade);
+  }
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--ion-text-color);
+  border-radius: 12px;
+  border: 1px solid var(--ion-color-medium);
+  padding: 16px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ion-color-light);
+  }
+}
+
+/* Cards */
+.custom-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: none !important;
+  border: 1px solid var(--border);
+  margin: 0;
+  padding: 24px;
+}
+
+/* Override Ionic Shadow DOM styles */
+ion-card {
+  --box-shadow: none !important;
+  box-shadow: none !important;
+  border: 1px solid var(--border) !important;
+}
+
+ion-card.workout-card {
+  --background: var(--muted) !important;
+  background: var(--muted) !important;
+}
+
+ion-card-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  padding: 0 !important;
+}
+
+:host {
+  --box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* Exercise Icons */
+.exercise-icon {
+  font-size: 24px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  margin-right: 16px;
+}
+
+/* Timer Display */
+.timer-display {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--workout-timer-color);
+  text-align: center;
+  font-feature-settings: 'tnum';
+}
+
+/* Progress Indicators */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ion-color-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 16px 0;
+
+  .progress-fill {
+    height: 100%;
+    background: var(--ion-color-secondary);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+  }
+}
+
+/* Modal Styles */
+.modal-content {
+  background: white;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 20px;
+}
+
+/* Mood Emojis */
+.mood-emoji {
+  font-size: 32px;
+  padding: 8px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(0, 122, 255, 0.1);
+  }
+
+  &.selected {
+    background: var(--ion-color-primary-tint);
+    transform: scale(1.2);
+  }
+}
+
+/* Celebration Styles */
+.celebration-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--celebration-gradient);
+  background-size: 400% 400%;
+  animation: morphGradient 8s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  overflow: hidden;
+}
+
+.celebration-text {
+  font-size: 64px;
+  font-weight: 800;
+  color: white;
+  text-align: center;
+  animation: celebrationFadeIn 0.5s ease-out;
+}
+
+/* Animations */
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes celebrationFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Input Styles */
+.weight-input {
+  width: 120px;
+  height: 40px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  background: white;
+
+  &:focus {
+    outline: none;
+    border-color: var(--ion-color-primary);
+  }
+
+  &:disabled {
+    background: var(--ion-color-light);
+    color: var(--ion-color-medium);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* Calendar Styles */
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    background: var(--ion-color-light);
+  }
+
+  &.workout-day {
+    background: var(--ion-color-success);
+    color: white;
+  }
+
+  &.selected {
+    background: var(--ion-color-primary);
+    color: white;
+  }
+
+  &.other-month {
+    color: var(--ion-color-medium);
+    opacity: 0.5;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 390px) {
+  .app-container {
+    padding: 0 16px;
+  }
+
+  .timer-display {
+    font-size: 36px;
+  }
+
+  .celebration-text {
+    font-size: 48px;
+  }
+}
+
+/* iOS Safe Area Support */
+@supports (padding: env(safe-area-inset-top)) {
+  .app-container {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  ion-tab-bar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Custom Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.available {
+    background: white;
+    color: var(--ion-color-secondary);
+  }
+
+  &.ongoing {
+    background: white;
+    color: var(--ion-color-secondary);
+  }
+
+  &.completed {
+    background: white;
+    color: var(--ion-color-tertiary);
+  }
+}
+
+/* Home Page Container */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Workout Page Container */
+.workout-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Home Page Workout List */
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workout-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.workout-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+
+  &.normal {
+    color: var(--wt-text);
+  }
+
+  &.ongoing {
+    color: white;
+  }
+}
+
+.workout-card-description {
+  font-size: 14px;
+  margin: 0;
+
+  &.normal {
+    color: var(--wt-text);
+  }
+
+  &.ongoing {
+    color: white;
+  }
+}
+
+/* Stats Card Layout */
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--wt-text);
+  display: block;
+}
+
+.stat-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wt-gray);
+  opacity: 0.8;
+}
+
+/* Exercise Section Cards */
+.section-container {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin: 8px 0;
+}
+
+.section-container-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: var(--ion-text-color);
+}
+
+/* Set Management */
+.set-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  margin: 8px 0;
+}
+
+.reps-container {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--ion-color-primary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reps-button-group {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.reps-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.minus {
+    border-radius: 9999px 0 0 9999px;
+  }
+
+  &.plus {
+    border-radius: 0 9999px 9999px 0;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus {
+    outline: none;
+    z-index: 10;
+  }
+}
+
+.reps-display {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0 12px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 40px;
+}
+
+/* Exercise Row Styling */
+.exercise-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.completed {
+    background-color: #e8f5e8;
+  }
+}
+
+/* Set Row Styling */
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.remove-set-btn {
+  background: none;
+  border: none;
+  color: var(--destructive);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--muted);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

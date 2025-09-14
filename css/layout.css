@@ -1,0 +1,196 @@
+/* Layout Styles - Containers, Grids, Screen Management */
+
+.container {
+    max-width: 390px;
+    width: 100vw;
+    margin: 0 auto;
+    padding: 20px 20px calc(80px + env(safe-area-inset-bottom)) 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Screen Management */
+.screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.home-screen {
+    gap: 16px;
+}
+
+.workout-screen {
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.workout-screen.slide-in {
+    transform: translateX(0);
+}
+
+/* Header Layouts */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.workout-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+}
+
+.header-spacer {
+    width: 40px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Timer Layout */
+.timer {
+    text-align: center;
+}
+
+/* Exercise Lists */
+.exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.exercise-list .exercise-item:not(.completed) {
+    order: 2;
+}
+
+.workout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Stats Layouts */
+.stats-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-around;
+    color: #18222b;
+    border: none;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.stat-card.wide {
+    grid-column: 1 / -1;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+/* Bottom App Bar */
+.bottom-app-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 390px;
+    width: 100vw;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    padding: 12px 32px calc(12px + env(safe-area-inset-bottom)) 32px;
+    z-index: 1000;
+    justify-content: space-around;
+}
+
+.app-bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    color: #8e8e93;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    min-width: 60px;
+}
+
+.app-bar-item:hover {
+    color: var(--orange);
+}
+
+.app-bar-item.active {
+    color: var(--orange);
+}
+
+.app-bar-item.active i {
+    color: var(--orange);
+}
+
+.app-bar-item i {
+    width: 28px;
+    height: 28px;
+    color: inherit;
+}

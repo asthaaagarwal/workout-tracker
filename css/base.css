@@ -1,0 +1,149 @@
+/* Base Styles - Variables, Reset, Typography */
+
+:root {
+    --blue: #153EFC;
+    --orange: #fa7427;
+    --gray: #6c6c70;
+
+    /* Ionic Core Colors */
+    --ion-color-primary: oklch(0.71 0.16 293.40);
+    --ion-color-primary-contrast: oklch(1.00 0 0);
+    --ion-color-secondary: oklch(0.91 0.05 306.07);
+    --ion-color-secondary-contrast: oklch(0.45 0.03 257.68);
+    --ion-color-tertiary: oklch(0.94 0.03 322.47);
+    --ion-color-tertiary-contrast: oklch(0.37 0.03 259.73);
+    --ion-color-danger: oklch(0.81 0.10 19.47);
+    --ion-color-success: oklch(0.43 0.21 292.63); /* optional mapping */
+    --ion-color-warning: oklch(0.95 0.03 307.19);
+    --ion-color-dark: oklch(0.37 0.03 259.73);
+    --ion-color-light: oklch(1.00 0 0);
+
+    /* Backgrounds */
+    --ion-background-color: var(--background);
+    --ion-text-color: var(--foreground);
+    --ion-card-background: var(--card);
+    --ion-card-color: var(--card-foreground);
+    --ion-toolbar-background: var(--primary);
+    --ion-toolbar-color: var(--primary-foreground);
+
+    /* Additional custom colors */
+    --ion-popover-background: var(--popover);
+    --ion-popover-color: var(--popover-foreground);
+    --ion-muted-color: var(--muted);
+    --ion-muted-foreground: var(--muted-foreground);
+    --ion-accent-color: var(--accent);
+    --ion-accent-foreground: var(--accent-foreground);
+    --ion-border-color: var(--border);
+    --ion-input-background: var(--input);
+    --ion-ring-color: var(--ring);
+    --ion-chart-1: var(--chart-1);
+    --ion-chart-2: var(--chart-2);
+    --ion-chart-3: var(--chart-3);
+    --ion-chart-4: var(--chart-4);
+    --ion-chart-5: var(--chart-5);
+    --ion-sidebar-background: var(--sidebar);
+    --ion-sidebar-color: var(--sidebar-foreground);
+    --ion-sidebar-primary: var(--sidebar-primary);
+    --ion-sidebar-primary-color: var(--sidebar-primary-foreground);
+    --ion-sidebar-accent: var(--sidebar-accent);
+    --ion-sidebar-accent-color: var(--sidebar-accent-foreground);
+    --ion-sidebar-border: var(--sidebar-border);
+    --ion-sidebar-ring: var(--sidebar-ring);
+
+    /* Fonts */
+    --ion-font-family: var(--font-sans);
+    --ion-font-family-monospace: var(--font-mono);
+    --ion-font-family-serif: var(--font-serif);
+
+    /* Border radius */
+    --ion-radius-sm: calc(var(--radius) - 4px);
+    --ion-radius-md: calc(var(--radius) - 2px);
+    --ion-radius: var(--radius);
+    --ion-radius-lg: calc(var(--radius) + 4px);
+
+    /* Shadows - Disabled */
+    --ion-shadow-2xs: none;
+    --ion-shadow-xs: none;
+    --ion-shadow-sm: none;
+    --ion-shadow: none;
+    --ion-shadow-md: none;
+    --ion-shadow-lg: none;
+    --ion-shadow-xl: none;
+    --ion-shadow-2xl: none;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f3eee8;
+    color: #18222b;
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* General Hidden Class */
+.hidden {
+    display: none !important;
+}
+
+/* Typography */
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #18222b;
+}
+
+.stat-value {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+#workoutTimer {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--blue);
+}
+
+.workout-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #18222b;
+}
+
+.workout-description {
+    font-size: 14px;
+    color: #18222b;
+}
+
+.exercise-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #18222b;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
+.section-title-standalone {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 20px 0 8px 0;
+    color: #1c1c1e;
+}

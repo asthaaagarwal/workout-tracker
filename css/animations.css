@@ -1,0 +1,1096 @@
+/* Animations and special effects - Keyframes, transitions, celebration styles */
+
+/* Stats Screen */
+.exercise-filter {
+    padding: 0;
+}
+
+.exercise-dropdown {
+    width: 100%;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1c1c1e;
+}
+
+.exercise-dropdown:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.stats-content {
+    padding: 0;
+}
+
+#statsScreen {
+    padding-bottom: 40px;
+}
+
+/* Weight Progression Graph */
+.graph-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    height: auto;
+}
+
+.graph-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.graph-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin-bottom: 4px;
+}
+
+.graph-header p {
+    font-size: 14px;
+    color: #6c6c70;
+    margin: 0;
+}
+
+.graph-content {
+    position: relative;
+}
+
+.progression-chart {
+    width: 100%;
+    height: 140px;
+}
+
+.chart-line {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-point {
+    fill: var(--orange);
+    stroke: white;
+    stroke-width: 2;
+    r: 4;
+}
+
+.chart-point:hover {
+    r: 6;
+    fill: var(--blue);
+}
+
+.chart-axis {
+    stroke: #e5e5e7;
+    stroke-width: 1;
+}
+
+.chart-grid {
+    stroke: #f5f5f7;
+    stroke-width: 1;
+}
+
+.chart-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+    fill: #6c6c70;
+    text-anchor: middle;
+}
+
+.chart-label.y-axis {
+    text-anchor: end;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c6c70;
+    font-size: 16px;
+}
+
+.play-video-btn {
+    background: transparent;
+    border: 2px solid var(--blue);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.play-video-btn i {
+    margin-left: 2px;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.checkin-mood-selector {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.mood-options {
+    display: flex;
+    justify-content: space-around;
+    gap: 16px;
+}
+
+.mood-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    background: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.mood-option:hover {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: rgba(0, 122, 255, 0.3);
+}
+
+.mood-option.selected {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.mood-option.selected .mood-label {
+    color: white;
+}
+
+.mood-emoji-large {
+    font-size: 32px;
+}
+
+.mood-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
+}
+
+.checkin-note-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.checkin-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    resize: vertical;
+    background: white;
+}
+
+.checkin-textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.btn-save-checkin {
+    position: fixed;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 20px;
+    right: 20px;
+    max-width: 350px;
+    margin: 0 auto;
+    background: #153EFC;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3000;
+}
+
+/* Mobile keyboard handling - prevent page movement */
+.checkin-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* Keep save button sticky at bottom */
+.checkin-popover.keyboard-open .btn-save-checkin {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    max-width: 350px;
+    margin: 0 auto;
+    z-index: 3001;
+}
+
+.btn-save-checkin:hover {
+    background: var(--blue);
+}
+
+.daily-checkin-card.hidden {
+    display: none;
+}
+
+.checkin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.checkin-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c1c1e;
+    margin: 0;
+}
+
+.checkin-date {
+    font-size: 14px;
+    color: #6c6c70;
+}
+
+.checkin-soreness {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.checkin-soreness-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
+.checkin-soreness-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.checkin-soreness-option {
+    background: #f8f9fa;
+    border: 2px solid #e5e5e7;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    flex: 1;
+}
+
+.checkin-soreness-option:hover {
+    background: #f0f0f0;
+    border-color: var(--blue);
+}
+
+.checkin-soreness-option.selected {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.checkin-soreness-option.selected .checkin-soreness-label {
+    color: white;
+}
+
+.checkin-soreness-emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.checkin-soreness-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
+}
+
+.checkin-note {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.checkin-note-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
+.checkin-note-input {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px 12px;
+    border: 2px solid #e5e5e7;
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.checkin-note-input:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.checkin-save-btn {
+    background: #153EFC;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkin-save-btn:hover {
+    background: var(--blue);
+}
+
+.checkin-complete {
+    text-align: center;
+    color: #34c759;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.checkin-complete-emoji {
+    font-size: 16px;
+}
+
+/* Developer Controls */
+.dev-controls {
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    border: 2px dashed #007aff;
+    opacity: 0.8;
+}
+
+.dev-controls-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.dev-controls-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #007aff;
+    margin-bottom: 4px;
+}
+
+.dev-controls-header small {
+    font-size: 12px;
+    color: #6c6c70;
+}
+
+.dev-controls-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-dev {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #007aff;
+    background: white;
+    color: #007aff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-dev:hover {
+    background: #007aff;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-dev:active {
+    transform: translateY(0);
+}
+
+.daily-note-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.daily-note-container h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
+.daily-note-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    resize: vertical;
+}
+
+.daily-note-input:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.daily-note-display {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.btn-save-note, .btn-edit-note, .btn-delete-note {
+    padding: 16px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-save-note {
+    background: #153EFC;
+    color: white;
+}
+
+.btn-save-note:hover {
+    background: var(--blue);
+}
+
+.btn-edit-note {
+    background: #153EFC;
+    color: white;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.btn-edit-note:hover {
+    background: var(--blue);
+}
+
+.btn-delete-note {
+    background: #ff3b30;
+    color: white;
+}
+
+.btn-delete-note:hover {
+    background: #d70015;
+}
+
+.note-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.soreness-question, .note-question {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+    color: #1c1c1e;
+}
+
+.soreness-options {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.soreness-option {
+    background: #f8f9fa;
+    border: 2px solid #e5e5e7;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    flex: 1;
+}
+
+.soreness-option:hover {
+    background: #f0f0f0;
+    border-color: var(--blue);
+}
+
+.soreness-option.selected {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.soreness-option.selected .soreness-label {
+    color: white;
+}
+
+.soreness-emoji {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.soreness-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #1c1c1e;
+}
+
+/* Confirmation Dialog */
+.confirmation-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.confirmation-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
+.confirmation-content p {
+    font-size: 16px;
+    color: #6c6c70;
+    line-height: 1.4;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 16px;
+    flex-direction: row-reverse;
+}
+
+.confirmation-content .confirmation-buttons {
+    margin-top: 16px;
+}
+
+.btn-confirm-yes {
+    flex: 1;
+    background: #282826;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-yes:hover {
+    background: #3c3c3a;
+}
+
+.btn-confirm-no {
+    flex: 1;
+    background: #f2f2f7;
+    color: #1c1c1e;
+    border: 1px solid #c7c7cc;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-no:hover {
+    background: #e5e5ea;
+}
+
+.btn-confirm-delete {
+    flex: 1;
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-delete:hover {
+    background: #d70015;
+}
+
+/* Daily Check-in Collapsible */
+.checkin-header.collapsible {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.checkin-toggle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6c6c70;
+    transition: transform 0.2s ease;
+}
+
+.checkin-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    max-height: 500px;
+}
+
+.checkin-content.collapsed {
+    max-height: 0;
+}
+
+/* Daily Completion Message */
+.daily-completion-message {
+    background: var(--blue);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.completion-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+}
+
+.completion-character {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.completion-emoji {
+    background: white;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.daily-completion-message h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+}
+
+.daily-completion-message p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.completion-icon {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Celebration Overlay */
+.celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        #ffe8a3 0%,
+        #ffb3d4 25%,
+        #c8a2ff 50%,
+        #a2d2ff 75%,
+        #ffe8a3 100%);
+    background-size: 400% 400%;
+    animation: morphGradient 8s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    overflow: hidden;
+}
+
+.celebration-overlay.hidden {
+    display: none;
+}
+
+.celebration-content {
+    text-align: center;
+    color: #18222b;
+    animation: celebrationFadeIn 0.5s ease-out;
+    position: relative;
+    width: 100%;
+}
+
+.celebration-gif {
+    width: 250px;
+    margin: 20px 0;
+}
+
+.celebration-text {
+    position: relative;
+    z-index: 10;
+    font-size: 64px;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+}
+
+.celebration-duration {
+    position: relative;
+    z-index: 10;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+}
+
+.celebration-feedback {
+    position: relative;
+    z-index: 10;
+}
+
+.feedback-question {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    opacity: 0.9;
+}
+
+.feedback-options {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.feedback-option {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    min-width: 70px;
+}
+
+.feedback-option:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.feedback-option.selected {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: scale(1.05);
+}
+
+.feedback-emoji {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.feedback-label {
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.celebration-continue-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 24px;
+    padding: 14px 32px;
+    color: #1c1c1e;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.celebration-emoji-row {
+    padding: 20px 0;
+}
+
+.celebration-continue-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+}
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.confetti {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 2px;
+    opacity: 0.9;
+}
+
+.character-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    animation: slideInFromLeft 0.8s ease-out;
+}
+
+.celebration-character {
+    animation: bounce 1s ease-in-out infinite alternate;
+}
+
+.speech-bubble {
+    position: relative;
+    background: white;
+    border: 2px solid #18222b;
+    border-radius: 20px;
+    padding: 16px 24px;
+    animation: fadeInDelay 0.6s ease-out;
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+
+.speech-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #18222b;
+    white-space: nowrap;
+}
+
+.speech-tail {
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 12px solid white;
+}
+
+.speech-tail::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: -12px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-right: 14px solid #18222b;
+}
+
+/* Animations */
+@keyframes celebrationFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100vw);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0px);
+    }
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeInDelay {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpCloud {
+    from {
+        transform: translateY(100vh);
+        opacity: 0.8;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceText {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(50px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) translateY(-10px);
+    }
+    70% {
+        transform: scale(0.95) translateY(5px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes morphGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 100% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    75% {
+        background-position: 0% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(calc(100vh + 50px)) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+/* Individual confetti pieces with different positions and delays */
+.confetti-1 { left: 5%; animation: confettiFall 1.5s linear infinite; animation-delay: 0s; }
+.confetti-2 { left: 10%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.1s; }
+.confetti-3 { left: 15%; animation: confettiFall 1.6s linear infinite; animation-delay: 0.2s; }
+.confetti-4 { left: 20%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.05s; }
+.confetti-5 { left: 25%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.3s; }
+.confetti-6 { left: 30%; animation: confettiFall 1.35s linear infinite; animation-delay: 0.15s; }
+.confetti-7 { left: 35%; animation: confettiFall 1.65s linear infinite; animation-delay: 0.4s; }
+.confetti-8 { left: 40%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.25s; }
+.confetti-9 { left: 45%; animation: confettiFall 1.5s linear infinite; animation-delay: 0.45s; }
+.confetti-10 { left: 50%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.35s; }
+.confetti-11 { left: 55%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.55s; }
+.confetti-12 { left: 60%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.2s; }
+.confetti-13 { left: 65%; animation: confettiFall 1.6s linear infinite; animation-delay: 0.65s; }
+.confetti-14 { left: 70%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.3s; }
+.confetti-15 { left: 75%; animation: confettiFall 1.5s linear infinite; animation-delay: 0.75s; }
+.confetti-16 { left: 80%; animation: confettiFall 1.35s linear infinite; animation-delay: 0.4s; }
+.confetti-17 { left: 85%; animation: confettiFall 1.65s linear infinite; animation-delay: 0.85s; }
+.confetti-18 { left: 90%; animation: confettiFall 1.4s linear infinite; animation-delay: 0.5s; }
+.confetti-19 { left: 95%; animation: confettiFall 1.55s linear infinite; animation-delay: 0.95s; }
+.confetti-20 { left: 12%; animation: confettiFall 1.45s linear infinite; animation-delay: 0.6s; }

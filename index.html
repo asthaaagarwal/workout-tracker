@@ -1,312 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="utf-8" />
     <title>Squat Squad</title>
-    
+
+    <base href="/" />
+
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="icons/favicon.png">
-    
+    <link rel="icon" type="image/png" href="/favicon.png">
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1c1c1e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Squat Squad">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-icon-180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-icon-167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-icon-152.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-icon-120.png">
-    
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-icon-167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120.png">
+
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <!-- Service Worker Registration handled in script.js -->
-</head>
-<body>
-    <div class="container">
-        <!-- Home Screen -->
-        <div id="homeScreen" class="screen home-screen">
-            <header class="header">
-                <h1>Squat Squad</h1>
-            </header>
+    <link rel="manifest" href="/manifest.json" />
 
-            <!-- Daily Check-in -->
-            <div id="dailyCheckin" class="daily-checkin-simple">
-                <!-- Daily check-in emojis will be dynamically generated -->
-            </div>
-
-            <!-- Workout Cards -->
-            <div id="workoutList" class="workout-list">
-                <!-- Workout cards will be dynamically generated -->
-            </div>
-
-            <!-- Stats Card -->
-            <div class="stats-card">
-                <div class="stat">
-                    <span class="stat-value" id="daysSinceLastWorkout">0</span>
-                    <span class="stat-label">Days since last workout</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value" id="totalWorkouts">0</span>
-                    <span class="stat-label">Total workouts completed</span>
-                </div>
-            </div>
-
-
-        </div>
-
-        <!-- Workout Screen -->
-        <div id="workoutScreen" class="workout-screen screen hidden">
-            <header class="workout-header">
-                <button id="cancelWorkoutBtn" class="btn-cancel"><i data-lucide="chevron-left"></i>Back</button>
-                <h2 id="workoutTitle">Workout</h2>
-                <div class="header-spacer"></div>
-            </header>
-            
-            <div class="timer">
-                <span id="workoutTimer">00:00:00</span>
-            </div>
-
-            <button id="startWorkoutBtn" class="btn-success hidden">Start Workout</button>
-
-            <div id="exerciseList" class="exercise-list">
-                <!-- Exercise items will be dynamically generated -->
-            </div>
-
-            <!-- Workout Feedback Section -->
-            <div id="workoutFeedbackSection" class="workout-feedback-section hidden">
-                <h3>How did you feel?</h3>
-                <div id="workoutFeedbackOptions" class="daily-checkin-simple">
-                    <!-- Feedback emoji options will be dynamically generated -->
-                </div>
-            </div>
-
-            <button id="completeWorkoutBtn" class="btn-success hidden">Complete Workout</button>
-            
-            <button id="deleteWorkoutBtn" class="btn-destructive hidden">Delete Workout</button>
-        </div>
-
-        <!-- Calendar Screen -->
-        <div id="calendarScreen" class="screen hidden">
-
-            <div class="calendar-navigation">
-                <button id="prevMonthBtn" class="btn-nav"><i data-lucide="chevron-left"></i></button>
-                <span id="currentMonth">January 2024</span>
-                <button id="nextMonthBtn" class="btn-nav"><i data-lucide="chevron-right"></i></button>
-            </div>
-
-            <div id="calendar" class="calendar-grid">
-                <!-- Calendar will be dynamically generated -->
-            </div>
-
-            <!-- Daily Check-in for Calendar -->
-            <div id="calendarDailyCheckin" class="daily-checkin-simple">
-                <!-- Daily check-in emojis will be dynamically generated -->
-            </div>
-
-            <div id="workoutDetails" class="workout-details hidden">
-                <!-- Selected date workout details -->
-            </div>
-        </div>
-
-        <!-- Stats Screen -->
-        <div id="statsScreen" class="screen hidden">
-            <div class="exercise-filter">
-                <select id="exerciseDropdown" class="exercise-dropdown">
-                    <option value="all">All Exercises</option>
-                    <!-- Exercise options will be dynamically generated -->
-                </select>
-            </div>
-
-            <!-- Weight Progression Graph -->
-            <div id="weightProgressionGraph" class="graph-container hidden">
-                <div class="graph-header">
-                    <h3>Weight Progression</h3>
-                    <p id="graphSubtitle">Select an exercise to see weight progression over time</p>
-                </div>
-                <div class="graph-content">
-                    <svg id="progressionSvg" class="progression-chart" width="100%" height="140">
-                        <!-- Graph will be dynamically generated -->
-                    </svg>
-                    <div id="noDataMessage" class="no-data-message hidden">
-                        <p>No weight data available for this exercise</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="statsContent" class="stats-content">
-                <!-- Stats content will be dynamically generated -->
-            </div>
-
-            <!-- Developer Controls -->
-            <div id="statsDevControls" class="dev-controls">
-                <div class="dev-controls-header">
-                    <h3>Test Data Controls</h3>
-                    <small>For testing purposes only</small>
-                </div>
-                <div class="dev-controls-buttons">
-                    <button id="addTestDataBtn" class="btn-dev">Add Test Data</button>
-                    <button id="removeTestDataBtn" class="btn-dev">Remove Test Data</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exercise Bottom Sheet -->
-        <div id="exerciseBottomSheet" class="bottom-sheet hidden">
-            <div class="bottom-sheet-content">
-                <div class="bottom-sheet-header">
-                    <h3 id="sheetExerciseTitle">Exercise</h3>
-                    <button id="playVideoBtn" class="play-video-btn hidden">
-                        <i data-lucide="play"></i>
-                    </button>
-                </div>
-
-                <div id="sheetSetsContainer" class="sheet-sets-container">
-                    <!-- Sets will be dynamically generated -->
-                </div>
-                <div class="sheet-actions">
-                    <button id="sheetAddSetBtn" class="btn-add-set">
-                        <i data-lucide="plus"></i>
-                    </button>
-                    <button id="sheetDoneBtn" class="btn-done-exercise">Done</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Confirmation Dialog -->
-        <div id="confirmationDialog" class="bottom-sheet hidden">
-            <div class="bottom-sheet-content">
-                <div class="confirmation-content">
-                    <p>Are you sure you are done with the workout?</p>
-                    <div class="confirmation-buttons">
-                        <button id="confirmYesBtn" class="btn-confirm-yes">Yes</button>
-                        <button id="confirmNoBtn" class="btn-confirm-no">No</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete Confirmation Dialog -->
-        <div id="deleteConfirmationDialog" class="bottom-sheet hidden">
-            <div class="bottom-sheet-content">
-                <div class="confirmation-content">
-                    <p>Are you sure you want to delete this workout? All your hardwork will vanish in an instance.</p>
-                    <div class="confirmation-buttons">
-                        <button id="confirmDeleteBtn" class="btn-confirm-delete">Delete</button>
-                        <button id="cancelDeleteBtn" class="btn-confirm-no">Go back</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete Checkin Confirmation Dialog -->
-        <div id="deleteCheckinConfirmationDialog" class="bottom-sheet hidden">
-            <div class="bottom-sheet-content">
-                <div class="confirmation-content">
-                    <p>Are you sure you want to delete this check-in?</p>
-                    <div class="confirmation-buttons">
-                        <button id="confirmDeleteCheckinBtn" class="btn-confirm-delete">Delete</button>
-                        <button id="cancelDeleteCheckinBtn" class="btn-confirm-no">Go back</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Daily Check-in Popover -->
-        <div id="checkinPopover" class="checkin-popover screen hidden">
-            <header class="checkin-header">
-                <button id="closeCheckinBtn" class="btn-cancel"><i data-lucide="chevron-left"></i>Back</button>
-                <h2>Daily Check-in</h2>
-                <button id="deleteCheckinBtn" class="btn-delete-icon hidden"><i data-lucide="trash-2"></i></button>
-            </header>
-
-            <div class="checkin-content">
-                <div class="checkin-mood-selector">
-                    <div class="mood-options" id="moodOptions">
-                        <!-- Mood options will be generated -->
-                    </div>
-                </div>
-
-                <div class="checkin-note-section">
-                    <textarea
-                        id="checkinTextarea"
-                        placeholder="How are you feeling today?"
-                        class="checkin-textarea"
-                        enterkeyhint="save"
-                    ></textarea>
-                </div>
-
-            </div>
-
-            <button id="saveCheckinBtn" class="btn-save-checkin">Save Check-in</button>
-        </div>
-
-        <!-- Celebration Overlay -->
-        <div id="celebrationOverlay" class="celebration-overlay hidden">
-            <div class="confetti-container">
-                <div class="confetti confetti-1"></div>
-                <div class="confetti confetti-2"></div>
-                <div class="confetti confetti-3"></div>
-                <div class="confetti confetti-4"></div>
-                <div class="confetti confetti-5"></div>
-                <div class="confetti confetti-6"></div>
-                <div class="confetti confetti-7"></div>
-                <div class="confetti confetti-8"></div>
-                <div class="confetti confetti-9"></div>
-                <div class="confetti confetti-10"></div>
-                <div class="confetti confetti-11"></div>
-                <div class="confetti confetti-12"></div>
-                <div class="confetti confetti-13"></div>
-                <div class="confetti confetti-14"></div>
-                <div class="confetti confetti-15"></div>
-                <div class="confetti confetti-16"></div>
-                <div class="confetti confetti-17"></div>
-                <div class="confetti confetti-18"></div>
-                <div class="confetti confetti-19"></div>
-                <div class="confetti confetti-20"></div>
-            </div>
-            <div class="celebration-content">
-                <div class="celebration-text">Crushed it!</div>
-                <div class="celebration-duration" id="celebrationDuration"></div>
-                <img src="images/celebration.gif" alt="Celebration" class="celebration-gif">
-                <div class="celebration-feedback">
-                    <div class="feedback-question">How did you feel?</div>
-                    <div class="celebration-emoji-row" id="celebrationMoodOptions">
-                        <!-- Emojis will be dynamically generated using daily checkin style -->
-                    </div>
-
-                    <button class="celebration-continue-btn" id="celebrationContinueBtn" onclick="closeCelebration()">
-                        Continue
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom App Bar -->
-        <div class="bottom-app-bar">
-            <button class="app-bar-item active" id="homeAppBarBtn">
-                <i data-lucide="home"></i>
-            </button>
-            <button class="app-bar-item" id="calendarAppBarBtn">
-                <i data-lucide="calendar"></i>
-            </button>
-            <button class="app-bar-item" id="statsAppBarBtn">
-                <i data-lucide="bar-chart-3"></i>
-            </button>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
-</body>
+    <!-- Mobile Web App -->
+    <meta name="mobile-web-app-capable" content="yes" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
