@@ -564,15 +564,6 @@ body {
     padding-bottom: 20px;
 }
 
-/* Prevent viewport changes when keyboard opens */
-/* .checkin-popover.keyboard-open {
-    height: 100vh !important;
-}
-
-.checkin-popover.keyboard-open .checkin-content {
-    height: calc(100vh - 160px) !important;
-    overflow-y: auto;
-} */
 
 /* Keep save button sticky at bottom */
 .checkin-popover.keyboard-open .btn-save-checkin {

@@ -99,7 +99,7 @@ const exerciseInfo = {
     'Push ups': { icon: '💪', description: 'Start in plank, lower chest to ground, push back up. Keep body straight throughout.', video: 'https://www.youtube.com/watch?v=KEFQyLkDYtI' },
     'Bodyweight squats': { icon: '🤸', description: 'Stand with feet shoulder-width apart. Lower hips down and back, then return to standing.', video: null },
     'Hand walks': { icon: '🙏', description: 'From standing, walk hands forward to plank, then walk back to standing position.', video: null },
-    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+    'Chest press': { icon: '🏋️', description: 'Lie on bench, press weights from chest level up and slightly forward, then lower slowly.', video: 'https://www.youtube.com/watch?v=tuwHzzPdaGc' },
     'Lat pull downs': { icon: '⬇️', description: 'Sit at machine, pull bar down to chest level, squeeze shoulder blades together.', video: 'https://www.youtube.com/watch?v=Mdp7kuhZD_M' },
     'Bent over rows': { icon: '🦵', description: 'Hinge at hips, pull weights to lower chest, squeeze shoulder blades at the top.', video: 'https://www.youtube.com/watch?v=3_RR7ELmcAk' },
     'Shoulder press': { icon: '⬆️', description: 'Press weights overhead from shoulder level, extend arms fully, lower with control.', video: 'https://www.youtube.com/watch?v=FRxZ6wr5bpA' },
@@ -578,7 +578,18 @@ function setupEventListeners() {
     // Daily Check-in Popover
     document.getElementById('closeCheckinBtn').addEventListener('click', closeCheckinPopover);
     document.getElementById('saveCheckinBtn').addEventListener('click', saveCheckinFromPopover);
-    
+
+    // Textarea blur handler for "Done" button
+    document.getElementById('checkinTextarea').addEventListener('blur', (e) => {
+        // Small delay to allow other events to process first
+        setTimeout(() => {
+            // Only submit if there's content and a mood is selected
+            if (e.target.value.trim() && selectedMood) {
+                saveCheckinFromPopover();
+            }
+        }, 100);
+    });
+
     // Bottom App Bar
     document.getElementById('homeAppBarBtn').addEventListener('click', () => {
         showHomeScreen();
@@ -3280,29 +3291,6 @@ document.addEventListener('touchstart', handleSwipeStart, { passive: false });
 document.addEventListener('touchmove', handleSwipeMove, { passive: false });
 document.addEventListener('touchend', handleSwipeEnd, { passive: false });
 
-// Handle mobile keyboard for save button positioning
-function handleVisualViewportChange() {
-    const saveBtn = document.querySelector('.btn-save-checkin');
-    const popover = document.querySelector('.checkin-popover');
-    if (!saveBtn || !popover) return;
-
-    if (window.visualViewport) {
-        const viewport = window.visualViewport;
-        const keyboardHeight = window.innerHeight - viewport.height;
-
-        if (keyboardHeight > 50) { // Keyboard is open
-            popover.classList.add('keyboard-open');
-            // Prevent body scroll
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-        } else { // Keyboard is closed
-            popover.classList.remove('keyboard-open');
-            // Restore body scroll
-            document.body.style.position = '';
-            document.body.style.width = '';
-        }
-    }
-}
 
 // Developer controls toggle functions
 function showDevControls() {
