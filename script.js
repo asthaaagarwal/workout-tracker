@@ -2462,8 +2462,16 @@ function extractVideoId(url) {
 function openYouTubeVideo(url) {
     if (!url) return;
 
-    // Try to open in YouTube app first, fallback to browser
-    window.open(url, '_blank');
+    // Create a temporary anchor element with security attributes
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    // Trigger the click programmatically
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // Close exercise bottom sheet
