@@ -558,20 +558,21 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px; /* Restore spacing between sections */
-    height: calc(100vh - 140px); /* Reserve space for header and save button */
+    /* height: calc(100vh - 140px);  */
+    /* Reserve space for header and save button */
     overflow-y: auto;
     padding-bottom: 20px;
 }
 
 /* Prevent viewport changes when keyboard opens */
-.checkin-popover.keyboard-open {
+/* .checkin-popover.keyboard-open {
     height: 100vh !important;
 }
 
 .checkin-popover.keyboard-open .checkin-content {
     height: calc(100vh - 160px) !important;
     overflow-y: auto;
-}
+} */
 
 /* Keep save button sticky at bottom */
 .checkin-popover.keyboard-open .btn-save-checkin {
