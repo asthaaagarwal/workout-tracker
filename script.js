@@ -436,7 +436,6 @@ function addTestData() {
     saveWorkoutData();
 
     const checkinCount = Object.values(workoutData.dailyEntries).filter(entry => entry.isTestData).length;
-    console.log(`Added ${testWorkouts.length} test workouts and ${checkinCount} daily check-ins to your history!`);
 
     // Refresh the display if we're on the home page
     if (typeof updateDisplay === 'function') {
@@ -472,8 +471,6 @@ function removeTestData() {
     workoutData.totalWorkouts = Math.max(0, (workoutData.totalWorkouts || 0) - removedWorkoutCount);
 
     saveWorkoutData();
-
-    console.log(`Removed ${removedWorkoutCount} test workouts and ${removedCheckinCount} daily check-ins from your history!`);
 
     // Refresh the display if we're on the home page
     if (typeof updateDisplay === 'function') {
@@ -971,7 +968,6 @@ function formatDateForHomeDisplay(date) {
 
 // Update app bar active state
 function updateAppBarState(activeTab) {
-    console.log('updateAppBarState called with:', activeTab);
 
     // Remove active class from all buttons
     document.getElementById('homeAppBarBtn').classList.remove('active');
@@ -985,13 +981,11 @@ function updateAppBarState(activeTab) {
         document.getElementById('calendarAppBarBtn').classList.add('active');
     } else if (activeTab === 'stats') {
         document.getElementById('statsAppBarBtn').classList.add('active');
-        console.log('Added active class to stats button');
     }
 }
 
 // Open stats screen
 function openStats() {
-    console.log('openStats() called');
     document.getElementById('homeScreen').classList.add('hidden');
     document.getElementById('calendarScreen').classList.add('hidden');
     document.getElementById('workoutScreen').classList.add('hidden');
@@ -999,7 +993,6 @@ function openStats() {
     populateExerciseDropdown();
     renderStats();
     updateAppBarState('stats');
-    console.log('openStats() completed');
 }
 
 // Populate exercise dropdown
@@ -3158,7 +3151,6 @@ if ('serviceWorker' in navigator) {
     let refreshing = false;
     
     navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(registration => {
-        console.log('SW registered:', registration);
         
         // Check for updates every time the app is opened
         registration.update();
@@ -3166,16 +3158,12 @@ if ('serviceWorker' in navigator) {
         // Listen for updates
         registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
-            console.log('New SW found, installing...');
             
             newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed') {
                     if (navigator.serviceWorker.controller) {
-                        console.log('New SW installed, activating...');
                         // Force the new service worker to take control
                         newWorker.postMessage({ type: 'SKIP_WAITING' });
-                    } else {
-                        console.log('SW installed for the first time');
                     }
                 }
             });
@@ -3185,14 +3173,12 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (refreshing) return;
             refreshing = true;
-            console.log('SW controller changed, reloading...');
             window.location.reload();
         });
         
         // Check for updates on visibility change (iOS PWA switching)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && registration) {
-                console.log('App became visible, checking for updates...');
                 registration.update();
             }
         });
@@ -3200,7 +3186,6 @@ if ('serviceWorker' in navigator) {
         // Check for updates on focus (when returning to the app)
         window.addEventListener('focus', () => {
             if (registration) {
-                console.log('App focused, checking for updates...');
                 registration.update();
             }
         });
@@ -3305,7 +3290,6 @@ function showDevControls() {
     const devControls = document.getElementById('devControls');
     if (devControls) {
         devControls.classList.remove('hidden');
-        console.log('Developer controls are now visible');
     }
 }
 
@@ -3313,7 +3297,6 @@ function hideDevControls() {
     const devControls = document.getElementById('devControls');
     if (devControls) {
         devControls.classList.add('hidden');
-        console.log('Developer controls are now hidden');
     }
 }
 
@@ -3337,8 +3320,3 @@ window.removeTestData = removeTestData;
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initApp);
-
-// Handle virtual keyboard on mobile
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', handleVisualViewportChange);
-}
